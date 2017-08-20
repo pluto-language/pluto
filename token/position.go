@@ -7,5 +7,5 @@ type Position struct {
 }
 
 func (p *Position) String() string {
-	return fmt.Sprintf("%s:%s", p.Line, p.Column)
+	return fmt.Sprintf("%d:%d", p.Line, p.Column)
 }

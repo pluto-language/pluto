@@ -85,7 +85,7 @@ func (p *Parser) unexpectedTokenErr(t token.Type) {
 func (p *Parser) printError(index int) {
 	err := p.Errors[index]
 
-	fmt.Printf("%s to %s -- %s", err.Start.String(), err.End.String(), err.Message)
+	fmt.Printf("%s → %s\t- %s\n", err.Start.String(), err.End.String(), err.Message)
 }
 
 func (p *Parser) PrintErrors() {

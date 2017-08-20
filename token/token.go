@@ -10,9 +10,11 @@ type Token struct {
 
 func (t *Token) String() string {
 	return fmt.Sprintf(
-		"%s `%s`",
+		"%s `%s` from %s → %s",
 		t.Type,
 		t.Literal,
+		t.Start.String(),
+		t.End.String(),
 	)
 }
 
