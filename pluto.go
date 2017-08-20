@@ -32,6 +32,11 @@ func main() {
 		return
 	}
 
+	if opts.Version {
+		fmt.Printf("Pluto v%s\n", VERSION)
+		return
+	}
+
 	if len(opts.Args.File) == 0 {
 		REPL()
 	} else {
