@@ -88,7 +88,7 @@ func (p *Parser) printError(index int) {
 	fmt.Printf("%s to %s -- %s", err.Start.String(), err.End.String(), err.Message)
 }
 
-func (p *Parser) printErrors() {
+func (p *Parser) PrintErrors() {
 	for i := range p.Errors {
 		p.printError(i)
 	}
