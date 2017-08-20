@@ -1,0 +1,20 @@
+# arrays, tuples, and strings, are collections
+a = [1, 2, 3]
+b = (2, 3, 4)
+c = "abc"
+
+# union and intersection builtins are supported
+printf "the union of %s and %s is %s" with (a, b, union of $a and $b)
+printf "the intersection of %s and %s is %s" with (a, b, intersection of $a and $b)
+printf "the union of %s and %s is %s" with (a, c, union of $a and $c)
+
+new line
+
+empty = ()
+one = (5,)
+lots = (1, 2, 3)
+
+printf "%s + %s = %s" with (a, b, a + b)
+printf "%s - %s = %s" with (a, b, a - b)
+printf "%s & %s = %s" with (a, b, a & b)
+printf "%s | %s = %s" with (a, b, a | b)

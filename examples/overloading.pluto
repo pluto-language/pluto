@@ -1,0 +1,45 @@
+class Vector {
+  init at $x $y {
+    self.x = x
+    self.y = y
+  }
+  
+  # Overloads 'self + <anything>'
+  # Since anything can be added, it is a good idea
+  # to check the type of $other
+  def __plus $other {
+    Vector at (self.x + other.x) (self.y + other.y)
+  }
+  
+  def __minus $other {
+    Vector at (self.x - other.x) (self.y - other.y)
+  }
+  
+  def __negate {
+    Vector at (-self.x) (-self.y)
+  }
+  
+  # Similar to __str__
+  # Returns a string representation of the vector
+  def string {
+    format "(%s, %s)" with (self.x, self.y)
+  }
+}
+
+a = Vector at 5 2
+b = Vector at 4 8
+
+# What you used to have to do
+print ((a: __plus $b): string)
+
+# What you can do instead
+# The 'a + b' is syntactical sugar, and the :string is implied
+print (a + b)
+
+# You can also overload prefix operators:
+
+print (-a)
+
+# is the same as
+
+print (a: __negate)

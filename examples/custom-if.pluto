@@ -1,0 +1,13 @@
+def if $condition $a else $b {
+  if (condition) {
+    do $a
+  } else {
+    do $b
+  }
+}
+
+\if (false) {
+  print "Hello!"
+} else {
+  print "The other one..."
+}

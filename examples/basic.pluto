@@ -1,0 +1,29 @@
+def print two times $n {
+  print (2 * n)
+}
+
+print two times 5
+
+printf "the 5th root of 10 is %s" with (\5th root of 10,)
+
+# basic types
+π = 3.14159
+i_am_a_bool = true
+nothing = null
+
+new line
+
+# collection types. further examples in 'collections'
+good_numbers = [1, 7, 95, 321]
+bad_numbers = (2, 8, 96, 322)
+name = "Zac"
+
+# these types can be represented as a list of values, hence can be used interchangably in almost all cases
+print (good_numbers + bad_numbers + name)
+
+# blocks. further examples in 'blocks.pluto'
+say_hi = { print "Hello, world!" }
+add = { |x, y| -> x + y }
+
+do $say_hi
+do $add with (5, 10)

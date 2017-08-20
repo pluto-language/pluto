@@ -1,0 +1,11 @@
+my_map = [ "x": 10,
+           "y": 5,
+           "z": 15,
+           true: "True!",
+           3: "Three" ]
+
+ten = key "x" of $my_map
+
+for (key : keys of $my_map) {
+  printf "%s: %s" with (key, key $key of $my_map)
+}

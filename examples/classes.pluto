@@ -1,0 +1,20 @@
+class Animal {
+  init of type $species called $name {
+    self.species = species
+    self.name = name
+  }
+  
+  def speak {
+    printf "%s the %s says hello!" with (self.name, self.species)
+  }
+}
+
+class Lion extends Animal {
+  init called $name {
+    self.species = "lion"
+    self.name = name
+  }
+}
+
+l = Lion called "Leo"
+l: speak

@@ -1,0 +1,16 @@
+def throws an error {
+  Error $IO "An error :)"
+}
+
+try {
+  throws an error
+} catch (err) {
+  General => {
+    print "An error occurred. The message was:"
+    print (err.msg)
+  }
+  
+  * => {
+    print (err.tag)
+  }
+}

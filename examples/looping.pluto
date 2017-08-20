@@ -1,0 +1,38 @@
+print "Type 'quit' to exit the loop"
+input = ""
+
+# while-loops are exactly as you'd expect
+while (input != "quit") {
+  input = prompt ">> "
+}
+
+new line
+
+my_collection = (1, 2, 3, 4, 5)
+
+# for-loops are fairly straight-forward too
+for (item : my_collection) {
+  print $item
+};
+
+new line
+
+# you can use the `range $collection` builtin to loop through indices of a collection
+word = "foo"
+
+for (i : range $word) {
+  print (index $i of $word)
+}
+
+new line
+
+# you get the usual loop control statements too:
+for (i : \1 to 10) {
+  if (i == 4) {
+    next
+  } elif (i == 7) {
+    break
+  } else {
+    print $i
+  }
+}

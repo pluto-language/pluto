@@ -1,0 +1,21 @@
+print `
+   +   Adds 1
+   -   Subtracts 1
+   *   Multiplies by 2
+   /   Divides by 2
+`
+text = prompt ">> "
+
+if (text == null || text == "") {
+  print "You didn't type anything!"
+} else {  
+  print (left fold $text with { |result, ch| ->
+    match (ch) {
+      '+' => result + 1
+      '-' => result - 1
+      '*' => result * 2
+      '/' => result / 2
+    }
+  } from 0)
+}
+
