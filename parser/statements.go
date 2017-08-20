@@ -53,10 +53,16 @@ func (p *Parser) parseBlockStatement() ast.Statement {
 }
 
 func (p *Parser) parseExpressionStatement() ast.Statement {
-	return &ast.ExpressionStatement{
+	stmt := &ast.ExpressionStatement{
 		Tok:  p.cur,
 		Expr: p.parseExpression(LOWEST),
 	}
+
+	if stmt.Expr == nil {
+		return nil
+	}
+
+	return stmt
 }
 
 func (p *Parser) parseReturnStatement() ast.Statement {
