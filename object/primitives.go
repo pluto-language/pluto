@@ -19,7 +19,7 @@ type (
 	}
 
 	Char struct {
-		Value byte
+		Value rune
 	}
 
 	Null struct{}
@@ -89,4 +89,15 @@ func (c *Char) String() string {
 
 func (_ *Null) String() string {
 	return "null"
+}
+
+/* Collection implementations */
+func (s *String) Elements() []Object {
+	chars := make([]Object, len(s.Value))
+
+	for i, ch := range s.Value {
+		chars[i] = &Char{ch}
+	}
+
+	return chars
 }
