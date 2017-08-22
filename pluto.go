@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"os"
 
+	_ "github.com/Zac-Garby/pluto/context"
 	"github.com/Zac-Garby/pluto/lexer"
 	_ "github.com/Zac-Garby/pluto/object"
 	"github.com/Zac-Garby/pluto/parser"
