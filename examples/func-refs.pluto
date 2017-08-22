@@ -1,0 +1,11 @@
+# Note: This will be added in a later version
+
+def print $a plus $b plus $c {
+  print (a + b + c)
+}
+
+fn = #"print $ plus $"
+fn!["a": 1, "b": 2, "c": 3] #=> 6
+fn <- ["a": 2]
+fn <- ["b": 5, "c": 3]
+fn! #=> 10
