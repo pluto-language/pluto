@@ -7,6 +7,7 @@ import (
 	"os"
 
 	"github.com/Zac-Garby/pluto/lexer"
+	_ "github.com/Zac-Garby/pluto/object"
 	"github.com/Zac-Garby/pluto/parser"
 	"github.com/jessevdk/go-flags"
 )
