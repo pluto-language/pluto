@@ -8,8 +8,8 @@ type Identifier struct {
 	Value string
 }
 
-func (_ *Identifier) Expr()              {}
-func (n *Identifier) Token() token.Token { return n.Tok }
+func (_ Identifier) Expr()              {}
+func (n Identifier) Token() token.Token { return n.Tok }
 
 /* Number */
 type Number struct {
@@ -17,8 +17,8 @@ type Number struct {
 	Value float64
 }
 
-func (_ *Number) Expr()              {}
-func (n *Number) Token() token.Token { return n.Tok }
+func (_ Number) Expr()              {}
+func (n Number) Token() token.Token { return n.Tok }
 
 /* Boolean */
 type Boolean struct {
@@ -26,8 +26,8 @@ type Boolean struct {
 	Value bool
 }
 
-func (_ *Boolean) Expr()              {}
-func (n *Boolean) Token() token.Token { return n.Tok }
+func (_ Boolean) Expr()              {}
+func (n Boolean) Token() token.Token { return n.Tok }
 
 /* String */
 type String struct {
@@ -35,8 +35,8 @@ type String struct {
 	Value string
 }
 
-func (_ *String) Expr()              {}
-func (n *String) Token() token.Token { return n.Tok }
+func (_ String) Expr()              {}
+func (n String) Token() token.Token { return n.Tok }
 
 /* Char */
 type Char struct {
@@ -44,8 +44,8 @@ type Char struct {
 	Value byte
 }
 
-func (_ *Char) Expr()              {}
-func (n *Char) Token() token.Token { return n.Tok }
+func (_ Char) Expr()              {}
+func (n Char) Token() token.Token { return n.Tok }
 
 /* Tuple */
 type Tuple struct {
@@ -53,8 +53,8 @@ type Tuple struct {
 	Value []Expression
 }
 
-func (_ *Tuple) Expr()              {}
-func (n *Tuple) Token() token.Token { return n.Tok }
+func (_ Tuple) Expr()              {}
+func (n Tuple) Token() token.Token { return n.Tok }
 
 /* Array */
 type Array struct {
@@ -62,8 +62,8 @@ type Array struct {
 	Elements []Expression
 }
 
-func (_ *Array) Expr()              {}
-func (n *Array) Token() token.Token { return n.Tok }
+func (_ Array) Expr()              {}
+func (n Array) Token() token.Token { return n.Tok }
 
 /* Map */
 type Map struct {
@@ -71,8 +71,8 @@ type Map struct {
 	Pairs map[Expression]Expression
 }
 
-func (_ *Map) Expr()              {}
-func (n *Map) Token() token.Token { return n.Tok }
+func (_ Map) Expr()              {}
+func (n Map) Token() token.Token { return n.Tok }
 
 /* BlockLiteral */
 type BlockLiteral struct {
@@ -81,16 +81,16 @@ type BlockLiteral struct {
 	Params []Expression
 }
 
-func (_ *BlockLiteral) Expr()              {}
-func (n *BlockLiteral) Token() token.Token { return n.Tok }
+func (_ BlockLiteral) Expr()              {}
+func (n BlockLiteral) Token() token.Token { return n.Tok }
 
 /* Null */
 type Null struct {
 	Tok token.Token
 }
 
-func (_ *Null) Expr()              {}
-func (n *Null) Token() token.Token { return n.Tok }
+func (_ Null) Expr()              {}
+func (n Null) Token() token.Token { return n.Tok }
 
 /* AssignExpression */
 type AssignExpression struct {
@@ -98,8 +98,8 @@ type AssignExpression struct {
 	Name, Value Expression
 }
 
-func (_ *AssignExpression) Expr()              {}
-func (n *AssignExpression) Token() token.Token { return n.Tok }
+func (_ AssignExpression) Expr()              {}
+func (n AssignExpression) Token() token.Token { return n.Tok }
 
 /* DeclareExpression */
 type DeclareExpression struct {
@@ -107,8 +107,8 @@ type DeclareExpression struct {
 	Name, Value Expression
 }
 
-func (_ *DeclareExpression) Expr()              {}
-func (n *DeclareExpression) Token() token.Token { return n.Tok }
+func (_ DeclareExpression) Expr()              {}
+func (n DeclareExpression) Token() token.Token { return n.Tok }
 
 /* PrefixExpression */
 type PrefixExpression struct {
@@ -117,8 +117,8 @@ type PrefixExpression struct {
 	Right    Expression
 }
 
-func (_ *PrefixExpression) Expr()              {}
-func (n *PrefixExpression) Token() token.Token { return n.Tok }
+func (_ PrefixExpression) Expr()              {}
+func (n PrefixExpression) Token() token.Token { return n.Tok }
 
 /* InfixExpression */
 type InfixExpression struct {
@@ -127,8 +127,8 @@ type InfixExpression struct {
 	Left, Right Expression
 }
 
-func (_ *InfixExpression) Expr()              {}
-func (n *InfixExpression) Token() token.Token { return n.Tok }
+func (_ InfixExpression) Expr()              {}
+func (n InfixExpression) Token() token.Token { return n.Tok }
 
 /* DotExpression */
 type DotExpression struct {
@@ -136,8 +136,8 @@ type DotExpression struct {
 	Left, Right Expression
 }
 
-func (_ *DotExpression) Expr()              {}
-func (n *DotExpression) Token() token.Token { return n.Tok }
+func (_ DotExpression) Expr()              {}
+func (n DotExpression) Token() token.Token { return n.Tok }
 
 /* Parameter */
 type Parameter struct {
@@ -145,8 +145,8 @@ type Parameter struct {
 	Name string
 }
 
-func (_ *Parameter) Expr()              {}
-func (n *Parameter) Token() token.Token { return n.Tok }
+func (_ Parameter) Expr()              {}
+func (n Parameter) Token() token.Token { return n.Tok }
 
 /* Argument */
 type Argument struct {
@@ -154,8 +154,8 @@ type Argument struct {
 	Value Expression
 }
 
-func (_ *Argument) Expr()              {}
-func (n *Argument) Token() token.Token { return n.Tok }
+func (_ Argument) Expr()              {}
+func (n Argument) Token() token.Token { return n.Tok }
 
 /* FunctionCall */
 type FunctionCall struct {
@@ -163,8 +163,8 @@ type FunctionCall struct {
 	Pattern []Expression
 }
 
-func (_ *FunctionCall) Expr()              {}
-func (n *FunctionCall) Token() token.Token { return n.Tok }
+func (_ FunctionCall) Expr()              {}
+func (n FunctionCall) Token() token.Token { return n.Tok }
 
 /* IfExpression */
 type IfExpression struct {
@@ -173,8 +173,8 @@ type IfExpression struct {
 	Consequence, Alternative Statement
 }
 
-func (_ *IfExpression) Expr()              {}
-func (n *IfExpression) Token() token.Token { return n.Tok }
+func (_ IfExpression) Expr()              {}
+func (n IfExpression) Token() token.Token { return n.Tok }
 
 type Arm struct {
 	Exprs []Expression
@@ -188,8 +188,8 @@ type MatchExpression struct {
 	Arms []Arm
 }
 
-func (_ *MatchExpression) Expr()              {}
-func (n *MatchExpression) Token() token.Token { return n.Tok }
+func (_ MatchExpression) Expr()              {}
+func (n MatchExpression) Token() token.Token { return n.Tok }
 
 /* WhileLoop */
 type WhileLoop struct {
@@ -198,8 +198,8 @@ type WhileLoop struct {
 	Body      Statement
 }
 
-func (_ *WhileLoop) Expr()              {}
-func (n *WhileLoop) Token() token.Token { return n.Tok }
+func (_ WhileLoop) Expr()              {}
+func (n WhileLoop) Token() token.Token { return n.Tok }
 
 /* ForLoop */
 type ForLoop struct {
@@ -208,8 +208,8 @@ type ForLoop struct {
 	Body            Statement
 }
 
-func (_ *ForLoop) Expr()              {}
-func (n *ForLoop) Token() token.Token { return n.Tok }
+func (_ ForLoop) Expr()              {}
+func (n ForLoop) Token() token.Token { return n.Tok }
 
 /* TryExpression */
 type TryExpression struct {
@@ -219,8 +219,8 @@ type TryExpression struct {
 	Arms    []Arm
 }
 
-func (_ *TryExpression) Expr()              {}
-func (n *TryExpression) Token() token.Token { return n.Tok }
+func (_ TryExpression) Expr()              {}
+func (n TryExpression) Token() token.Token { return n.Tok }
 
 /* MethodCall */
 type MethodCall struct {
@@ -229,5 +229,5 @@ type MethodCall struct {
 	Pattern  []Expression
 }
 
-func (_ *MethodCall) Expr()              {}
-func (n *MethodCall) Token() token.Token { return n.Tok }
+func (_ MethodCall) Expr()              {}
+func (n MethodCall) Token() token.Token { return n.Tok }
