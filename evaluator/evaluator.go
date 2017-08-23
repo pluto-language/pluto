@@ -58,58 +58,58 @@ func eval(n ast.Node, ctx *object.Context) object.Object {
 
 	switch node := n.(type) {
 	/* Not literals */
-	case ast.AssignExpression:
+	case *ast.AssignExpression:
 		// return evalAssignExpression(node, ctx)
-	case ast.BlockStatement:
-		return evalBlockStatement(node, ctx)
-	case ast.ClassStatement:
+	case *ast.BlockStatement:
+		return evalBlockStatement(*node, ctx)
+	case *ast.ClassStatement:
 		// return evalClassStatement(node, ctx)
-	case ast.DeclareExpression:
+	case *ast.DeclareExpression:
 		// return evalDeclareExpression(node, ctx)
-	case ast.DotExpression:
+	case *ast.DotExpression:
 		// return evalDotExpression(node, ctx)
-	case ast.ExpressionStatement:
+	case *ast.ExpressionStatement:
 		return eval(node.Expr, ctx)
-	case ast.ForLoop:
+	case *ast.ForLoop:
 		// return evalForLoop(node, ctx)
-	case ast.IfExpression:
+	case *ast.IfExpression:
 		// return evalIfExpression(node, ctx)
-	case ast.InfixExpression:
+	case *ast.InfixExpression:
 		// return evalInfixExpression(node, ctx)
-	case ast.MatchExpression:
+	case *ast.MatchExpression:
 		// return evalMatchExpression(node, ctx)
-	case ast.MethodCall:
+	case *ast.MethodCall:
 		// return evalMethodCall(node, ctx)
-	case ast.ReturnStatement:
+	case *ast.ReturnStatement:
 		// return evalReturnStatement(node, ctx)
-	case ast.PrefixExpression:
+	case *ast.PrefixExpression:
 		// return evalPrefixExpression(node, ctx)
-	case ast.TryExpression:
+	case *ast.TryExpression:
 		// return evalTryExpression(node, ctx)
-	case ast.WhileLoop:
+	case *ast.WhileLoop:
 		// return evalWhileLoop(node, ctx)
 
 	/* Literals */
-	case ast.Array:
-		return evalArray(node, ctx)
-	case ast.BlockLiteral:
-		return evalBlockLiteral(node, ctx)
-	case ast.Boolean:
+	case *ast.Array:
+		return evalArray(*node, ctx)
+	case *ast.BlockLiteral:
+		return evalBlockLiteral(*node, ctx)
+	case *ast.Boolean:
 		return &object.Boolean{Value: node.Value}
-	case ast.Char:
+	case *ast.Char:
 		return &object.Char{Value: rune(node.Value)}
-	case ast.Identifier:
-		return evalIdentifier(node, ctx)
-	case ast.Map:
-		return evalMap(node, ctx)
-	case ast.Null:
+	case *ast.Identifier:
+		return evalIdentifier(*node, ctx)
+	case *ast.Map:
+		return evalMap(*node, ctx)
+	case *ast.Null:
 		return NULL
-	case ast.Number:
+	case *ast.Number:
 		return &object.Number{Value: node.Value}
-	case ast.String:
+	case *ast.String:
 		return &object.String{Value: node.Value}
-	case ast.Tuple:
-		return evalTuple(node, ctx)
+	case *ast.Tuple:
+		return evalTuple(*node, ctx)
 	}
 
 	return err(ctx, "evaluation for %s not yet implemented", "NotImplementedError", reflect.TypeOf(n))
