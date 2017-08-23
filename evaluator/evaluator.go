@@ -38,8 +38,8 @@ var (
 	}
 )
 
-func EvaluateProgram(prog *ast.Program, ctx *object.Context) object.Object {
-	return evalProgram(prog, ctx)
+func EvaluateProgram(prog ast.Program, ctx *object.Context) object.Object {
+	return evalProgram(&prog, ctx)
 }
 
 func Evaluate(n ast.Node, ctx *object.Context) object.Object {
