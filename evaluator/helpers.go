@@ -9,7 +9,7 @@ func evalExpressions(exprs []ast.Expression, ctx *object.Context) []object.Objec
 	var result []object.Object
 
 	for _, expr := range exprs {
-		o := Evaluate(expr, ctx)
+		o := eval(expr, ctx)
 
 		if isErr(o) {
 			return []object.Object{o}

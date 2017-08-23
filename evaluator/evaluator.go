@@ -42,7 +42,7 @@ func EvaluateProgram(prog ast.Program, ctx *object.Context) object.Object {
 	return evalProgram(&prog, ctx)
 }
 
-func Evaluate(n ast.Node, ctx *object.Context) object.Object {
+func eval(n ast.Node, ctx *object.Context) object.Object {
 	/** Evaluation function naming **
 	 * Every AST node evaluation function's name should be in the form:
 	 *
@@ -67,7 +67,7 @@ func Evaluate(n ast.Node, ctx *object.Context) object.Object {
 	case ast.DotExpression:
 		// return evalDotExpression(node, ctx)
 	case ast.ExpressionStatement:
-		return Evaluate(node.Expr, ctx)
+		return eval(node.Expr, ctx)
 	case ast.ForLoop:
 		// return evalForLoop(node, ctx)
 	case ast.IfExpression:
@@ -121,7 +121,7 @@ func evalProgram(prog *ast.Program, ctx *object.Context) object.Object {
 	var result object.Object
 
 	for _, stmt := range prog.Statements {
-		result = Evaluate(stmt, ctx)
+		result = eval(stmt, ctx)
 
 		if isErr(result) {
 			return result

@@ -13,7 +13,7 @@ func evalBlockStatement(block ast.BlockStatement, ctx *object.Context) object.Ob
 	var result object.Object
 
 	for _, stmt := range block.Statements {
-		result = Evaluate(stmt, ctx)
+		result = eval(stmt, ctx)
 
 		if isErr(result) || result != nil &&
 			(result.Type() == object.RETURN_VALUE ||

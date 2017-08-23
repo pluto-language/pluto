@@ -39,12 +39,12 @@ func evalMap(node ast.Map, ctx *object.Context) object.Object {
 	var dict map[object.Object]object.Object
 
 	for k, v := range node.Pairs {
-		key := Evaluate(k, ctx)
+		key := eval(k, ctx)
 		if isErr(key) {
 			return key
 		}
 
-		value := Evaluate(v, ctx)
+		value := eval(v, ctx)
 		if isErr(value) {
 			return value
 		}
