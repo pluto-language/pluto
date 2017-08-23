@@ -1,6 +1,8 @@
 package evaluator
 
 import (
+	"reflect"
+
 	"github.com/Zac-Garby/pluto/ast"
 	"github.com/Zac-Garby/pluto/object"
 )
@@ -110,7 +112,7 @@ func eval(n ast.Node, ctx *object.Context) object.Object {
 		return evalTuple(node, ctx)
 	}
 
-	return err(ctx, "evaluation not yet implemented", "NotImplementedError")
+	return err(ctx, "evaluation for %s not yet implemented", "NotImplementedError", reflect.TypeOf(n))
 }
 
 func evalProgram(prog *ast.Program, ctx *object.Context) object.Object {
