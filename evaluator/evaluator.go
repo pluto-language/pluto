@@ -88,6 +88,10 @@ func eval(n ast.Node, ctx *object.Context) object.Object {
 		// return evalTryExpression(node, ctx)
 	case *ast.WhileLoop:
 		// return evalWhileLoop(node, ctx)
+	case *ast.NextStatement:
+		return NEXT
+	case *ast.BreakStatement:
+		return BREAK
 
 	/* Literals */
 	case *ast.Array:
