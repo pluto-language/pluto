@@ -10,8 +10,8 @@ var (
 	BREAK = new(object.Break)
 
 	NULL  = new(object.Null)
-	TRUE  = &object.Boolean{true}
-	FALSE = &object.Boolean{false}
+	TRUE  = &object.Boolean{Value: true}
+	FALSE = &object.Boolean{Value: false}
 )
 
 var (
