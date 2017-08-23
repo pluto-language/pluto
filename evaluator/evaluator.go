@@ -59,7 +59,7 @@ func Evaluate(n ast.Node, ctx *object.Context) object.Object {
 	case ast.AssignExpression:
 		// return evalAssignExpression(node, ctx)
 	case ast.BlockStatement:
-		// return evalBlockStatement(node, ctx)
+		return evalBlockStatement(node, ctx)
 	case ast.ClassStatement:
 		// return evalClassStatement(node, ctx)
 	case ast.DeclareExpression:
