@@ -95,3 +95,16 @@ func evalClassStatement(node ast.ClassStatement, ctx *object.Context) object.Obj
 
 	return o
 }
+
+func evalReturnStatement(node ast.ReturnStatement, ctx *object.Context) object.Object {
+	if node.Value == nil {
+		return &object.ReturnValue{Value: NULL}
+	}
+
+	val := eval(node.Value, ctx)
+	if isErr(val) {
+		return val
+	}
+
+	return &object.ReturnValue{Value: val}
+}

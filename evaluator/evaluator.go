@@ -63,7 +63,7 @@ func eval(n ast.Node, ctx *object.Context) object.Object {
 	case *ast.BlockStatement:
 		return evalBlockStatement(*node, ctx)
 	case *ast.ClassStatement:
-		// return evalClassStatement(node, ctx)
+		return evalClassStatement(*node, ctx)
 	case *ast.DeclareExpression:
 		// return evalDeclareExpression(node, ctx)
 	case *ast.DotExpression:
@@ -81,7 +81,7 @@ func eval(n ast.Node, ctx *object.Context) object.Object {
 	case *ast.MethodCall:
 		// return evalMethodCall(node, ctx)
 	case *ast.ReturnStatement:
-		// return evalReturnStatement(node, ctx)
+		return evalReturnStatement(*node, ctx)
 	case *ast.PrefixExpression:
 		// return evalPrefixExpression(node, ctx)
 	case *ast.TryExpression:
