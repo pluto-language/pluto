@@ -1,6 +1,8 @@
 package object
 
-import "github.com/Zac-Garby/pluto/ast"
+import (
+	"github.com/Zac-Garby/pluto/ast"
+)
 
 /* Structs */
 type (
@@ -15,6 +17,7 @@ type (
 		Pattern []ast.Expression
 		Body    ast.Statement
 		Context *Context
+		OnCall  func(self Function, ctx, enclosed *Context) Object
 	}
 
 	InitMethod struct {
