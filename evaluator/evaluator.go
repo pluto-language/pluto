@@ -62,6 +62,8 @@ func eval(n ast.Node, ctx *object.Context) object.Object {
 		// return evalAssignExpression(node, ctx)
 	case *ast.BlockStatement:
 		return evalBlockStatement(*node, ctx)
+	case *ast.BreakStatement:
+		return BREAK
 	case *ast.ClassStatement:
 		return evalClassStatement(*node, ctx)
 	case *ast.DeclareExpression:
@@ -80,6 +82,8 @@ func eval(n ast.Node, ctx *object.Context) object.Object {
 		// return evalMatchExpression(node, ctx)
 	case *ast.MethodCall:
 		// return evalMethodCall(node, ctx)
+	case *ast.NextStatement:
+		return NEXT
 	case *ast.ReturnStatement:
 		return evalReturnStatement(*node, ctx)
 	case *ast.PrefixExpression:
@@ -88,10 +92,6 @@ func eval(n ast.Node, ctx *object.Context) object.Object {
 		// return evalTryExpression(node, ctx)
 	case *ast.WhileLoop:
 		// return evalWhileLoop(node, ctx)
-	case *ast.NextStatement:
-		return NEXT
-	case *ast.BreakStatement:
-		return BREAK
 
 	/* Literals */
 	case *ast.Array:
