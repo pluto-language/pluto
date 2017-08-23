@@ -89,17 +89,17 @@ func Evaluate(n ast.Node, ctx *object.Context) object.Object {
 
 	/* Literals */
 	case ast.Array:
-		// return evalArray(node, ctx)
+		return evalArray(node, ctx)
 	case ast.BlockLiteral:
-		// return evalBlockLiteral(node, ctx)
+		return evalBlockLiteral(node, ctx)
 	case ast.Boolean:
 		return &object.Boolean{Value: node.Value}
 	case ast.Char:
 		return &object.Char{Value: rune(node.Value)}
 	case ast.Identifier:
-		// return evalIdentifier(node, ctx)
+		return evalIdentifier(node, ctx)
 	case ast.Map:
-		// return evalMap(node, ctx)
+		return evalMap(node, ctx)
 	case ast.Null:
 		return NULL
 	case ast.Number:
@@ -107,7 +107,7 @@ func Evaluate(n ast.Node, ctx *object.Context) object.Object {
 	case ast.String:
 		return &object.String{Value: node.Value}
 	case ast.Tuple:
-		// return evalTuple(node, ctx)
+		return evalTuple(node, ctx)
 	}
 
 	return err(ctx, "evaluation not yet implemented", "NotImplementedError")
