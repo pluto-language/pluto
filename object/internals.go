@@ -14,7 +14,7 @@ type (
 	Function struct {
 		Pattern []ast.Expression
 		Body    ast.Statement
-		Context Context
+		Context *Context
 	}
 
 	InitMethod struct {
