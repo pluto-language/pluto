@@ -8,8 +8,8 @@ type ExpressionStatement struct {
 	Expr Expression
 }
 
-func (_ *ExpressionStatement) Stmt()              {}
-func (n *ExpressionStatement) Token() token.Token { return n.Tok }
+func (_ ExpressionStatement) Stmt()              {}
+func (n ExpressionStatement) Token() token.Token { return n.Tok }
 
 /* BlockStatement */
 type BlockStatement struct {
@@ -17,8 +17,8 @@ type BlockStatement struct {
 	Statements []Statement
 }
 
-func (_ *BlockStatement) Stmt()              {}
-func (n *BlockStatement) Token() token.Token { return n.Tok }
+func (_ BlockStatement) Stmt()              {}
+func (n BlockStatement) Token() token.Token { return n.Tok }
 
 /* FunctionDefinition */
 type FunctionDefinition struct {
@@ -27,8 +27,8 @@ type FunctionDefinition struct {
 	Body    Statement
 }
 
-func (_ *FunctionDefinition) Stmt()              {}
-func (n *FunctionDefinition) Token() token.Token { return n.Tok }
+func (_ FunctionDefinition) Stmt()              {}
+func (n FunctionDefinition) Token() token.Token { return n.Tok }
 
 /* InitDefinition */
 type InitDefinition struct {
@@ -37,8 +37,8 @@ type InitDefinition struct {
 	Body    Statement
 }
 
-func (_ *InitDefinition) Stmt()              {}
-func (n *InitDefinition) Token() token.Token { return n.Tok }
+func (_ InitDefinition) Stmt()              {}
+func (n InitDefinition) Token() token.Token { return n.Tok }
 
 /* ReturnStatement */
 type ReturnStatement struct {
@@ -46,24 +46,24 @@ type ReturnStatement struct {
 	Value Expression
 }
 
-func (_ *ReturnStatement) Stmt()              {}
-func (n *ReturnStatement) Token() token.Token { return n.Tok }
+func (_ ReturnStatement) Stmt()              {}
+func (n ReturnStatement) Token() token.Token { return n.Tok }
 
 /* NextStatement */
 type NextStatement struct {
 	Tok token.Token
 }
 
-func (_ *NextStatement) Stmt()              {}
-func (n *NextStatement) Token() token.Token { return n.Tok }
+func (_ NextStatement) Stmt()              {}
+func (n NextStatement) Token() token.Token { return n.Tok }
 
 /* BreakStatement */
 type BreakStatement struct {
 	Tok token.Token
 }
 
-func (_ *BreakStatement) Stmt()              {}
-func (n *BreakStatement) Token() token.Token { return n.Tok }
+func (_ BreakStatement) Stmt()              {}
+func (n BreakStatement) Token() token.Token { return n.Tok }
 
 /* ClassStatement */
 type ClassStatement struct {
@@ -72,5 +72,5 @@ type ClassStatement struct {
 	Methods      []Statement
 }
 
-func (_ *ClassStatement) Stmt()              {}
-func (n *ClassStatement) Token() token.Token { return n.Tok }
+func (_ ClassStatement) Stmt()              {}
+func (n ClassStatement) Token() token.Token { return n.Tok }
