@@ -129,14 +129,13 @@ func (p *Parser) parseGroupedExpression() ast.Expression {
 		p.next()
 		p.next()
 
-		expr := &ast.Tuple{
+		expr = &ast.Tuple{
 			Tok: expr.Token(),
+			Value: append(
+				[]ast.Expression{expr},
+				p.parseExpressionList(token.RPAREN)...,
+			),
 		}
-
-		expr.Value = append(
-			[]ast.Expression{expr},
-			p.parseExpressionList(token.RPAREN)...,
-		)
 	}
 
 	if !isTuple && !p.expect(token.RPAREN) {
