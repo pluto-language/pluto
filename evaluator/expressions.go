@@ -1,6 +1,9 @@
 package evaluator
 
 import (
+	"math"
+	"strings"
+
 	"github.com/Zac-Garby/pluto/ast"
 	"github.com/Zac-Garby/pluto/object"
 )
@@ -110,4 +113,250 @@ func evalMinusPrefix(right object.Object, ctx *object.Context) object.Object {
 	}
 
 	return &object.Number{Value: -right.(*object.Number).Value}
+}
+
+func evalInfixExpression(node ast.InfixExpression, ctx *object.Context) object.Object {
+	left := eval(node.Left, ctx)
+	if isErr(left) {
+		return left
+	}
+
+	right := eval(node.Right, ctx)
+	if isErr(right) {
+		return right
+	}
+
+	op := node.Operator
+
+	if lCol, ok := left.(object.Collection); ok {
+		if rCol, ok := right.(object.Collection); ok {
+			return evalCollectionInfix(op, lCol, rCol, ctx)
+		}
+	}
+
+	if instance, ok := left.(*object.Instance); ok {
+		return evalInstanceInfix(op, instance, right, ctx)
+	}
+
+	switch op {
+	case "&&":
+		return boolObj(isTruthy(left) && isTruthy(right))
+	case "||":
+		return boolObj(isTruthy(left) || isTruthy(right))
+	case "==":
+		return boolObj(left.Equals(right))
+	case "!=":
+		return boolObj(!left.Equals(right))
+	case "?":
+		if left == NULL {
+			return right
+		}
+
+		return left
+	}
+
+	if left.Type() == object.NUMBER && right.Type() == object.NUMBER {
+		return evalNumberInfix(op, left.(*object.Number), right.(*object.Number), ctx)
+	}
+
+	if (left.Type() == object.CHAR || left.Type() == object.STRING) &&
+		(right.Type() == object.CHAR || right.Type() == object.STRING) {
+		return evalCharStringInfix(op, left, right, ctx)
+	}
+
+	if left.Type() == object.CHAR && right.Type() == object.NUMBER {
+		ch := string(left.(*object.Char).Value)
+		amount := int(math.Floor(right.(*object.Number).Value))
+
+		return &object.String{Value: strings.Repeat(ch, amount)}
+	}
+
+	if lCol, ok := left.(object.Collection); ok {
+		if right.Type() == object.NUMBER && op == "*" {
+			var result []object.Object
+			elems := lCol.Elements()
+			amount := int(math.Floor(right.(*object.Number).Value))
+
+			for i := 0; i < amount; i++ {
+				result = append(result, elems...)
+			}
+
+			return makeCollection(left.Type(), result, ctx)
+		}
+	}
+
+	return err(ctx, "unknown operator: %s %s %s", "NotFoundError", left.Type(), op, right.Type())
+}
+
+func evalCollectionInfix(op string, left, right object.Collection, ctx *object.Context) object.Object {
+	l := left.Elements()
+	r := right.Elements()
+
+	switch op {
+	case "==":
+		return boolObj(left.Equals(right))
+	case "!=":
+		return boolObj(!left.Equals(right))
+	case "+":
+		return makeCollection(left.Type(), append(l, r...), ctx)
+	case "-":
+		var elems []object.Object
+
+	outer:
+		for _, el := range l {
+			for _, rel := range r {
+				if el.Equals(rel) {
+					break outer
+				}
+			}
+
+			elems = append(elems, el)
+		}
+
+		return makeCollection(left.Type(), elems, ctx)
+	case "&", "&&":
+		var elems []object.Object
+
+		for _, el := range l {
+			both := false
+
+			for _, rel := range r {
+				if el.Equals(rel) {
+					both = true
+					break
+				}
+			}
+
+			if both {
+				elems = append(elems, el)
+			}
+		}
+
+		return makeCollection(left.Type(), elems, ctx)
+	case "|", "||":
+		var elems []object.Object
+
+		for _, el := range l {
+			unique := true
+
+			for _, rel := range r {
+				if el.Equals(rel) {
+					unique = false
+					break
+				}
+			}
+
+			if unique {
+				elems = append(elems, el)
+			}
+		}
+
+		return makeCollection(left.Type(), elems, ctx)
+	default:
+		return err(ctx, "unknown operator: %s %s %s", "NotFoundError", left.Type(), op, right.Type())
+	}
+}
+
+func evalNumberInfix(op string, left, right *object.Number, ctx *object.Context) object.Object {
+	l := left.Value
+	r := right.Value
+
+	switch op {
+	case "+":
+		return &object.Number{Value: l + r}
+	case "-":
+		return &object.Number{Value: l - r}
+	case "*":
+		return &object.Number{Value: l * r}
+	case "/":
+		return &object.Number{Value: l / r}
+	case "&":
+		return &object.Number{Value: float64(int(l) & int(r))}
+	case "|":
+		return &object.Number{Value: float64(int(l) | int(r))}
+	case "**":
+		return &object.Number{Value: math.Pow(l, r)}
+	case "//":
+		return &object.Number{Value: math.Floor(l / r)}
+	case "%":
+		return &object.Number{Value: math.Mod(l, r)}
+	case "<":
+		return boolObj(l < r)
+	case ">":
+		return boolObj(l > r)
+	case "<=":
+		return boolObj(l <= r)
+	case ">=":
+		return boolObj(l >= r)
+	default:
+		return err(ctx, "unknown operator: %s %s %s", "NotFoundError", left.Type(), op, right.Type())
+	}
+}
+
+func evalCharStringInfix(op string, left, right object.Object, ctx *object.Context) object.Object {
+	var l, r string
+
+	if lch, ok := left.(*object.Char); ok {
+		l = string(lch.Value)
+	} else if lstr, ok := left.(*object.String); ok {
+		l = lstr.Value
+	}
+
+	if rch, ok := right.(*object.Char); ok {
+		r = string(rch.Value)
+	} else if rstr, ok := right.(*object.String); ok {
+		r = rstr.Value
+	}
+
+	switch op {
+	case "+":
+		return &object.String{Value: l + r}
+	case "-":
+		var val string
+
+		for _, ch := range strings.Split(l, "") {
+			if ch != r {
+				val += ch
+			}
+		}
+
+		return &object.String{Value: val}
+	default:
+		return err(ctx, "unknown operator: %s %s %s", "NotFoundError", left.Type(), op, right.Type())
+	}
+}
+
+func evalInstanceInfix(op string, left *object.Instance, right object.Object, ctx *object.Context) object.Object {
+	fnName, ok := infixOverloads[op]
+	if !ok {
+		return err(ctx, "cannot overload operator %s", "NotFoundError", op)
+	}
+
+	if method := left.Base.(*object.Class).GetMethod(fnName); method != nil {
+		methodPattern := method.Fn.Pattern
+
+		args := map[string]object.Object{
+			"self": left,
+		}
+
+		for _, item := range methodPattern {
+			if param, ok := item.(*ast.Parameter); ok {
+				args[param.Name] = right
+				break
+			}
+		}
+
+		enclosed := ctx.EncloseWith(args)
+
+		return eval(method.Fn.Body, enclosed)
+	}
+
+	return err(
+		ctx, "unknown operator: %s %s %s. try overloading %s",
+		"NotFoundError",
+		left.Base.String(),
+		op,
+		right.Type(),
+		fnName,
+	)
 }

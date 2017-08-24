@@ -1,6 +1,8 @@
 package evaluator
 
 import (
+	"strings"
+
 	"github.com/Zac-Garby/pluto/ast"
 	"github.com/Zac-Garby/pluto/object"
 )
@@ -27,6 +29,25 @@ func unwrapReturnValue(o object.Object) object.Object {
 	}
 
 	return o
+}
+
+func makeCollection(t object.Type, elems []object.Object, ctx *object.Context) object.Object {
+	switch t {
+	case object.ARRAY:
+		return &object.Array{Value: elems}
+	case object.TUPLE:
+		return &object.Tuple{Value: elems}
+	case object.STRING:
+		var strs []string
+
+		for _, elem := range elems {
+			strs = append(strs, elem.String())
+		}
+
+		return &object.String{Value: strings.Join(strs, "")}
+	default:
+		return err(ctx, "could not form a collection of type %s", "TypeError", t)
+	}
 }
 
 func isTruthy(o object.Object) bool {
