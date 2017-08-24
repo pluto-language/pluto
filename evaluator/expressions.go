@@ -396,3 +396,17 @@ func evalAssignExpression(node ast.AssignExpression, ctx *object.Context) object
 
 	return err(ctx, "can only assign to identifiers!", "SyntaxError")
 }
+
+func evalDeclareExpression(node ast.DeclareExpression, ctx *object.Context) object.Object {
+	right := eval(node.Value, ctx)
+	if isErr(right) {
+		return right
+	}
+
+	if left, ok := node.Name.(*ast.Identifier); ok {
+		ctx.Declare(left.Value, right)
+		return right
+	}
+
+	return err(ctx, "cannot declare a non-identifier!", "SyntaxError")
+}
