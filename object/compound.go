@@ -190,3 +190,48 @@ func (t *Tuple) Elements() []Object {
 func (a *Array) Elements() []Object {
 	return a.Value
 }
+
+/* Other methods */
+func (c *Class) GetMethods() []Method {
+	var methods []Method
+
+	if c.Parent != nil {
+		methods = c.Parent.(*Class).GetMethods()
+	}
+
+	for _, m := range c.Methods {
+		if method, ok := m.(*Method); ok {
+			methods = append(methods, *method)
+		}
+	}
+
+	return methods
+}
+
+func (c *Class) GetMethod(pattern string) *Method {
+	fnPattern := strings.Split(pattern, " ")
+
+	for _, method := range c.GetMethods() {
+		methodPattern := method.Fn.Pattern
+
+		if len(fnPattern) != len(methodPattern) {
+			continue
+		}
+
+		isMatch := true
+		for i, mPatItem := range methodPattern {
+			_, isParam := mPatItem.(*ast.Parameter)
+			_, isIdent := mPatItem.(*ast.Identifier)
+
+			if !(fnPattern[i] == "$" && isParam || isIdent && fnPattern[i] == methodPattern[i].Token().Literal) {
+				isMatch = false
+			}
+		}
+
+		if isMatch {
+			return &method
+		}
+	}
+
+	return nil
+}

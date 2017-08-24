@@ -87,7 +87,7 @@ func eval(n ast.Node, ctx *object.Context) object.Object {
 	case *ast.ReturnStatement:
 		return evalReturnStatement(*node, ctx)
 	case *ast.PrefixExpression:
-		// return evalPrefixExpression(node, ctx)
+		return evalPrefixExpression(*node, ctx)
 	case *ast.TryExpression:
 		// return evalTryExpression(node, ctx)
 	case *ast.WhileLoop:
