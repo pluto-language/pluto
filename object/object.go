@@ -41,5 +41,5 @@ type Collection interface {
 type Container interface {
 	Object
 	Get(Object) Object
-	Set(Object, Object) Object
+	Set(Object, Object)
 }

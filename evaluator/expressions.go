@@ -39,7 +39,7 @@ func evalArray(node ast.Array, ctx *object.Context) object.Object {
 }
 
 func evalMap(node ast.Map, ctx *object.Context) object.Object {
-	var dict map[object.Object]object.Object
+	dict := make(map[object.Object]object.Object)
 
 	for k, v := range node.Pairs {
 		key := eval(k, ctx)
