@@ -202,15 +202,18 @@ func evalCollectionInfix(op string, left, right object.Collection, ctx *object.C
 	case "-":
 		var elems []object.Object
 
-	outer:
 		for _, el := range l {
+			blacklisted := false
+
 			for _, rel := range r {
 				if el.Equals(rel) {
-					break outer
+					blacklisted = true
 				}
 			}
 
-			elems = append(elems, el)
+			if !blacklisted {
+				elems = append(elems, el)
+			}
 		}
 
 		return makeCollection(left.Type(), elems, ctx)
@@ -236,10 +239,10 @@ func evalCollectionInfix(op string, left, right object.Collection, ctx *object.C
 	case "|", "||":
 		var elems []object.Object
 
-		for _, el := range l {
+		for _, el := range append(l, r...) {
 			unique := true
 
-			for _, rel := range r {
+			for _, rel := range elems {
 				if el.Equals(rel) {
 					unique = false
 					break
