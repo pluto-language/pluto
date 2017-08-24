@@ -37,3 +37,9 @@ type Collection interface {
 	Object
 	Elements() []Object
 }
+
+type Container interface {
+	Object
+	Get(Object) Object
+	Set(Object, Object) Object
+}

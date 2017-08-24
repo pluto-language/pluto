@@ -48,12 +48,16 @@ func main() {
 }
 
 func runREPL() {
+	ctx := &object.Context{
+		Store: make(map[string]object.Object),
+	}
+
 	for {
 		reader := bufio.NewReader(os.Stdin)
 		fmt.Print(">> ")
 		text, _ := reader.ReadString('\n')
 
-		execute(text, true)
+		execute(text, true, ctx)
 	}
 }
 
@@ -61,11 +65,15 @@ func executeFile(name string) {
 	if code, err := ioutil.ReadFile(name); err != nil {
 		panic(err)
 	} else {
-		execute(string(code), false)
+		ctx := &object.Context{
+			Store: make(map[string]object.Object),
+		}
+
+		execute(string(code), false, ctx)
 	}
 }
 
-func execute(code string, showOutput bool) {
+func execute(code string, showOutput bool, ctx *object.Context) {
 	next := lexer.Lexer(code)
 	parse := parser.New(next)
 	program := parse.Parse()
@@ -84,8 +92,7 @@ func execute(code string, showOutput bool) {
 		return
 	}
 
-	context := &object.Context{}
-	result := evaluator.EvaluateProgram(program, context)
+	result := evaluator.EvaluateProgram(program, ctx)
 
 	if showOutput && result != evaluator.NULL {
 		fmt.Println(result.String())

@@ -14,5 +14,6 @@ func err(ctx *object.Context, msg, tag string, fmts ...interface{}) object.Objec
 }
 
 func isErr(o object.Object) bool {
-	panic("Implement me :)")
+	return false
+	// panic("Implement me :)")
 }

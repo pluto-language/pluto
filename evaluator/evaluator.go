@@ -59,7 +59,7 @@ func eval(n ast.Node, ctx *object.Context) object.Object {
 	switch node := n.(type) {
 	/* Not literals */
 	case *ast.AssignExpression:
-		// return evalAssignExpression(node, ctx)
+		return evalAssignExpression(*node, ctx)
 	case *ast.BlockStatement:
 		return evalBlockStatement(*node, ctx)
 	case *ast.BreakStatement:

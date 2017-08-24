@@ -363,3 +363,36 @@ func evalInstanceInfix(op string, left *object.Instance, right object.Object, ct
 		fnName,
 	)
 }
+
+func evalAssignExpression(node ast.AssignExpression, ctx *object.Context) object.Object {
+	right := eval(node.Value, ctx)
+	if isErr(right) {
+		return right
+	}
+
+	if dot, ok := node.Name.(*ast.DotExpression); ok {
+		o := eval(dot.Left, ctx)
+		if isErr(o) {
+			return o
+		}
+
+		ctr, ok := o.(object.Container)
+		if !ok {
+			return err(ctx, "can only access fields of containers", "TypeError")
+		}
+
+		if id, ok := dot.Right.(*ast.Identifier); ok {
+			ctr.Set(&object.String{Value: id.Value}, right)
+			return right
+		}
+
+		return err(ctx, "an identifier is expected to follow a dot operator", "SyntaxError")
+	}
+
+	if left, ok := node.Name.(*ast.Identifier); ok {
+		ctx.Assign(left.Value, right)
+		return right
+	}
+
+	return err(ctx, "can only assign to identifiers!", "SyntaxError")
+}

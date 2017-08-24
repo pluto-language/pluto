@@ -191,6 +191,15 @@ func (a *Array) Elements() []Object {
 	return a.Value
 }
 
+/* Container implementations */
+func (m *Map) Get(key Object) Object {
+	return m.Pairs[key]
+}
+
+func (m *Map) Set(key, value Object) {
+	m.Pairs[key] = value
+}
+
 /* Other methods */
 func (c *Class) GetMethods() []Method {
 	var methods []Method
