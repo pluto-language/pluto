@@ -68,7 +68,7 @@ func executeAppliedBlock(ab *object.AppliedBlock, ctx *object.Context) object.Ob
 		argDict[pval] = ab.Args[i]
 	}
 
-	enclosed := ctx.EncloseWith(argDict)
+	enclosed := ab.Context.EncloseWith(argDict)
 	return eval(ab.Block.Body, enclosed)
 }
 

@@ -29,8 +29,9 @@ type (
 	}
 
 	AppliedBlock struct {
-		Block *Block
-		Args  []Object
+		Block   *Block
+		Args    []Object
+		Context *Context
 	}
 )
 

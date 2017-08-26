@@ -5,17 +5,18 @@ import (
 	"strings"
 )
 
-type builtinFn func(map[string]Object, *Context) Object
+type args map[string]Object
+type builtinFn func(args, *Context) Object
 
 type Builtin struct {
 	Pattern []string
 	Fn      builtinFn
 }
 
-func NewBuiltin(ptn string, types map[string]Type, fn builtinFn) Builtin {
+func NewBuiltin(ptn string, fn builtinFn, types map[string]Type) Builtin {
 	pattern := strings.Split(ptn, " ")
 
-	typedFn := func(args map[string]Object, ctx *Context) Object {
+	typedFn := func(args args, ctx *Context) Object {
 		for key, t := range types {
 			val := args[key]
 
@@ -48,57 +49,64 @@ var (
 )
 
 var Builtins = []Builtin{
-	NewBuiltin("print $obj", empty, printObj),
+	NewBuiltin("print $obj", printObj, empty),
 
-	NewBuiltin("do $block", map[string]Type{
+	NewBuiltin("do $block", doBlock, map[string]Type{
 		"block": BLOCK,
-	}, doBlock),
+	}),
 
-	NewBuiltin("do $block with $args", map[string]Type{
+	NewBuiltin("do $block with $args", doBlockWithArgs, map[string]Type{
 		"block": BLOCK,
 		"args":  COLLECTION,
-	}, doBlockWithArgs),
+	}),
 
-	NewBuiltin("do $block on $arg", map[string]Type{
+	NewBuiltin("do $block on $arg", doBlockOnArg, map[string]Type{
 		"block": BLOCK,
-	}, doBlockOnArg),
+	}),
 }
 
 // print $obj
-func printObj(args map[string]Object, ctx *Context) Object {
+func printObj(args args, ctx *Context) Object {
 	fmt.Println(args["obj"])
 
 	return O_NULL
 }
 
 // do $block
-func doBlock(args map[string]Object, ctx *Context) Object {
+func doBlock(args args, ctx *Context) Object {
 	block := args["block"].(*Block)
 
 	return &AppliedBlock{
-		Block: block,
-		Args:  []Object{},
+		Block:   block,
+		Args:    []Object{},
+		Context: ctx,
 	}
 }
 
 // do $block with $args
-func doBlockWithArgs(args map[string]Object, ctx *Context) Object {
-	block := args["block"].(*Block)
-	col := args["args"].(Collection)
+func doBlockWithArgs(args args, ctx *Context) Object {
+	var (
+		block = args["block"].(*Block)
+		col   = args["args"].(Collection)
+	)
 
 	return &AppliedBlock{
-		Block: block,
-		Args:  col.Elements(),
+		Block:   block,
+		Args:    col.Elements(),
+		Context: ctx,
 	}
 }
 
 // do $block on $arg
-func doBlockOnArg(args map[string]Object, ctx *Context) Object {
-	block := args["block"].(*Block)
-	arg := args["arg"]
+func doBlockOnArg(args args, ctx *Context) Object {
+	var (
+		block = args["block"].(*Block)
+		arg   = args["arg"]
+	)
 
 	return &AppliedBlock{
-		Block: block,
-		Args:  []Object{arg},
+		Block:   block,
+		Args:    []Object{arg},
+		Context: ctx,
 	}
 }
