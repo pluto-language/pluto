@@ -59,71 +59,79 @@ func eval(n ast.Node, ctx *object.Context) object.Object {
 	 * Also, try to keep the switch branches below in alphabetical order.
 	 */
 
+	var result object.Object
+
 	switch node := n.(type) {
 	/* Not literals */
 	case *ast.AssignExpression:
-		return evalAssignExpression(*node, ctx)
+		result = evalAssignExpression(*node, ctx)
 	case *ast.BlockStatement:
-		return evalBlockStatement(*node, ctx)
+		result = evalBlockStatement(*node, ctx)
 	case *ast.BreakStatement:
-		return BREAK
+		result = BREAK
 	case *ast.ClassStatement:
-		return evalClassStatement(*node, ctx)
+		result = evalClassStatement(*node, ctx)
 	case *ast.DeclareExpression:
-		return evalDeclareExpression(*node, ctx)
+		result = evalDeclareExpression(*node, ctx)
 	case *ast.DotExpression:
-		return evalDotExpression(*node, ctx)
+		result = evalDotExpression(*node, ctx)
 	case *ast.ExpressionStatement:
-		return eval(node.Expr, ctx)
+		result = eval(node.Expr, ctx)
 	case *ast.ForLoop:
-		return evalForLoop(*node, ctx)
+		result = evalForLoop(*node, ctx)
 	case *ast.FunctionDefinition:
-		return evalFunctionDefinition(*node, ctx)
+		result = evalFunctionDefinition(*node, ctx)
 	case *ast.FunctionCall:
-		return evalFunctionCall(*node, ctx)
+		result = evalFunctionCall(*node, ctx)
 	case *ast.IfExpression:
-		return evalIfExpression(*node, ctx)
+		result = evalIfExpression(*node, ctx)
 	case *ast.InfixExpression:
-		return evalInfixExpression(*node, ctx)
+		result = evalInfixExpression(*node, ctx)
 	case *ast.MatchExpression:
-		return evalMatchExpression(*node, ctx)
+		result = evalMatchExpression(*node, ctx)
 	case *ast.MethodCall:
-		return evalMethodCall(*node, ctx)
+		result = evalMethodCall(*node, ctx)
 	case *ast.NextStatement:
-		return NEXT
+		result = NEXT
 	case *ast.ReturnStatement:
-		return evalReturnStatement(*node, ctx)
+		result = evalReturnStatement(*node, ctx)
 	case *ast.PrefixExpression:
-		return evalPrefixExpression(*node, ctx)
+		result = evalPrefixExpression(*node, ctx)
 	case *ast.TryExpression:
-		return evalTryExpression(*node, ctx)
+		result = evalTryExpression(*node, ctx)
 	case *ast.WhileLoop:
-		return evalWhileLoop(*node, ctx)
+		result = evalWhileLoop(*node, ctx)
 
 	/* Literals */
 	case *ast.Array:
-		return evalArray(*node, ctx)
+		result = evalArray(*node, ctx)
 	case *ast.BlockLiteral:
-		return evalBlockLiteral(*node, ctx)
+		result = evalBlockLiteral(*node, ctx)
 	case *ast.Boolean:
-		return &object.Boolean{Value: node.Value}
+		result = &object.Boolean{Value: node.Value}
 	case *ast.Char:
-		return &object.Char{Value: rune(node.Value)}
+		result = &object.Char{Value: rune(node.Value)}
 	case *ast.Identifier:
-		return evalIdentifier(*node, ctx)
+		result = evalIdentifier(*node, ctx)
 	case *ast.Map:
-		return evalMap(*node, ctx)
+		result = evalMap(*node, ctx)
 	case *ast.Null:
-		return NULL
+		result = NULL
 	case *ast.Number:
-		return &object.Number{Value: node.Value}
+		result = &object.Number{Value: node.Value}
 	case *ast.String:
-		return &object.String{Value: node.Value}
+		result = &object.String{Value: node.Value}
 	case *ast.Tuple:
-		return evalTuple(*node, ctx)
+		result = evalTuple(*node, ctx)
+	default:
+		return err(ctx, "evaluation for %s not yet implemented", "NotImplementedError", reflect.TypeOf(n))
 	}
 
-	return err(ctx, "evaluation for %s not yet implemented", "NotImplementedError", reflect.TypeOf(n))
+	if ab, ok := result.(*object.AppliedBlock); ok {
+		return executeAppliedBlock(ab, ctx)
+	}
+
+	return result
 }
 
 func evalProgram(prog *ast.Program, ctx *object.Context) object.Object {

@@ -50,6 +50,28 @@ func makeCollection(t object.Type, elems []object.Object, ctx *object.Context) o
 	}
 }
 
+func executeAppliedBlock(ab *object.AppliedBlock, ctx *object.Context) object.Object {
+	if len(ab.Args) != len(ab.Block.Params) {
+		return err(
+			ctx,
+			"wrong amount of arguments to a block. expected %d, got %d",
+			"TypeError",
+			len(ab.Block.Params),
+			len(ab.Args),
+		)
+	}
+
+	argDict := make(map[string]object.Object)
+
+	for i, param := range ab.Block.Params {
+		pval := param.(*ast.Identifier).Value
+		argDict[pval] = ab.Args[i]
+	}
+
+	enclosed := ctx.EncloseWith(argDict)
+	return eval(ab.Block.Body, enclosed)
+}
+
 func isTruthy(o object.Object) bool {
 	if o.Equals(NULL) || o.Equals(FALSE) {
 		return false
