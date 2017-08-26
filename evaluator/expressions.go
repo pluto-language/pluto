@@ -724,3 +724,78 @@ func evalMethodCall(node ast.MethodCall, ctx *object.Context) object.Object {
 
 	return eval(function.Fn.Body, enclosed)
 }
+
+func evalTryExpression(node ast.TryExpression, ctx *object.Context) object.Object {
+	v := eval(node.Body, ctx)
+
+	val, ok := v.(*object.Instance)
+	if !ok || val.Base.(*object.Class).Name != "Error" {
+		return err(ctx, "the error value in a try-expression must be an Error instance", "TypeError")
+	}
+
+	tag, ok := val.Data["tag"]
+	if !ok {
+		return err(ctx, "error value doesn't have a 'tag' field", "NotFoundError")
+	}
+
+	msg, ok := val.Data["msg"]
+	if !ok {
+		return err(ctx, "error value doesn't have a 'msg' field", "NotFoundError")
+	}
+
+	var matched ast.Statement
+
+	for _, arm := range node.Arms {
+		var (
+			exprs = arm.Exprs
+			body  = arm.Body
+
+			m = false
+		)
+
+		if exprs == nil {
+			m = true
+		} else {
+			for _, expr := range exprs {
+				e := eval(expr, ctx)
+				if isErr(e) {
+					return e
+				}
+
+				if e.Type() != object.STRING {
+					return err(
+						ctx,
+						"all catch-arm predicate values must be strings. found %s",
+						"TypeError",
+						e.Type(),
+					)
+				}
+
+				if e.Equals(tag) {
+					m = true
+				}
+			}
+		}
+
+		if m {
+			matched = body
+			break
+		}
+	}
+
+	if matched != nil {
+		errObj := &object.Map{}
+
+		errObj.Set(&object.String{Value: "tag"}, tag)
+		errObj.Set(&object.String{Value: "msg"}, msg)
+
+		enclosed := ctx.EncloseWith(map[string]object.Object{
+			node.ErrName.(*ast.Identifier).Value: errObj,
+		})
+
+		r := eval(matched, enclosed)
+		return unwrapReturnValue(r)
+	}
+
+	return val
+}

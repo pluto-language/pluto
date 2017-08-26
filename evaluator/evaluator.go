@@ -93,7 +93,7 @@ func eval(n ast.Node, ctx *object.Context) object.Object {
 	case *ast.PrefixExpression:
 		return evalPrefixExpression(*node, ctx)
 	case *ast.TryExpression:
-		// return evalTryExpression(node, ctx)
+		return evalTryExpression(*node, ctx)
 	case *ast.WhileLoop:
 		return evalWhileLoop(*node, ctx)
 
