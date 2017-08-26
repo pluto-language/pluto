@@ -14,6 +14,9 @@ var (
 	NULL  = new(object.Null)
 	TRUE  = &object.Boolean{Value: true}
 	FALSE = &object.Boolean{Value: false}
+
+	err   = object.Err
+	isErr = object.IsErr
 )
 
 var (

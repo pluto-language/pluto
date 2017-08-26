@@ -500,9 +500,9 @@ func evalForLoop(node ast.ForLoop, ctx *object.Context) object.Object {
 }
 
 func evalFunctionCall(node ast.FunctionCall, ctx *object.Context) object.Object {
-	function := ctx.GetFunction(node.Pattern)
+	fn := ctx.GetFunction(node.Pattern)
 
-	if function == nil {
+	if fn == nil {
 		var patternStrings []string
 
 		for _, item := range node.Pattern {
@@ -522,7 +522,7 @@ func evalFunctionCall(node ast.FunctionCall, ctx *object.Context) object.Object 
 
 	var result object.Object
 
-	if function.Type() == object.FUNCTION {
+	if function, ok := fn.(*object.Function); ok {
 		for i, item := range node.Pattern {
 			fItem := function.Pattern[i]
 
@@ -552,6 +552,25 @@ func evalFunctionCall(node ast.FunctionCall, ctx *object.Context) object.Object 
 		if isErr(result) {
 			return result
 		}
+	}
+
+	if function, ok := fn.(object.Builtin); ok {
+		for i, item := range node.Pattern {
+			fItem := function.Pattern[i]
+
+			if arg, ok := item.(*ast.Argument); ok {
+				if fItem[0] == '$' {
+					evaled := eval(arg.Value, ctx)
+					if isErr(evaled) {
+						return evaled
+					}
+
+					args[fItem[1:]] = evaled
+				}
+			}
+		}
+
+		result = function.Fn(args, ctx)
 	}
 
 	if result == nil {

@@ -55,7 +55,7 @@ func (c *Context) AddFunction(fn Object) {
 	c.Functions = append(c.Functions, fn.(*Function))
 }
 
-func (c *Context) GetFunction(pattern []ast.Expression) *Function {
+func (c *Context) GetFunction(pattern []ast.Expression) interface{} {
 	for _, fn := range c.Functions {
 		if len(pattern) != len(fn.Pattern) {
 			continue
@@ -86,6 +86,34 @@ func (c *Context) GetFunction(pattern []ast.Expression) *Function {
 
 	if c.Outer != nil {
 		return c.Outer.GetFunction(pattern)
+	}
+
+	for _, fn := range Builtins {
+		if len(pattern) != len(fn.Pattern) {
+			continue
+		}
+
+		matched := true
+
+		for i, item := range pattern {
+			fItem := fn.Pattern[i]
+
+			if itemID, ok := item.(*ast.Identifier); ok {
+				if fItem[0] != '$' {
+					if itemID.Value != fItem {
+						matched = false
+					}
+				}
+			} else if _, ok := item.(*ast.Argument); !ok {
+				matched = false
+			} else if !(fItem[0] == '$') {
+				matched = false
+			}
+		}
+
+		if matched {
+			return fn
+		}
 	}
 
 	return nil
