@@ -51,7 +51,7 @@ func makeCollection(t object.Type, elems []object.Object, ctx *object.Context) o
 }
 
 func isTruthy(o object.Object) bool {
-	if o == NULL || o == FALSE {
+	if o.Equals(NULL) || o.Equals(FALSE) {
 		return false
 	}
 
