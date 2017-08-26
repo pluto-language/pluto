@@ -498,3 +498,74 @@ func evalForLoop(node ast.ForLoop, ctx *object.Context) object.Object {
 
 	return &object.Array{Value: steps}
 }
+
+func evalFunctionCall(node ast.FunctionCall, ctx *object.Context) object.Object {
+	function := ctx.GetFunction(node.Pattern)
+
+	if function == nil {
+		var patternStrings []string
+
+		for _, item := range node.Pattern {
+			if id, ok := item.(*ast.Identifier); ok {
+				patternStrings = append(patternStrings, id.Value)
+			} else {
+				patternStrings = append(patternStrings, "$")
+			}
+		}
+
+		patternString := strings.Join(patternStrings, " ")
+
+		return err(ctx, "no function matching the pattern: %s", "NotFoundError", patternString)
+	}
+
+	args := make(map[string]object.Object)
+
+	var result object.Object
+
+	if function.Type() == object.FUNCTION {
+		for i, item := range node.Pattern {
+			fItem := function.Pattern[i]
+
+			if arg, ok := item.(*ast.Argument); ok {
+				if param, ok := fItem.(*ast.Parameter); ok {
+					evaled := eval(arg.Value, ctx)
+					if isErr(evaled) {
+						return evaled
+					}
+
+					args[param.Name] = evaled
+				}
+			}
+		}
+
+		enclosed := ctx.EncloseWith(args)
+		onCallResult := function.OnCall(*function, ctx, enclosed)
+
+		if onCallResult != nil || isErr(onCallResult) {
+			return onCallResult
+		}
+
+		result = eval(function.Body, enclosed)
+		if isErr(result) {
+			return result
+		}
+	}
+
+	if result == nil {
+		return NULL
+	}
+
+	return unwrapReturnValue(result)
+}
+
+func evalFunctionDefinition(node ast.FunctionDefinition, ctx *object.Context) object.Object {
+	function := &object.Function{
+		Pattern: node.Pattern,
+		Body:    node.Body,
+		Context: ctx,
+	}
+
+	ctx.AddFunction(function)
+
+	return NULL
+}

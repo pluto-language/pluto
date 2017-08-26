@@ -74,8 +74,10 @@ func eval(n ast.Node, ctx *object.Context) object.Object {
 		return eval(node.Expr, ctx)
 	case *ast.ForLoop:
 		return evalForLoop(*node, ctx)
+	case *ast.FunctionDefinition:
+		return evalFunctionDefinition(*node, ctx)
 	case *ast.FunctionCall:
-		// return evalFunctionCall(*node, ctx)
+		return evalFunctionCall(*node, ctx)
 	case *ast.IfExpression:
 		// return evalIfExpression(node, ctx)
 	case *ast.InfixExpression:
