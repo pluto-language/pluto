@@ -72,7 +72,7 @@ func (_ *Null) Equals(o Object) bool {
 
 /* Stringer implementations */
 func (n *Number) String() string {
-	return fmt.Sprintf("%f", n.Value)
+	return fmt.Sprintf("%g", n.Value)
 }
 
 func (b *Boolean) String() string {
@@ -100,4 +100,25 @@ func (s *String) Elements() []Object {
 	}
 
 	return chars
+}
+
+/* Hasher implementations */
+func (n *Number) Hash() string {
+	return fmt.Sprintf("number %g", n.Value)
+}
+
+func (b *Boolean) Hash() string {
+	return fmt.Sprintf("boolean %t", b.Value)
+}
+
+func (s *String) Hash() string {
+	return fmt.Sprintf("string %s", s.Value)
+}
+
+func (c *Char) Hash() string {
+	return fmt.Sprintf("char %s", string(c.Value))
+}
+
+func (n *Null) Hash() string {
+	return "null"
 }

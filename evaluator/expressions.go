@@ -39,7 +39,10 @@ func evalArray(node ast.Array, ctx *object.Context) object.Object {
 }
 
 func evalMap(node ast.Map, ctx *object.Context) object.Object {
-	dict := make(map[object.Object]object.Object)
+	m := &object.Map{
+		Values: make(map[string]object.Object),
+		Keys:   make(map[string]object.Object),
+	}
 
 	for k, v := range node.Pairs {
 		key := eval(k, ctx)
@@ -52,10 +55,10 @@ func evalMap(node ast.Map, ctx *object.Context) object.Object {
 			return value
 		}
 
-		dict[key] = value
+		m.Set(key, value)
 	}
 
-	return &object.Map{Pairs: dict}
+	return m
 }
 
 func evalBlockLiteral(node ast.BlockLiteral, ctx *object.Context) object.Object {
@@ -409,4 +412,21 @@ func evalDeclareExpression(node ast.DeclareExpression, ctx *object.Context) obje
 	}
 
 	return err(ctx, "cannot declare a non-identifier!", "SyntaxError")
+}
+
+func evalDotExpression(node ast.DotExpression, ctx *object.Context) object.Object {
+	left := eval(node.Left, ctx)
+	if isErr(left) {
+		return left
+	}
+
+	if field, ok := node.Right.(*ast.Identifier); ok {
+		if cnt, ok := left.(object.Container); ok {
+			return cnt.Get(&object.String{Value: field.Value})
+		}
+
+		return err(ctx, "cannot access fields of %s", "TypeError", left.Type())
+	}
+
+	return err(ctx, "an identifier is expected after a dot '.'", "SyntaxError")
 }

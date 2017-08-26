@@ -69,7 +69,7 @@ func eval(n ast.Node, ctx *object.Context) object.Object {
 	case *ast.DeclareExpression:
 		return evalDeclareExpression(*node, ctx)
 	case *ast.DotExpression:
-		// return evalDotExpression(node, ctx)
+		return evalDotExpression(*node, ctx)
 	case *ast.ExpressionStatement:
 		return eval(node.Expr, ctx)
 	case *ast.ForLoop:

@@ -10,6 +10,7 @@ import (
 /* Structs */
 type (
 	/* Collections and collection-likes */
+
 	Tuple struct {
 		Value []Object
 	}
@@ -19,10 +20,12 @@ type (
 	}
 
 	Map struct {
-		Pairs map[Object]Object
+		Values map[string]Object
+		Keys   map[string]Object
 	}
 
 	/* Others */
+
 	Block struct {
 		Params []ast.Expression
 		Body   ast.Statement
@@ -87,12 +90,16 @@ func (a *Array) Equals(o Object) bool {
 
 func (m *Map) Equals(o Object) bool {
 	if other, ok := o.(*Map); ok {
-		if len(other.Pairs) != len(m.Pairs) {
+		if len(other.Values) != len(m.Values) {
 			return false
 		}
 
-		for k, v := range m.Pairs {
-			if !v.Equals(other.Pairs[k]) {
+		for k, v := range m.Values {
+			if _, ok := other.Values[k]; !ok {
+				return false
+			}
+
+			if !v.Equals(other.Values[k]) {
 				return false
 			}
 		}
@@ -154,17 +161,17 @@ func (a *Array) String() string {
 }
 
 func (m *Map) String() string {
-	stringArr := make([]string, len(m.Pairs))
+	stringArr := make([]string, len(m.Values))
 	i := 0
 
-	for k, v := range m.Pairs {
+	for k, v := range m.Values {
 		stringArr[i] = fmt.Sprintf(
 			"%s: %s",
-			k.String(),
+			m.Keys[k].String(),
 			v.String(),
 		)
 
-		i += 1
+		i++
 	}
 
 	return fmt.Sprintf("[%s]", strings.Join(stringArr, ", "))
@@ -193,11 +200,22 @@ func (a *Array) Elements() []Object {
 
 /* Container implementations */
 func (m *Map) Get(key Object) Object {
-	return m.Pairs[key]
+	if hasher, ok := key.(Hasher); !ok {
+		return &Null{}
+	} else {
+		if val, ok := m.Values[hasher.Hash()]; ok {
+			return val
+		}
+		return &Null{}
+	}
 }
 
 func (m *Map) Set(key, value Object) {
-	m.Pairs[key] = value
+	if hasher, ok := key.(Hasher); ok {
+		hash := hasher.Hash()
+		m.Values[hash] = value
+		m.Keys[hash] = key
+	}
 }
 
 /* Other methods */

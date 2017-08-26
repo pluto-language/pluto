@@ -43,3 +43,8 @@ type Container interface {
 	Get(Object) Object
 	Set(Object, Object)
 }
+
+type Hasher interface {
+	Object
+	Hash() string
+}
