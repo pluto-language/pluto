@@ -74,7 +74,7 @@ func (c *Context) GetFunction(pattern []ast.Expression) *Function {
 				}
 			} else if _, ok := item.(*ast.Argument); !ok {
 				matched = false
-			} else if _, ok := item.(*ast.Parameter); !ok {
+			} else if _, ok := fItem.(*ast.Parameter); !ok {
 				matched = false
 			}
 		}
