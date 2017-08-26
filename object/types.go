@@ -14,6 +14,7 @@ const (
 	COLLECTION Type = "<collection>"
 	CONTAINER  Type = "<container>"
 	HASHER     Type = "<hasher>"
+	ANY        Type = "<any>"
 
 	/* Normal Types */
 	NUMBER   Type = "<number>"
@@ -32,6 +33,10 @@ const (
 )
 
 func is(obj Object, t Type) bool {
+	if t == ANY {
+		return true
+	}
+
 	if t == COLLECTION {
 		_, ok := obj.(Collection)
 		return ok
@@ -47,9 +52,5 @@ func is(obj Object, t Type) bool {
 		return ok
 	}
 
-	if obj.Type() == t {
-		return true
-	}
-
-	return false
+	return obj.Type() == t
 }
