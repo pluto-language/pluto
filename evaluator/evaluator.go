@@ -79,7 +79,7 @@ func eval(n ast.Node, ctx *object.Context) object.Object {
 	case *ast.FunctionCall:
 		return evalFunctionCall(*node, ctx)
 	case *ast.IfExpression:
-		// return evalIfExpression(node, ctx)
+		return evalIfExpression(*node, ctx)
 	case *ast.InfixExpression:
 		return evalInfixExpression(*node, ctx)
 	case *ast.MatchExpression:

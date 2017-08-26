@@ -572,3 +572,18 @@ func evalFunctionDefinition(node ast.FunctionDefinition, ctx *object.Context) ob
 
 	return NULL
 }
+
+func evalIfExpression(node ast.IfExpression, ctx *object.Context) object.Object {
+	condition := eval(node.Condition, ctx)
+	if isErr(condition) {
+		return condition
+	}
+
+	if isTruthy(condition) {
+		return eval(node.Consequence, ctx)
+	} else if node.Alternative != nil {
+		return eval(node.Alternative, ctx)
+	} else {
+		return NULL
+	}
+}
