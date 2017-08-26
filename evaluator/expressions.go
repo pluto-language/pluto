@@ -430,3 +430,31 @@ func evalDotExpression(node ast.DotExpression, ctx *object.Context) object.Objec
 
 	return err(ctx, "an identifier is expected after a dot '.'", "SyntaxError")
 }
+
+func evalWhileLoop(node ast.WhileLoop, ctx *object.Context) object.Object {
+	var steps []object.Object
+
+	for {
+		condition := eval(node.Condition, ctx)
+		if isErr(condition) {
+			return condition
+		}
+
+		if !isTruthy(condition) {
+			break
+		}
+
+		result := eval(node.Body, ctx.Enclose())
+		if isErr(result) {
+			return result
+		}
+
+		if result.Type() == object.BREAK {
+			break
+		}
+
+		steps = append(steps, result)
+	}
+
+	return &object.Array{Value: steps}
+}
