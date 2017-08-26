@@ -539,10 +539,13 @@ func evalFunctionCall(node ast.FunctionCall, ctx *object.Context) object.Object 
 		}
 
 		enclosed := ctx.EncloseWith(args)
-		onCallResult := function.OnCall(*function, ctx, enclosed)
 
-		if onCallResult != nil || isErr(onCallResult) {
-			return onCallResult
+		if function.OnCall != nil {
+			onCallResult := function.OnCall(function, ctx, enclosed)
+
+			if onCallResult != nil || isErr(onCallResult) {
+				return onCallResult
+			}
 		}
 
 		result = eval(function.Body, enclosed)

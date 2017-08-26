@@ -67,7 +67,7 @@ func evalClassStatement(node ast.ClassStatement, ctx *object.Context) object.Obj
 				fn.Pattern...,
 			)
 
-			onInit := func(self object.Function, ctx, enclosed *object.Context) object.Object {
+			onInit := func(self *object.Function, ctx, enclosed *object.Context) object.Object {
 				enclosed.Assign("self", &object.Instance{Base: o})
 
 				result := eval(self.Body, enclosed)

@@ -17,7 +17,7 @@ type (
 		Pattern []ast.Expression
 		Body    ast.Statement
 		Context *Context
-		OnCall  func(self Function, ctx, enclosed *Context) Object
+		OnCall  func(self *Function, ctx, enclosed *Context) Object
 	}
 
 	InitMethod struct {
