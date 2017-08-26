@@ -458,3 +458,43 @@ func evalWhileLoop(node ast.WhileLoop, ctx *object.Context) object.Object {
 
 	return &object.Array{Value: steps}
 }
+
+func evalForLoop(node ast.ForLoop, ctx *object.Context) object.Object {
+	var (
+		v    = node.Var
+		body = node.Body
+		col  = eval(node.Collection, ctx)
+	)
+
+	if isErr(col) {
+		return col
+	}
+
+	var items []object.Object
+	if collection, ok := col.(object.Collection); ok {
+		items = collection.Elements()
+	} else {
+		return err(ctx, "cannot perform a for-loop over the non-collection type: %s", "TypeError", col.Type())
+	}
+
+	var steps []object.Object
+
+	for _, item := range items {
+		enclosed := ctx.EncloseWith(map[string]object.Object{
+			v.Token().Literal: item,
+		})
+
+		result := eval(body, enclosed)
+		if isErr(result) {
+			return result
+		}
+
+		if result.Type() == object.BREAK {
+			break
+		}
+
+		steps = append(steps, result)
+	}
+
+	return &object.Array{Value: steps}
+}
