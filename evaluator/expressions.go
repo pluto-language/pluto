@@ -587,3 +587,48 @@ func evalIfExpression(node ast.IfExpression, ctx *object.Context) object.Object 
 		return NULL
 	}
 }
+
+func evalMatchExpression(node ast.MatchExpression, ctx *object.Context) object.Object {
+	val := eval(node.Exp, ctx)
+	if isErr(val) {
+		return val
+	}
+
+	var matched ast.Statement
+
+	for _, arm := range node.Arms {
+		var (
+			exprs = arm.Exprs
+			body  = arm.Body
+
+			m = false
+		)
+
+		if exprs == nil {
+			m = true
+		} else {
+			for _, expr := range exprs {
+				e := eval(expr, ctx)
+				if isErr(e) {
+					return e
+				}
+
+				if e.Equals(val) {
+					m = true
+				}
+			}
+		}
+
+		if m {
+			matched = body
+			break
+		}
+	}
+
+	if matched != nil {
+		result := eval(matched, ctx.Enclose())
+		return unwrapReturnValue(result)
+	}
+
+	return NULL
+}
