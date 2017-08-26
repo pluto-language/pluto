@@ -632,3 +632,95 @@ func evalMatchExpression(node ast.MatchExpression, ctx *object.Context) object.O
 
 	return NULL
 }
+
+func evalMethodCall(node ast.MethodCall, ctx *object.Context) object.Object {
+	inst := eval(node.Instance, ctx)
+	if isErr(inst) {
+		return inst
+	}
+
+	instance, ok := inst.(*object.Instance)
+	if !ok {
+		return err(ctx, "can only call a method on type <instance>. got %s", "TypeError", inst.Type())
+	}
+
+	base := instance.Base.(*object.Class)
+
+	var (
+		pattern  = node.Pattern
+		function *object.Method
+	)
+
+	for _, fn := range base.GetMethods() {
+		if len(pattern) != len(fn.Fn.Pattern) {
+			continue
+		}
+
+		matched := true
+
+		for i, item := range pattern {
+			fItem := fn.Fn.Pattern[i]
+
+			if itemID, ok := item.(*ast.Identifier); ok {
+				if fItemID, ok := fItem.(*ast.Identifier); ok {
+					if itemID.Value != fItemID.Value {
+						matched = false
+					}
+				}
+			} else if _, ok := item.(*ast.Argument); !ok {
+				matched = false
+			} else if _, ok := fItem.(*ast.Parameter); !ok {
+				matched = false
+			}
+		}
+
+		if matched {
+			function = &fn
+			break
+		}
+	}
+
+	if function == nil {
+		var patternStrings []string
+
+		for _, item := range node.Pattern {
+			if id, ok := item.(*ast.Identifier); ok {
+				patternStrings = append(patternStrings, id.Value)
+			} else {
+				patternStrings = append(patternStrings, "$")
+			}
+		}
+
+		patternString := strings.Join(patternStrings, " ")
+
+		return err(
+			ctx,
+			"could not find a method of %s matching %s",
+			"NotFoundError",
+			base.Name,
+			patternString,
+		)
+	}
+
+	args := make(map[string]object.Object)
+
+	for i, item := range node.Pattern {
+		fItem := function.Fn.Pattern[i]
+
+		if arg, ok := item.(*ast.Argument); ok {
+			if param, ok := fItem.(*ast.Parameter); ok {
+				evaled := eval(arg.Value, ctx)
+				if isErr(evaled) {
+					return evaled
+				}
+
+				args[param.Name] = evaled
+			}
+		}
+	}
+
+	args["self"] = instance
+	enclosed := ctx.EncloseWith(args)
+
+	return eval(function.Fn.Body, enclosed)
+}

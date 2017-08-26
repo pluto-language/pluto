@@ -85,7 +85,7 @@ func eval(n ast.Node, ctx *object.Context) object.Object {
 	case *ast.MatchExpression:
 		return evalMatchExpression(*node, ctx)
 	case *ast.MethodCall:
-		// return evalMethodCall(node, ctx)
+		return evalMethodCall(*node, ctx)
 	case *ast.NextStatement:
 		return NEXT
 	case *ast.ReturnStatement:
