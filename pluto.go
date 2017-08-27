@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"path/filepath"
 
 	"github.com/Zac-Garby/pluto/evaluation"
 
@@ -51,6 +52,10 @@ func runREPL() {
 		Store: make(map[string]evaluation.Object),
 	}
 
+	if !opts.NoPrelude {
+		importPrelude(ctx)
+	}
+
 	for {
 		reader := bufio.NewReader(os.Stdin)
 		fmt.Print(">> ")
@@ -69,6 +74,19 @@ func executeFile(name string) {
 		}
 
 		execute(string(code), false, ctx)
+	}
+}
+
+func importPrelude(ctx *evaluation.Context) {
+	srcPath, err := filepath.Abs("libraries/prelude.pluto")
+	if err != nil {
+		panic(err)
+	}
+
+	if prelude, err := ioutil.ReadFile(srcPath); err != nil {
+		panic(err)
+	} else {
+		execute(string(prelude), false, ctx)
 	}
 }
 
