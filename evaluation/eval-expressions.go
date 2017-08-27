@@ -396,7 +396,35 @@ func evalAssignExpression(node ast.AssignExpression, ctx *Context) Object {
 		return right
 	}
 
-	return err(ctx, "can only assign to identifiers!", "SyntaxError")
+	if left, ok := node.Name.(*ast.IndexExpression); ok {
+		rightobj := eval(left.Index, ctx)
+		if isErr(rightobj) {
+			return rightobj
+		}
+
+		leftobj := eval(left.Collection, ctx)
+		if isErr(leftobj) {
+			return leftobj
+		}
+
+		if col, ok := leftobj.(Collection); ok {
+			if index, ok := rightobj.(*Number); ok {
+				col.SetIndex(int(index.Value), right)
+				return O_NULL
+			}
+
+			return err(ctx, "cannot index a collection with %s - expected a <number>", "TypeError", rightobj.Type())
+		}
+
+		if cont, ok := leftobj.(Container); ok {
+			cont.Set(rightobj, right)
+			return O_NULL
+		}
+
+		return err(ctx, "can only index collections and containers", "TypeError")
+	}
+
+	return err(ctx, "can only assign to identifiers and index expressions!", "SyntaxError")
 }
 
 func evalDeclareExpression(node ast.DeclareExpression, ctx *Context) Object {

@@ -220,6 +220,10 @@ func (t *Tuple) GetIndex(i int) Object {
 }
 
 func (t *Tuple) SetIndex(i int, o Object) {
+	if i >= len(t.Value) || i < 0 {
+		return
+	}
+
 	t.Value[i] = o
 }
 
@@ -236,6 +240,10 @@ func (a *Array) GetIndex(i int) Object {
 }
 
 func (a *Array) SetIndex(i int, o Object) {
+	if i >= len(a.Value) || i < 0 {
+		return
+	}
+
 	a.Value[i] = o
 }
 
