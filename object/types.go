@@ -1,34 +1,34 @@
 package object
 
-type Type string
+type Type = string
 
 const (
 	/* Internal Types */
-	RETURN_VALUE Type = "<return value>"
-	FUNCTION     Type = "<function>"
-	NEXT         Type = "<next>"
-	BREAK        Type = "<break>"
+	RETURN_VALUE = "<return value>"
+	FUNCTION     = "<function>"
+	NEXT         = "<next>"
+	BREAK        = "<break>"
 
 	/* Special Types */
-	COLLECTION Type = "<collection>"
-	CONTAINER  Type = "<container>"
-	HASHER     Type = "<hasher>"
-	ANY        Type = "<any>"
+	COLLECTION = "<collection>"
+	CONTAINER  = "<container>"
+	HASHER     = "<hasher>"
+	ANY        = "<any>"
 
 	/* Normal Types */
-	NUMBER   Type = "<number>"
-	BOOLEAN  Type = "<boolean>"
-	STRING   Type = "<string>"
-	CHAR     Type = "<char>"
-	ARRAY    Type = "<array>"
-	NULL     Type = "<null>"
-	BLOCK    Type = "<block>"
-	TUPLE    Type = "<tuple>"
-	MAP      Type = "<map>"
-	CLASS    Type = "<class>"
-	INIT     Type = "<init method>"
-	METHOD   Type = "<method>"
-	INSTANCE Type = "<instance>"
+	NUMBER   = "<number>"
+	BOOLEAN  = "<boolean>"
+	STRING   = "<string>"
+	CHAR     = "<char>"
+	ARRAY    = "<array>"
+	NULL     = "<null>"
+	BLOCK    = "<block>"
+	TUPLE    = "<tuple>"
+	MAP      = "<map>"
+	CLASS    = "<class>"
+	INIT     = "<init method>"
+	METHOD   = "<method>"
+	INSTANCE = "<instance>"
 )
 
 func is(obj Object, t Type) bool {
