@@ -127,10 +127,6 @@ func eval(n ast.Node, ctx *object.Context) object.Object {
 		return err(ctx, "evaluation for %s not yet implemented", "NotImplementedError", reflect.TypeOf(n))
 	}
 
-	if ab, ok := result.(*object.AppliedBlock); ok {
-		return executeAppliedBlock(ab, ctx)
-	}
-
 	return result
 }
 

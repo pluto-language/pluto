@@ -8,7 +8,6 @@ const (
 	FUNCTION     Type = "<function>"
 	NEXT         Type = "<next>"
 	BREAK        Type = "<break>"
-	APL_BLOCK    Type = "<applied block>"
 
 	/* Special Types */
 	COLLECTION Type = "<collection>"

@@ -27,22 +27,15 @@ type (
 	Method struct {
 		Fn Function
 	}
-
-	AppliedBlock struct {
-		Block   *Block
-		Args    []Object
-		Context *Context
-	}
 )
 
 /* Type() methods */
-func (_ *ReturnValue) Type() Type  { return RETURN_VALUE }
-func (_ *Next) Type() Type         { return NEXT }
-func (_ *Break) Type() Type        { return BREAK }
-func (_ *Function) Type() Type     { return FUNCTION }
-func (_ *InitMethod) Type() Type   { return INIT }
-func (_ *Method) Type() Type       { return METHOD }
-func (_ *AppliedBlock) Type() Type { return APL_BLOCK }
+func (_ *ReturnValue) Type() Type { return RETURN_VALUE }
+func (_ *Next) Type() Type        { return NEXT }
+func (_ *Break) Type() Type       { return BREAK }
+func (_ *Function) Type() Type    { return FUNCTION }
+func (_ *InitMethod) Type() Type  { return INIT }
+func (_ *Method) Type() Type      { return METHOD }
 
 /* Equals() methods */
 func (r *ReturnValue) Equals(o Object) bool {
@@ -78,11 +71,6 @@ func (_ *Method) Equals(o Object) bool {
 	return ok
 }
 
-func (_ *AppliedBlock) Equals(o Object) bool {
-	_, ok := o.(*AppliedBlock)
-	return ok
-}
-
 /* Stringer implementations */
 func (r *ReturnValue) String() string {
 	return r.Value.String()
@@ -106,8 +94,4 @@ func (_ *InitMethod) String() string {
 
 func (_ *Method) String() string {
 	return "<method>"
-}
-
-func (_ *AppliedBlock) String() string {
-	return "<applied block>"
 }

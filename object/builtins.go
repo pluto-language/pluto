@@ -76,37 +76,25 @@ func printObj(args args, ctx *Context) Object {
 func doBlock(args args, ctx *Context) Object {
 	block := args["block"].(*Block)
 
-	return &AppliedBlock{
-		Block:   block,
-		Args:    []Object{},
-		Context: ctx,
-	}
+	return block
 }
 
 // do $block with $args
 func doBlockWithArgs(args args, ctx *Context) Object {
 	var (
 		block = args["block"].(*Block)
-		col   = args["args"].(Collection)
+		// col   = args["args"].(Collection)
 	)
 
-	return &AppliedBlock{
-		Block:   block,
-		Args:    col.Elements(),
-		Context: ctx,
-	}
+	return block
 }
 
 // do $block on $arg
 func doBlockOnArg(args args, ctx *Context) Object {
 	var (
 		block = args["block"].(*Block)
-		arg   = args["arg"]
+		// arg   = args["arg"]
 	)
 
-	return &AppliedBlock{
-		Block:   block,
-		Args:    []Object{arg},
-		Context: ctx,
-	}
+	return block
 }
