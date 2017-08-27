@@ -22,21 +22,6 @@ class Error {
     self.tag = tag
     self.msg = msg
   }
-  
-  def string {
-    self.tag
-    # format "{}: {}" with (self.tag, self.msg)
-  }
-}
-
-class Test {
-  init called $name {
-    self.name = name
-  }
-
-  def string {
-    self.name
-  }
 }
 
 
