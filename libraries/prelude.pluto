@@ -57,12 +57,6 @@ def assert $predicate else $msg {
 
 # Collections
 
-## Gets the element of $collection
-## at $index
-def $collection at $index {
-
-}
-
 ## Returns the amount of elements
 ## in $collection.
 def len $collection {
