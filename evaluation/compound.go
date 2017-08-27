@@ -212,6 +212,10 @@ func (t *Tuple) Elements() []Object {
 }
 
 func (t *Tuple) GetIndex(i int) Object {
+	if i >= len(t.Value) || i < 0 {
+		return O_NULL
+	}
+
 	return t.Value[i]
 }
 
@@ -224,6 +228,10 @@ func (a *Array) Elements() []Object {
 }
 
 func (a *Array) GetIndex(i int) Object {
+	if i >= len(a.Value) || i < 0 {
+		return O_NULL
+	}
+
 	return a.Value[i]
 }
 

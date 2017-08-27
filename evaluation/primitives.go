@@ -103,6 +103,10 @@ func (s *String) Elements() []Object {
 }
 
 func (s *String) GetIndex(i int) Object {
+	if i >= len(s.Value) || i < 0 {
+		return O_NULL
+	}
+
 	return &Char{Value: rune(s.Value[i])}
 }
 
