@@ -67,7 +67,7 @@ func evalClassStatement(node ast.ClassStatement, ctx *Context) Object {
 			)
 
 			onInit := func(self *Function, ctx, enclosed *Context) Object {
-				enclosed.Assign("self", &Instance{Base: o})
+				enclosed.Assign("self", &Instance{Base: o, Data: make(map[string]Object)})
 
 				result := eval(self.Body, enclosed)
 				if isErr(result) {

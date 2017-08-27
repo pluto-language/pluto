@@ -186,6 +186,23 @@ func (c *Class) String() string {
 }
 
 func (i *Instance) String() string {
+	if i.Base.(*Class).Name == "Error" {
+		return fmt.Sprintf("%s: %s", i.Get(&String{"tag"}), i.Get(&String{"msg"}))
+	}
+
+	stringMethod := i.Base.(*Class).GetMethod("string")
+
+	if stringMethod != nil {
+		args := map[string]Object{
+			"self": i,
+		}
+
+		enclosed := stringMethod.Fn.Context.EncloseWith(args)
+		result := eval(stringMethod.Fn.Body, enclosed)
+
+		return result.String()
+	}
+
 	return fmt.Sprintf("<instance of %s>", i.Base.(*Class).Name)
 }
 
@@ -217,12 +234,13 @@ func (a *Array) SetIndex(i int, o Object) {
 /* Container implementations */
 func (m *Map) Get(key Object) Object {
 	if hasher, ok := key.(Hasher); !ok {
-		return &Null{}
+		return O_NULL
 	} else {
 		if val, ok := m.Values[hasher.Hash()]; ok {
 			return val
 		}
-		return &Null{}
+
+		return O_NULL
 	}
 }
 
@@ -231,6 +249,24 @@ func (m *Map) Set(key, value Object) {
 		hash := hasher.Hash()
 		m.Values[hash] = value
 		m.Keys[hash] = key
+	}
+}
+
+func (i *Instance) Get(key Object) Object {
+	if strkey, ok := key.(*String); !ok {
+		return O_NULL
+	} else {
+		if val, ok := i.Data[strkey.Value]; ok {
+			return val
+		}
+
+		return O_NULL
+	}
+}
+
+func (i *Instance) Set(key, value Object) {
+	if strkey, ok := key.(*String); ok {
+		i.Data[strkey.Value] = value
 	}
 }
 

@@ -68,6 +68,11 @@ func GetBuiltins() []Builtin {
 				"block":      BLOCK,
 				"collection": COLLECTION,
 			}),
+
+			NewBuiltin("format $format with $args", formatWithArgs, map[string]Type{
+				"format": STRING,
+				"args":   COLLECTION,
+			}),
 		}
 	}
 
@@ -81,11 +86,30 @@ func printObj(args args, ctx *Context) Object {
 	return O_NULL
 }
 
+// format $format with $args
+func formatWithArgs(args args, ctx *Context) Object {
+	var (
+		format  = args["format"].(*String)
+		formats = args["args"].(Collection)
+	)
+
+	// if format = "Hello, {}!" and args = ["world"]
+	// the result will be "Hello, world!"
+
+	result := format.Value
+
+	for _, f := range formats.Elements() {
+		result = strings.Replace(result, "{}", f.String(), 1)
+	}
+
+	return &String{Value: result}
+}
+
 func evalBlock(block *Block, args []Object, ctx *Context) Object {
 	if len(block.Params) != len(args) {
 		return err(
 			ctx,
-			"wrong number of arguments applied to a block. expected %s, got %s", "TypeError",
+			"wrong number of arguments applied to a block. expected %d, got %d", "TypeError",
 			len(block.Params),
 			len(args),
 		)
