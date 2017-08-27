@@ -3,6 +3,8 @@ package evaluation
 import (
 	"fmt"
 	"strings"
+
+	"github.com/Zac-Garby/pluto/ast"
 )
 
 type args map[string]Object
@@ -42,21 +44,29 @@ func NewBuiltin(ptn string, fn builtinFn, types map[string]Type) Builtin {
 
 var empty = make(map[string]Type)
 
-var Builtins = []Builtin{
-	NewBuiltin("print $obj", printObj, empty),
+var builtins = []Builtin{}
 
-	NewBuiltin("do $block", doBlock, map[string]Type{
-		"block": BLOCK,
-	}),
+func GetBuiltins() []Builtin {
+	if len(builtins) == 0 {
+		builtins = []Builtin{
+			NewBuiltin("print $obj", printObj, empty),
 
-	NewBuiltin("do $block with $args", doBlockWithArgs, map[string]Type{
-		"block": BLOCK,
-		"args":  COLLECTION,
-	}),
+			NewBuiltin("do $block", doBlock, map[string]Type{
+				"block": BLOCK,
+			}),
 
-	NewBuiltin("do $block on $arg", doBlockOnArg, map[string]Type{
-		"block": BLOCK,
-	}),
+			NewBuiltin("do $block with $args", doBlockWithArgs, map[string]Type{
+				"block": BLOCK,
+				"args":  COLLECTION,
+			}),
+
+			NewBuiltin("do $block on $arg", doBlockOnArg, map[string]Type{
+				"block": BLOCK,
+			}),
+		}
+	}
+
+	return builtins
 }
 
 // print $obj
@@ -66,29 +76,48 @@ func printObj(args args, ctx *Context) Object {
 	return O_NULL
 }
 
+func evalBlock(block *Block, args []Object, ctx *Context) Object {
+	if len(block.Params) != len(args) {
+		return err(
+			ctx,
+			"wrong number of arguments applied to a block. expected %s, got %s", "TypeError",
+			len(block.Params),
+			len(args),
+		)
+	}
+
+	apArgs := make(map[string]Object)
+
+	for i, param := range block.Params {
+		apArgs[param.(*ast.Identifier).Value] = args[i]
+	}
+
+	return eval(block.Body, ctx.EncloseWith(apArgs))
+}
+
 // do $block
 func doBlock(args args, ctx *Context) Object {
 	block := args["block"].(*Block)
 
-	return block
+	return evalBlock(block, []Object{}, ctx)
 }
 
 // do $block with $args
 func doBlockWithArgs(args args, ctx *Context) Object {
 	var (
 		block = args["block"].(*Block)
-		// col   = args["args"].(Collection)
+		col   = args["args"].(Collection)
 	)
 
-	return block
+	return evalBlock(block, col.Elements(), ctx)
 }
 
 // do $block on $arg
 func doBlockOnArg(args args, ctx *Context) Object {
 	var (
 		block = args["block"].(*Block)
-		// arg   = args["arg"]
+		arg   = args["arg"]
 	)
 
-	return block
+	return evalBlock(block, []Object{arg}, ctx)
 }

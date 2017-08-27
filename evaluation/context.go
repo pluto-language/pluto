@@ -88,7 +88,7 @@ func (c *Context) GetFunction(pattern []ast.Expression) interface{} {
 		return c.Outer.GetFunction(pattern)
 	}
 
-	for _, fn := range Builtins {
+	for _, fn := range GetBuiltins() {
 		if len(pattern) != len(fn.Pattern) {
 			continue
 		}
