@@ -145,14 +145,6 @@ func evalProgram(prog *ast.Program, ctx *Context) Object {
 			return result
 		}
 
-		if ret, ok := result.(*ReturnValue); ok {
-			return ret.Value
-		}
-
-		if _, ok := result.(*Next); ok {
-			return O_NULL
-		}
-
 		switch obj := result.(type) {
 		case *ReturnValue:
 			return obj.Value
