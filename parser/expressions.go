@@ -475,7 +475,23 @@ func (p *Parser) parseDotExpression(left ast.Expression) ast.Expression {
 	}
 
 	p.next()
-	expr.Right = p.parseExpression(DOT)
+	expr.Right = p.parseExpression(INDEX)
+
+	return expr
+}
+
+func (p *Parser) parseIndexExpression(left ast.Expression) ast.Expression {
+	expr := &ast.IndexExpression{
+		Tok:        p.cur,
+		Collection: left,
+	}
+
+	p.next()
+	expr.Index = p.parseExpression(LOWEST)
+
+	if !p.expect(token.RSQUARE) {
+		return nil
+	}
 
 	return expr
 }

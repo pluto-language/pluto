@@ -73,6 +73,7 @@ func New(lexer func() token.Token) *Parser {
 		token.DECLARE: p.parseDeclareExpression,
 		token.DOT:     p.parseDotExpression,
 		token.COLON:   p.parseMethodCall,
+		token.LSQUARE: p.parseIndexExpression,
 	}
 
 	p.argTokens = []token.Type{

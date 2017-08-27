@@ -817,3 +817,34 @@ func evalTryExpression(node ast.TryExpression, ctx *Context) Object {
 
 	return val
 }
+
+func evalIndexExpression(node ast.IndexExpression, ctx *Context) Object {
+	var (
+		left  = node.Collection
+		right = node.Index
+	)
+
+	leftobj := eval(left, ctx)
+	if isErr(leftobj) {
+		return leftobj
+	}
+
+	rightobj := eval(right, ctx)
+	if isErr(rightobj) {
+		return rightobj
+	}
+
+	if col, ok := leftobj.(Collection); ok {
+		if index, ok := rightobj.(*Number); ok {
+			return col.GetIndex(int(index.Value))
+		}
+
+		return err(ctx, "cannot index a collection with %s - expected a <number>", "TypeError", rightobj.Type())
+	}
+
+	if cont, ok := leftobj.(Container); ok {
+		return cont.Get(rightobj)
+	}
+
+	return err(ctx, "can only index collections and containers", "TypeError")
+}

@@ -139,6 +139,15 @@ type DotExpression struct {
 func (_ DotExpression) Expr()              {}
 func (n DotExpression) Token() token.Token { return n.Tok }
 
+/* IndexExpression */
+type IndexExpression struct {
+	Tok               token.Token
+	Collection, Index Expression
+}
+
+func (_ IndexExpression) Expr()              {}
+func (i IndexExpression) Token() token.Token { return i.Tok }
+
 /* Parameter */
 type Parameter struct {
 	Tok  token.Token

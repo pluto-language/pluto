@@ -84,6 +84,8 @@ func eval(n ast.Node, ctx *Context) Object {
 		result = evalFunctionCall(*node, ctx)
 	case *ast.IfExpression:
 		result = evalIfExpression(*node, ctx)
+	case *ast.IndexExpression:
+		result = evalIndexExpression(*node, ctx)
 	case *ast.InfixExpression:
 		result = evalInfixExpression(*node, ctx)
 	case *ast.MatchExpression:
