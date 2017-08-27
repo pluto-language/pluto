@@ -1,24 +1,23 @@
-package evaluator
+package evaluation
 
 import (
 	"github.com/Zac-Garby/pluto/ast"
-	"github.com/Zac-Garby/pluto/object"
 )
 
-func evalBlockStatement(block ast.BlockStatement, ctx *object.Context) object.Object {
+func evalBlockStatement(block ast.BlockStatement, ctx *Context) Object {
 	if len(block.Statements) == 0 {
-		return NULL
+		return O_NULL
 	}
 
-	var result object.Object
+	var result Object
 
 	for _, stmt := range block.Statements {
 		result = eval(stmt, ctx)
 
 		if isErr(result) || result != nil &&
-			(result.Type() == object.RETURN_VALUE ||
-				result.Type() == object.NEXT ||
-				result.Type() == object.BREAK) {
+			(result.Type() == RETURN_VALUE ||
+				result.Type() == NEXT ||
+				result.Type() == BREAK) {
 			return result
 		}
 	}
@@ -26,8 +25,8 @@ func evalBlockStatement(block ast.BlockStatement, ctx *object.Context) object.Ob
 	return result
 }
 
-func evalClassStatement(node ast.ClassStatement, ctx *object.Context) object.Object {
-	o := &object.Class{Name: node.Name.Token().Literal}
+func evalClassStatement(node ast.ClassStatement, ctx *Context) Object {
+	o := &Class{Name: node.Name.Token().Literal}
 
 	if node.Parent != nil {
 		o.Parent = eval(node.Parent, ctx)
@@ -42,33 +41,33 @@ func evalClassStatement(node ast.ClassStatement, ctx *object.Context) object.Obj
 	}
 
 	for _, n := range node.Methods {
-		var method object.Object
+		var method Object
 
 		switch m := n.(type) {
 		case *ast.FunctionDefinition:
-			fn := object.Function{
+			fn := Function{
 				Pattern: m.Pattern,
 				Body:    m.Body,
 				Context: ctx,
 			}
 
-			method = &object.Method{Fn: fn}
+			method = &Method{Fn: fn}
 		case *ast.InitDefinition:
-			fn := object.Function{
+			fn := Function{
 				Pattern: m.Pattern,
 				Body:    m.Body,
 				Context: ctx,
 			}
 
-			method = &object.InitMethod{Fn: fn}
+			method = &InitMethod{Fn: fn}
 
 			initPattern := append(
 				[]ast.Expression{node.Name},
 				fn.Pattern...,
 			)
 
-			onInit := func(self *object.Function, ctx, enclosed *object.Context) object.Object {
-				enclosed.Assign("self", &object.Instance{Base: o})
+			onInit := func(self *Function, ctx, enclosed *Context) Object {
+				enclosed.Assign("self", &Instance{Base: o})
 
 				result := eval(self.Body, enclosed)
 				if isErr(result) {
@@ -78,7 +77,7 @@ func evalClassStatement(node ast.ClassStatement, ctx *object.Context) object.Obj
 				return enclosed.Get("self")
 			}
 
-			initFn := &object.Function{
+			initFn := &Function{
 				Pattern: initPattern,
 				Body:    m.Body,
 				Context: ctx,
@@ -96,9 +95,9 @@ func evalClassStatement(node ast.ClassStatement, ctx *object.Context) object.Obj
 	return o
 }
 
-func evalReturnStatement(node ast.ReturnStatement, ctx *object.Context) object.Object {
+func evalReturnStatement(node ast.ReturnStatement, ctx *Context) Object {
 	if node.Value == nil {
-		return &object.ReturnValue{Value: NULL}
+		return &ReturnValue{Value: O_NULL}
 	}
 
 	val := eval(node.Value, ctx)
@@ -106,5 +105,5 @@ func evalReturnStatement(node ast.ReturnStatement, ctx *object.Context) object.O
 		return val
 	}
 
-	return &object.ReturnValue{Value: val}
+	return &ReturnValue{Value: val}
 }
