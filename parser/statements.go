@@ -154,7 +154,7 @@ func (p *Parser) parseClassDeclaration() ast.Statement {
 
 	p.next()
 
-	if !p.curIs(token.RBRACE) {
+	if p.curIs(token.RBRACE) {
 		return stmt
 	}
 
