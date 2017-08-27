@@ -102,6 +102,20 @@ func (s *String) Elements() []Object {
 	return chars
 }
 
+func (s *String) GetIndex(i int) Object {
+	return &Char{Value: rune(s.Value[i])}
+}
+
+func (s *String) SetIndex(i int, o Object) {
+	fmt.Println(o)
+
+	if ch, ok := o.(*Char); ok {
+		bytes := []byte(s.Value)
+		bytes[i] = byte(ch.Value)
+		s.Value = string(bytes)
+	}
+}
+
 /* Hasher implementations */
 func (n *Number) Hash() string {
 	return fmt.Sprintf("number %g", n.Value)

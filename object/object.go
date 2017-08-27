@@ -11,6 +11,8 @@ type Object interface {
 type Collection interface {
 	Object
 	Elements() []Object
+	GetIndex(int) Object
+	SetIndex(int, Object)
 }
 
 type Container interface {

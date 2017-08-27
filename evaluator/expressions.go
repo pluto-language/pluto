@@ -184,7 +184,7 @@ func evalInfixExpression(node ast.InfixExpression, ctx *object.Context) object.O
 				result = append(result, elems...)
 			}
 
-			return makeCollection(left.Type(), result, ctx)
+			return object.MakeCollection(left.Type(), result, ctx)
 		}
 	}
 
@@ -201,7 +201,7 @@ func evalCollectionInfix(op string, left, right object.Collection, ctx *object.C
 	case "!=":
 		return boolObj(!left.Equals(right))
 	case "+":
-		return makeCollection(left.Type(), append(l, r...), ctx)
+		return object.MakeCollection(left.Type(), append(l, r...), ctx)
 	case "-":
 		var elems []object.Object
 
@@ -219,7 +219,7 @@ func evalCollectionInfix(op string, left, right object.Collection, ctx *object.C
 			}
 		}
 
-		return makeCollection(left.Type(), elems, ctx)
+		return object.MakeCollection(left.Type(), elems, ctx)
 	case "&", "&&":
 		var elems []object.Object
 
@@ -238,7 +238,7 @@ func evalCollectionInfix(op string, left, right object.Collection, ctx *object.C
 			}
 		}
 
-		return makeCollection(left.Type(), elems, ctx)
+		return object.MakeCollection(left.Type(), elems, ctx)
 	case "|", "||":
 		var elems []object.Object
 
@@ -257,7 +257,7 @@ func evalCollectionInfix(op string, left, right object.Collection, ctx *object.C
 			}
 		}
 
-		return makeCollection(left.Type(), elems, ctx)
+		return object.MakeCollection(left.Type(), elems, ctx)
 	default:
 		return err(ctx, "unknown operator: %s %s %s", "NotFoundError", left.Type(), op, right.Type())
 	}

@@ -194,8 +194,24 @@ func (t *Tuple) Elements() []Object {
 	return t.Value
 }
 
+func (t *Tuple) GetIndex(i int) Object {
+	return t.Value[i]
+}
+
+func (t *Tuple) SetIndex(i int, o Object) {
+	t.Value[i] = o
+}
+
 func (a *Array) Elements() []Object {
 	return a.Value
+}
+
+func (a *Array) GetIndex(i int) Object {
+	return a.Value[i]
+}
+
+func (a *Array) SetIndex(i int, o Object) {
+	a.Value[i] = o
 }
 
 /* Container implementations */
