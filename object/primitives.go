@@ -107,8 +107,6 @@ func (s *String) GetIndex(i int) Object {
 }
 
 func (s *String) SetIndex(i int, o Object) {
-	fmt.Println(o)
-
 	if ch, ok := o.(*Char); ok {
 		bytes := []byte(s.Value)
 		bytes[i] = byte(ch.Value)
