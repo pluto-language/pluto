@@ -17,7 +17,7 @@ const (
 	EXP
 	PREFIX
 	METHOD_CALL
-	DOT
+	INDEX
 )
 
 var precedences = map[token.Type]int{
@@ -43,7 +43,8 @@ var precedences = map[token.Type]int{
 	token.F_DIV:   EXP,
 	token.BANG:    PREFIX,
 	token.COLON:   METHOD_CALL,
-	token.DOT:     DOT,
+	token.DOT:     INDEX,
+	token.LSQUARE: INDEX,
 }
 
 var argBlacklist = []token.Type{
@@ -54,6 +55,7 @@ var argBlacklist = []token.Type{
 	token.MATCH,
 	token.MINUS,
 	token.PLUS,
+	token.LSQUARE,
 }
 
 func isBlacklisted(t token.Type) bool {

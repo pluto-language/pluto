@@ -5,15 +5,18 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"path/filepath"
+
+	"github.com/Zac-Garby/pluto/evaluation"
 
 	"github.com/Zac-Garby/pluto/lexer"
 	"github.com/Zac-Garby/pluto/parser"
 	"github.com/jessevdk/go-flags"
 )
 
-const VERSION = "0.1.0"
+const version = "0.1.0"
 
-type Options struct {
+type options struct {
 	Parse       bool `short:"p" long:"parse" description:"Just parse the input - don't execute it."`
 	Tree        bool `short:"t" long:"tree" description:"Pretty-print the AST."`
 	Interactive bool `short:"i" long:"interactive" description:"Enter interactive mode after the file has been run"`
@@ -25,7 +28,7 @@ type Options struct {
 	} `positional-args:"yes"`
 }
 
-var opts Options
+var opts options
 
 func main() {
 	if _, err := flags.Parse(&opts); err != nil {
@@ -33,24 +36,32 @@ func main() {
 	}
 
 	if opts.Version {
-		fmt.Printf("Pluto v%s\n", VERSION)
+		fmt.Printf("Pluto v%s\n", version)
 		return
 	}
 
 	if len(opts.Args.File) == 0 {
-		REPL()
+		runREPL()
 	} else {
 		executeFile(opts.Args.File)
 	}
 }
 
-func REPL() {
+func runREPL() {
+	ctx := &evaluation.Context{
+		Store: make(map[string]evaluation.Object),
+	}
+
+	if !opts.NoPrelude {
+		importPrelude(ctx)
+	}
+
 	for {
 		reader := bufio.NewReader(os.Stdin)
 		fmt.Print(">> ")
 		text, _ := reader.ReadString('\n')
 
-		execute(text)
+		execute(text, true, ctx)
 	}
 }
 
@@ -58,11 +69,28 @@ func executeFile(name string) {
 	if code, err := ioutil.ReadFile(name); err != nil {
 		panic(err)
 	} else {
-		execute(string(code))
+		ctx := &evaluation.Context{
+			Store: make(map[string]evaluation.Object),
+		}
+
+		execute(string(code), false, ctx)
 	}
 }
 
-func execute(code string) {
+func importPrelude(ctx *evaluation.Context) {
+	srcPath, err := filepath.Abs("libraries/prelude.pluto")
+	if err != nil {
+		panic(err)
+	}
+
+	if prelude, err := ioutil.ReadFile(srcPath); err != nil {
+		panic(err)
+	} else {
+		execute(string(prelude), false, ctx)
+	}
+}
+
+func execute(code string, showOutput bool, ctx *evaluation.Context) {
 	next := lexer.Lexer(code)
 	parse := parser.New(next)
 	program := parse.Parse()
@@ -79,5 +107,11 @@ func execute(code string) {
 		}
 
 		return
+	}
+
+	result := evaluation.EvaluateProgram(program, ctx)
+
+	if showOutput && !result.Equals(evaluation.O_NULL) {
+		fmt.Println(result.String())
 	}
 }

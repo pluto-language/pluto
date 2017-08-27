@@ -65,7 +65,7 @@ func (p *Parser) parseExpressionPairs(end token.Type) map[ast.Expression]ast.Exp
 }
 
 func (p *Parser) parsePair() (ast.Expression, ast.Expression) {
-	key := p.parseExpression(DOT)
+	key := p.parseExpression(INDEX)
 
 	if !p.expect(token.COLON) {
 		return nil, nil
