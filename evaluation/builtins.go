@@ -63,6 +63,11 @@ func GetBuiltins() []Builtin {
 			NewBuiltin("do $block on $arg", doBlockOnArg, map[string]Type{
 				"block": BLOCK,
 			}),
+
+			NewBuiltin("map $block over $collection", mapBlockOverCollection, map[string]Type{
+				"block":      BLOCK,
+				"collection": COLLECTION,
+			}),
 		}
 	}
 
@@ -120,4 +125,29 @@ func doBlockOnArg(args args, ctx *Context) Object {
 	)
 
 	return evalBlock(block, []Object{arg}, ctx)
+}
+
+// map $block over $collection
+func mapBlockOverCollection(args args, ctx *Context) Object {
+	var (
+		block = args["block"].(*Block)
+		col   = args["collection"].(Collection)
+	)
+
+	var result []Object
+
+	for i, item := range col.Elements() {
+		mapped := evalBlock(block, []Object{
+			&Number{Value: float64(i)},
+			item,
+		}, ctx)
+
+		if isErr(mapped) {
+			return mapped
+		}
+
+		result = append(result, mapped)
+	}
+
+	return MakeCollection(col.Type(), result, ctx)
 }
