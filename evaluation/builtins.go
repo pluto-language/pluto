@@ -1,4 +1,4 @@
-package object
+package evaluation
 
 import (
 	"fmt"
@@ -40,13 +40,7 @@ func NewBuiltin(ptn string, fn builtinFn, types map[string]Type) Builtin {
 	}
 }
 
-var (
-	O_NULL  = new(Null)
-	O_TRUE  = &Boolean{Value: true}
-	O_FALSE = &Boolean{Value: false}
-
-	empty = make(map[string]Type)
-)
+var empty = make(map[string]Type)
 
 var Builtins = []Builtin{
 	NewBuiltin("print $obj", printObj, empty),

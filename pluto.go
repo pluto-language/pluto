@@ -6,8 +6,7 @@ import (
 	"io/ioutil"
 	"os"
 
-	"github.com/Zac-Garby/pluto/evaluator"
-	"github.com/Zac-Garby/pluto/object"
+	"github.com/Zac-Garby/pluto/evaluation"
 
 	"github.com/Zac-Garby/pluto/lexer"
 	"github.com/Zac-Garby/pluto/parser"
@@ -48,8 +47,8 @@ func main() {
 }
 
 func runREPL() {
-	ctx := &object.Context{
-		Store: make(map[string]object.Object),
+	ctx := &evaluation.Context{
+		Store: make(map[string]evaluation.Object),
 	}
 
 	for {
@@ -65,15 +64,15 @@ func executeFile(name string) {
 	if code, err := ioutil.ReadFile(name); err != nil {
 		panic(err)
 	} else {
-		ctx := &object.Context{
-			Store: make(map[string]object.Object),
+		ctx := &evaluation.Context{
+			Store: make(map[string]evaluation.Object),
 		}
 
 		execute(string(code), false, ctx)
 	}
 }
 
-func execute(code string, showOutput bool, ctx *object.Context) {
+func execute(code string, showOutput bool, ctx *evaluation.Context) {
 	next := lexer.Lexer(code)
 	parse := parser.New(next)
 	program := parse.Parse()
@@ -92,9 +91,9 @@ func execute(code string, showOutput bool, ctx *object.Context) {
 		return
 	}
 
-	result := evaluator.EvaluateProgram(program, ctx)
+	result := evaluation.EvaluateProgram(program, ctx)
 
-	if showOutput && result != evaluator.NULL {
+	if showOutput && !result.Equals(evaluation.O_NULL) {
 		fmt.Println(result.String())
 	}
 }

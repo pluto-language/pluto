@@ -1,14 +1,13 @@
-package evaluator
+package evaluation
 
 import (
 	"math"
 	"strings"
 
 	"github.com/Zac-Garby/pluto/ast"
-	"github.com/Zac-Garby/pluto/object"
 )
 
-func evalIdentifier(node ast.Identifier, ctx *object.Context) object.Object {
+func evalIdentifier(node ast.Identifier, ctx *Context) Object {
 	val := ctx.Get(node.Value)
 
 	if val != nil {
@@ -18,30 +17,30 @@ func evalIdentifier(node ast.Identifier, ctx *object.Context) object.Object {
 	return err(ctx, "`%s` is not found", "NotFoundError", node.Value)
 }
 
-func evalTuple(node ast.Tuple, ctx *object.Context) object.Object {
+func evalTuple(node ast.Tuple, ctx *Context) Object {
 	elements := evalExpressions(node.Value, ctx)
 
 	if len(elements) == 1 && isErr(elements[0]) {
 		return elements[0]
 	}
 
-	return &object.Tuple{Value: elements}
+	return &Tuple{Value: elements}
 }
 
-func evalArray(node ast.Array, ctx *object.Context) object.Object {
+func evalArray(node ast.Array, ctx *Context) Object {
 	elements := evalExpressions(node.Elements, ctx)
 
 	if len(elements) == 1 && isErr(elements[0]) {
 		return elements[0]
 	}
 
-	return &object.Array{Value: elements}
+	return &Array{Value: elements}
 }
 
-func evalMap(node ast.Map, ctx *object.Context) object.Object {
-	m := &object.Map{
-		Values: make(map[string]object.Object),
-		Keys:   make(map[string]object.Object),
+func evalMap(node ast.Map, ctx *Context) Object {
+	m := &Map{
+		Values: make(map[string]Object),
+		Keys:   make(map[string]Object),
 	}
 
 	for k, v := range node.Pairs {
@@ -61,11 +60,11 @@ func evalMap(node ast.Map, ctx *object.Context) object.Object {
 	return m
 }
 
-func evalBlockLiteral(node ast.BlockLiteral, ctx *object.Context) object.Object {
-	return &object.Block{Params: node.Params, Body: node.Body}
+func evalBlockLiteral(node ast.BlockLiteral, ctx *Context) Object {
+	return &Block{Params: node.Params, Body: node.Body}
 }
 
-func evalPrefixExpression(node ast.PrefixExpression, ctx *object.Context) object.Object {
+func evalPrefixExpression(node ast.PrefixExpression, ctx *Context) Object {
 	right := eval(node.Right, ctx)
 	if isErr(right) {
 		return right
@@ -74,8 +73,8 @@ func evalPrefixExpression(node ast.PrefixExpression, ctx *object.Context) object
 	return evalPrefix(node.Operator, right, ctx)
 }
 
-func evalPrefix(op string, right object.Object, ctx *object.Context) object.Object {
-	if instance, ok := right.(*object.Instance); ok {
+func evalPrefix(op string, right Object, ctx *Context) Object {
+	if instance, ok := right.(*Instance); ok {
 		return evalInstancePrefix(op, instance, ctx)
 	}
 
@@ -91,14 +90,14 @@ func evalPrefix(op string, right object.Object, ctx *object.Context) object.Obje
 	}
 }
 
-func evalInstancePrefix(op string, right *object.Instance, ctx *object.Context) object.Object {
+func evalInstancePrefix(op string, right *Instance, ctx *Context) Object {
 	fnName, ok := prefixOverloads[op]
 	if !ok {
 		return err(ctx, "cannot overload operator %s", "NotFoundError", op)
 	}
 
-	if method := right.Base.(*object.Class).GetMethod(fnName); method != nil {
-		args := map[string]object.Object{
+	if method := right.Base.(*Class).GetMethod(fnName); method != nil {
+		args := map[string]Object{
 			"self": right,
 		}
 
@@ -110,15 +109,15 @@ func evalInstancePrefix(op string, right *object.Instance, ctx *object.Context) 
 	return err(ctx, "unknown operator: %s%s. try overloading %s", "NotFoundError", op, right.Base.String(), fnName)
 }
 
-func evalMinusPrefix(right object.Object, ctx *object.Context) object.Object {
-	if right.Type() != object.NUMBER {
+func evalMinusPrefix(right Object, ctx *Context) Object {
+	if right.Type() != NUMBER {
 		return err(ctx, "unknown operator: -%s", "NotFoundError", right.Type())
 	}
 
-	return &object.Number{Value: -right.(*object.Number).Value}
+	return &Number{Value: -right.(*Number).Value}
 }
 
-func evalInfixExpression(node ast.InfixExpression, ctx *object.Context) object.Object {
+func evalInfixExpression(node ast.InfixExpression, ctx *Context) Object {
 	left := eval(node.Left, ctx)
 	if isErr(left) {
 		return left
@@ -131,13 +130,13 @@ func evalInfixExpression(node ast.InfixExpression, ctx *object.Context) object.O
 
 	op := node.Operator
 
-	if lCol, ok := left.(object.Collection); ok {
-		if rCol, ok := right.(object.Collection); ok {
+	if lCol, ok := left.(Collection); ok {
+		if rCol, ok := right.(Collection); ok {
 			return evalCollectionInfix(op, lCol, rCol, ctx)
 		}
 	}
 
-	if instance, ok := left.(*object.Instance); ok {
+	if instance, ok := left.(*Instance); ok {
 		return evalInstanceInfix(op, instance, right, ctx)
 	}
 
@@ -151,47 +150,47 @@ func evalInfixExpression(node ast.InfixExpression, ctx *object.Context) object.O
 	case "!=":
 		return boolObj(!left.Equals(right))
 	case "?":
-		if left == NULL {
+		if left == O_NULL {
 			return right
 		}
 
 		return left
 	}
 
-	if left.Type() == object.NUMBER && right.Type() == object.NUMBER {
-		return evalNumberInfix(op, left.(*object.Number), right.(*object.Number), ctx)
+	if left.Type() == NUMBER && right.Type() == NUMBER {
+		return evalNumberInfix(op, left.(*Number), right.(*Number), ctx)
 	}
 
-	if (left.Type() == object.CHAR || left.Type() == object.STRING) &&
-		(right.Type() == object.CHAR || right.Type() == object.STRING) {
+	if (left.Type() == CHAR || left.Type() == STRING) &&
+		(right.Type() == CHAR || right.Type() == STRING) {
 		return evalCharStringInfix(op, left, right, ctx)
 	}
 
-	if left.Type() == object.CHAR && right.Type() == object.NUMBER {
-		ch := string(left.(*object.Char).Value)
-		amount := int(math.Floor(right.(*object.Number).Value))
+	if left.Type() == CHAR && right.Type() == NUMBER {
+		ch := string(left.(*Char).Value)
+		amount := int(math.Floor(right.(*Number).Value))
 
-		return &object.String{Value: strings.Repeat(ch, amount)}
+		return &String{Value: strings.Repeat(ch, amount)}
 	}
 
-	if lCol, ok := left.(object.Collection); ok {
-		if right.Type() == object.NUMBER && op == "*" {
-			var result []object.Object
+	if lCol, ok := left.(Collection); ok {
+		if right.Type() == NUMBER && op == "*" {
+			var result []Object
 			elems := lCol.Elements()
-			amount := int(math.Floor(right.(*object.Number).Value))
+			amount := int(math.Floor(right.(*Number).Value))
 
 			for i := 0; i < amount; i++ {
 				result = append(result, elems...)
 			}
 
-			return object.MakeCollection(left.Type(), result, ctx)
+			return MakeCollection(left.Type(), result, ctx)
 		}
 	}
 
 	return err(ctx, "unknown operator: %s %s %s", "NotFoundError", left.Type(), op, right.Type())
 }
 
-func evalCollectionInfix(op string, left, right object.Collection, ctx *object.Context) object.Object {
+func evalCollectionInfix(op string, left, right Collection, ctx *Context) Object {
 	l := left.Elements()
 	r := right.Elements()
 
@@ -201,9 +200,9 @@ func evalCollectionInfix(op string, left, right object.Collection, ctx *object.C
 	case "!=":
 		return boolObj(!left.Equals(right))
 	case "+":
-		return object.MakeCollection(left.Type(), append(l, r...), ctx)
+		return MakeCollection(left.Type(), append(l, r...), ctx)
 	case "-":
-		var elems []object.Object
+		var elems []Object
 
 		for _, el := range l {
 			blacklisted := false
@@ -219,9 +218,9 @@ func evalCollectionInfix(op string, left, right object.Collection, ctx *object.C
 			}
 		}
 
-		return object.MakeCollection(left.Type(), elems, ctx)
+		return MakeCollection(left.Type(), elems, ctx)
 	case "&", "&&":
-		var elems []object.Object
+		var elems []Object
 
 		for _, el := range l {
 			both := false
@@ -238,9 +237,9 @@ func evalCollectionInfix(op string, left, right object.Collection, ctx *object.C
 			}
 		}
 
-		return object.MakeCollection(left.Type(), elems, ctx)
+		return MakeCollection(left.Type(), elems, ctx)
 	case "|", "||":
-		var elems []object.Object
+		var elems []Object
 
 		for _, el := range append(l, r...) {
 			unique := true
@@ -257,35 +256,35 @@ func evalCollectionInfix(op string, left, right object.Collection, ctx *object.C
 			}
 		}
 
-		return object.MakeCollection(left.Type(), elems, ctx)
+		return MakeCollection(left.Type(), elems, ctx)
 	default:
 		return err(ctx, "unknown operator: %s %s %s", "NotFoundError", left.Type(), op, right.Type())
 	}
 }
 
-func evalNumberInfix(op string, left, right *object.Number, ctx *object.Context) object.Object {
+func evalNumberInfix(op string, left, right *Number, ctx *Context) Object {
 	l := left.Value
 	r := right.Value
 
 	switch op {
 	case "+":
-		return &object.Number{Value: l + r}
+		return &Number{Value: l + r}
 	case "-":
-		return &object.Number{Value: l - r}
+		return &Number{Value: l - r}
 	case "*":
-		return &object.Number{Value: l * r}
+		return &Number{Value: l * r}
 	case "/":
-		return &object.Number{Value: l / r}
+		return &Number{Value: l / r}
 	case "&":
-		return &object.Number{Value: float64(int(l) & int(r))}
+		return &Number{Value: float64(int(l) & int(r))}
 	case "|":
-		return &object.Number{Value: float64(int(l) | int(r))}
+		return &Number{Value: float64(int(l) | int(r))}
 	case "**":
-		return &object.Number{Value: math.Pow(l, r)}
+		return &Number{Value: math.Pow(l, r)}
 	case "//":
-		return &object.Number{Value: math.Floor(l / r)}
+		return &Number{Value: math.Floor(l / r)}
 	case "%":
-		return &object.Number{Value: math.Mod(l, r)}
+		return &Number{Value: math.Mod(l, r)}
 	case "<":
 		return boolObj(l < r)
 	case ">":
@@ -299,24 +298,24 @@ func evalNumberInfix(op string, left, right *object.Number, ctx *object.Context)
 	}
 }
 
-func evalCharStringInfix(op string, left, right object.Object, ctx *object.Context) object.Object {
+func evalCharStringInfix(op string, left, right Object, ctx *Context) Object {
 	var l, r string
 
-	if lch, ok := left.(*object.Char); ok {
+	if lch, ok := left.(*Char); ok {
 		l = string(lch.Value)
-	} else if lstr, ok := left.(*object.String); ok {
+	} else if lstr, ok := left.(*String); ok {
 		l = lstr.Value
 	}
 
-	if rch, ok := right.(*object.Char); ok {
+	if rch, ok := right.(*Char); ok {
 		r = string(rch.Value)
-	} else if rstr, ok := right.(*object.String); ok {
+	} else if rstr, ok := right.(*String); ok {
 		r = rstr.Value
 	}
 
 	switch op {
 	case "+":
-		return &object.String{Value: l + r}
+		return &String{Value: l + r}
 	case "-":
 		var val string
 
@@ -326,22 +325,22 @@ func evalCharStringInfix(op string, left, right object.Object, ctx *object.Conte
 			}
 		}
 
-		return &object.String{Value: val}
+		return &String{Value: val}
 	default:
 		return err(ctx, "unknown operator: %s %s %s", "NotFoundError", left.Type(), op, right.Type())
 	}
 }
 
-func evalInstanceInfix(op string, left *object.Instance, right object.Object, ctx *object.Context) object.Object {
+func evalInstanceInfix(op string, left *Instance, right Object, ctx *Context) Object {
 	fnName, ok := infixOverloads[op]
 	if !ok {
 		return err(ctx, "cannot overload operator %s", "NotFoundError", op)
 	}
 
-	if method := left.Base.(*object.Class).GetMethod(fnName); method != nil {
+	if method := left.Base.(*Class).GetMethod(fnName); method != nil {
 		methodPattern := method.Fn.Pattern
 
-		args := map[string]object.Object{
+		args := map[string]Object{
 			"self": left,
 		}
 
@@ -367,7 +366,7 @@ func evalInstanceInfix(op string, left *object.Instance, right object.Object, ct
 	)
 }
 
-func evalAssignExpression(node ast.AssignExpression, ctx *object.Context) object.Object {
+func evalAssignExpression(node ast.AssignExpression, ctx *Context) Object {
 	right := eval(node.Value, ctx)
 	if isErr(right) {
 		return right
@@ -379,13 +378,13 @@ func evalAssignExpression(node ast.AssignExpression, ctx *object.Context) object
 			return o
 		}
 
-		ctr, ok := o.(object.Container)
+		ctr, ok := o.(Container)
 		if !ok {
 			return err(ctx, "can only access fields of containers", "TypeError")
 		}
 
 		if id, ok := dot.Right.(*ast.Identifier); ok {
-			ctr.Set(&object.String{Value: id.Value}, right)
+			ctr.Set(&String{Value: id.Value}, right)
 			return right
 		}
 
@@ -400,7 +399,7 @@ func evalAssignExpression(node ast.AssignExpression, ctx *object.Context) object
 	return err(ctx, "can only assign to identifiers!", "SyntaxError")
 }
 
-func evalDeclareExpression(node ast.DeclareExpression, ctx *object.Context) object.Object {
+func evalDeclareExpression(node ast.DeclareExpression, ctx *Context) Object {
 	right := eval(node.Value, ctx)
 	if isErr(right) {
 		return right
@@ -414,15 +413,15 @@ func evalDeclareExpression(node ast.DeclareExpression, ctx *object.Context) obje
 	return err(ctx, "cannot declare a non-identifier!", "SyntaxError")
 }
 
-func evalDotExpression(node ast.DotExpression, ctx *object.Context) object.Object {
+func evalDotExpression(node ast.DotExpression, ctx *Context) Object {
 	left := eval(node.Left, ctx)
 	if isErr(left) {
 		return left
 	}
 
 	if field, ok := node.Right.(*ast.Identifier); ok {
-		if cnt, ok := left.(object.Container); ok {
-			return cnt.Get(&object.String{Value: field.Value})
+		if cnt, ok := left.(Container); ok {
+			return cnt.Get(&String{Value: field.Value})
 		}
 
 		return err(ctx, "cannot access fields of %s", "TypeError", left.Type())
@@ -431,8 +430,8 @@ func evalDotExpression(node ast.DotExpression, ctx *object.Context) object.Objec
 	return err(ctx, "an identifier is expected after a dot '.'", "SyntaxError")
 }
 
-func evalWhileLoop(node ast.WhileLoop, ctx *object.Context) object.Object {
-	var steps []object.Object
+func evalWhileLoop(node ast.WhileLoop, ctx *Context) Object {
+	var steps []Object
 
 	for {
 		condition := eval(node.Condition, ctx)
@@ -449,17 +448,17 @@ func evalWhileLoop(node ast.WhileLoop, ctx *object.Context) object.Object {
 			return result
 		}
 
-		if result.Type() == object.BREAK {
+		if result.Type() == BREAK {
 			break
 		}
 
 		steps = append(steps, result)
 	}
 
-	return &object.Array{Value: steps}
+	return &Array{Value: steps}
 }
 
-func evalForLoop(node ast.ForLoop, ctx *object.Context) object.Object {
+func evalForLoop(node ast.ForLoop, ctx *Context) Object {
 	var (
 		v    = node.Var
 		body = node.Body
@@ -470,17 +469,17 @@ func evalForLoop(node ast.ForLoop, ctx *object.Context) object.Object {
 		return col
 	}
 
-	var items []object.Object
-	if collection, ok := col.(object.Collection); ok {
+	var items []Object
+	if collection, ok := col.(Collection); ok {
 		items = collection.Elements()
 	} else {
 		return err(ctx, "cannot perform a for-loop over the non-collection type: %s", "TypeError", col.Type())
 	}
 
-	var steps []object.Object
+	var steps []Object
 
 	for _, item := range items {
-		enclosed := ctx.EncloseWith(map[string]object.Object{
+		enclosed := ctx.EncloseWith(map[string]Object{
 			v.Token().Literal: item,
 		})
 
@@ -489,17 +488,17 @@ func evalForLoop(node ast.ForLoop, ctx *object.Context) object.Object {
 			return result
 		}
 
-		if result.Type() == object.BREAK {
+		if result.Type() == BREAK {
 			break
 		}
 
 		steps = append(steps, result)
 	}
 
-	return &object.Array{Value: steps}
+	return &Array{Value: steps}
 }
 
-func evalFunctionCall(node ast.FunctionCall, ctx *object.Context) object.Object {
+func evalFunctionCall(node ast.FunctionCall, ctx *Context) Object {
 	fn := ctx.GetFunction(node.Pattern)
 
 	if fn == nil {
@@ -518,11 +517,11 @@ func evalFunctionCall(node ast.FunctionCall, ctx *object.Context) object.Object 
 		return err(ctx, "no function matching the pattern: %s", "NotFoundError", patternString)
 	}
 
-	args := make(map[string]object.Object)
+	args := make(map[string]Object)
 
-	var result object.Object
+	var result Object
 
-	if function, ok := fn.(*object.Function); ok {
+	if function, ok := fn.(*Function); ok {
 		for i, item := range node.Pattern {
 			fItem := function.Pattern[i]
 
@@ -554,7 +553,7 @@ func evalFunctionCall(node ast.FunctionCall, ctx *object.Context) object.Object 
 		}
 	}
 
-	if function, ok := fn.(object.Builtin); ok {
+	if function, ok := fn.(Builtin); ok {
 		for i, item := range node.Pattern {
 			fItem := function.Pattern[i]
 
@@ -574,14 +573,14 @@ func evalFunctionCall(node ast.FunctionCall, ctx *object.Context) object.Object 
 	}
 
 	if result == nil {
-		return NULL
+		return O_NULL
 	}
 
 	return unwrapReturnValue(result)
 }
 
-func evalFunctionDefinition(node ast.FunctionDefinition, ctx *object.Context) object.Object {
-	function := &object.Function{
+func evalFunctionDefinition(node ast.FunctionDefinition, ctx *Context) Object {
+	function := &Function{
 		Pattern: node.Pattern,
 		Body:    node.Body,
 		Context: ctx,
@@ -589,10 +588,10 @@ func evalFunctionDefinition(node ast.FunctionDefinition, ctx *object.Context) ob
 
 	ctx.AddFunction(function)
 
-	return NULL
+	return O_NULL
 }
 
-func evalIfExpression(node ast.IfExpression, ctx *object.Context) object.Object {
+func evalIfExpression(node ast.IfExpression, ctx *Context) Object {
 	condition := eval(node.Condition, ctx)
 	if isErr(condition) {
 		return condition
@@ -603,11 +602,11 @@ func evalIfExpression(node ast.IfExpression, ctx *object.Context) object.Object 
 	} else if node.Alternative != nil {
 		return eval(node.Alternative, ctx)
 	} else {
-		return NULL
+		return O_NULL
 	}
 }
 
-func evalMatchExpression(node ast.MatchExpression, ctx *object.Context) object.Object {
+func evalMatchExpression(node ast.MatchExpression, ctx *Context) Object {
 	val := eval(node.Exp, ctx)
 	if isErr(val) {
 		return val
@@ -649,25 +648,25 @@ func evalMatchExpression(node ast.MatchExpression, ctx *object.Context) object.O
 		return unwrapReturnValue(result)
 	}
 
-	return NULL
+	return O_NULL
 }
 
-func evalMethodCall(node ast.MethodCall, ctx *object.Context) object.Object {
+func evalMethodCall(node ast.MethodCall, ctx *Context) Object {
 	inst := eval(node.Instance, ctx)
 	if isErr(inst) {
 		return inst
 	}
 
-	instance, ok := inst.(*object.Instance)
+	instance, ok := inst.(*Instance)
 	if !ok {
 		return err(ctx, "can only call a method on type <instance>. got %s", "TypeError", inst.Type())
 	}
 
-	base := instance.Base.(*object.Class)
+	base := instance.Base.(*Class)
 
 	var (
 		pattern  = node.Pattern
-		function *object.Method
+		function *Method
 	)
 
 	for _, fn := range base.GetMethods() {
@@ -721,7 +720,7 @@ func evalMethodCall(node ast.MethodCall, ctx *object.Context) object.Object {
 		)
 	}
 
-	args := make(map[string]object.Object)
+	args := make(map[string]Object)
 
 	for i, item := range node.Pattern {
 		fItem := function.Fn.Pattern[i]
@@ -744,11 +743,11 @@ func evalMethodCall(node ast.MethodCall, ctx *object.Context) object.Object {
 	return eval(function.Fn.Body, enclosed)
 }
 
-func evalTryExpression(node ast.TryExpression, ctx *object.Context) object.Object {
+func evalTryExpression(node ast.TryExpression, ctx *Context) Object {
 	v := eval(node.Body, ctx)
 
-	val, ok := v.(*object.Instance)
-	if !ok || val.Base.(*object.Class).Name != "Error" {
+	val, ok := v.(*Instance)
+	if !ok || val.Base.(*Class).Name != "Error" {
 		return err(ctx, "the error value in a try-expression must be an Error instance", "TypeError")
 	}
 
@@ -781,7 +780,7 @@ func evalTryExpression(node ast.TryExpression, ctx *object.Context) object.Objec
 					return e
 				}
 
-				if e.Type() != object.STRING {
+				if e.Type() != STRING {
 					return err(
 						ctx,
 						"all catch-arm predicate values must be strings. found %s",
@@ -803,12 +802,12 @@ func evalTryExpression(node ast.TryExpression, ctx *object.Context) object.Objec
 	}
 
 	if matched != nil {
-		errObj := &object.Map{}
+		errObj := &Map{}
 
-		errObj.Set(&object.String{Value: "tag"}, tag)
-		errObj.Set(&object.String{Value: "msg"}, msg)
+		errObj.Set(&String{Value: "tag"}, tag)
+		errObj.Set(&String{Value: "msg"}, msg)
 
-		enclosed := ctx.EncloseWith(map[string]object.Object{
+		enclosed := ctx.EncloseWith(map[string]Object{
 			node.ErrName.(*ast.Identifier).Value: errObj,
 		})
 

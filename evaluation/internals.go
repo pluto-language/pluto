@@ -1,4 +1,4 @@
-package object
+package evaluation
 
 import (
 	"github.com/Zac-Garby/pluto/ast"
