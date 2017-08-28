@@ -128,6 +128,18 @@ func GetBuiltins() []Builtin {
 			NewBuiltin("ceil $number", ceilNumber, map[string]Type{
 				"number": NUMBER,
 			}),
+
+			NewBuiltin("keys of $map", keysOfMap, map[string]Type{
+				"map": MAP,
+			}),
+
+			NewBuiltin("values of $map", valuesOfMap, map[string]Type{
+				"map": MAP,
+			}),
+
+			NewBuiltin("pairs of $map", pairsOfMap, map[string]Type{
+				"map": MAP,
+			}),
 		}
 	}
 
@@ -369,4 +381,50 @@ func ceilNumber(args args, ctx *Context) Object {
 	num := args["number"].(*Number).Value
 
 	return &Number{Value: math.Ceil(num)}
+}
+
+// keys of $map
+func keysOfMap(args args, ctx *Context) Object {
+	var (
+		m    = args["map"].(*Map)
+		keys = []Object{}
+	)
+
+	for _, k := range m.Keys {
+		keys = append(keys, k)
+	}
+
+	return &Array{Value: keys}
+}
+
+// values of $map
+func valuesOfMap(args args, ctx *Context) Object {
+	var (
+		m    = args["map"].(*Map)
+		vals = []Object{}
+	)
+
+	for _, v := range m.Values {
+		vals = append(vals, v)
+	}
+
+	return &Array{Value: vals}
+}
+
+// pairs of $map
+func pairsOfMap(args args, ctx *Context) Object {
+	var (
+		m     = args["map"].(*Map)
+		keys  = m.Keys
+		vals  = m.Values
+		pairs = []Object{}
+	)
+
+	for hash, key := range keys {
+		val := vals[hash]
+
+		pairs = append(pairs, &Tuple{Value: []Object{key, val}})
+	}
+
+	return &Array{Value: pairs}
 }
