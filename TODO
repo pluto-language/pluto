@@ -1,0 +1,25 @@
+META
+  write up some documentation
+  add tests
+  add more examples
+  extend the standard library
+  split standard library into modules
+  add a literate Pluto file type (maybe .lpluto)
+
+LANGUAGE
+  only require explicit (\) function calls when the pattern len == 1
+  only throw one syntax error per statement
+  compile Pluto to bytecode to speed up execution?
+  improve error messages (syntax and evaluation)
+  allow blocks to be curried
+  convert some language constructs to builtins
+
+  + type conversions
+  + a way of importing code
+  + list and map comprehensions
+  + meta-programming support
+  + stacktraces in errors
+  + function references
+  + a module system?
+  + a special string interpolation syntax?
+  + a regex literal?
