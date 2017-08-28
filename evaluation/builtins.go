@@ -191,8 +191,6 @@ func startToEnd(args args, ctx *Context) Object {
 		eVal = int(end.Value)
 	)
 
-	fmt.Println(sVal, eVal)
-
 	if eVal < sVal {
 		result := &Array{Value: []Object{}}
 
