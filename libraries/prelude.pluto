@@ -72,7 +72,7 @@ def append $item to $collection {
 ## Returns an array of integers representing
 ## each index in a collection.
 def range $collection {
-  \0 to (len $collection - 1)
+  \0 to (len $collection)
 }
 
 ## Returns a boolean indicating whether
@@ -82,15 +82,18 @@ def $collection contains $item {
   fold $collection with { |acc, o| -> acc || o == item } from (false)
 }
 
+## Returns $collection with its elements
+## reversed.
 def reverse $collection {
   len = len $collection
-  new = collection
 
-  for (i : range $collection) {
-    new[len - i] = collection[i]
+  for (i : \0 to (len / 2)) {
+    temp = collection[i]
+    collection[i] = collection[len - i - 1]
+    collection[len - i - 1] = temp
   }
 
-  new
+  collection
 }
 
 ## Folds $collection starting from the left,
