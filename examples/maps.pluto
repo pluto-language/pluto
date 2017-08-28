@@ -6,8 +6,9 @@ my_map = [
   3: "Three",
 ]
 
-ten = key "x" of $my_map
+ten = my_map["x"]
+fifteen = my_map.z
 
 for (key : keys of $my_map) {
-  printf "%s: %s" with (key, key $key of $my_map)
+  print "{}: {}" with (key, my_map[key])
 }

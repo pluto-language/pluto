@@ -1,8 +1,10 @@
 package evaluation
 
 import (
+	"bufio"
 	"fmt"
 	"math"
+	"os"
 	"strings"
 
 	"github.com/Zac-Garby/pluto/ast"
@@ -145,6 +147,10 @@ func GetBuiltins() []Builtin {
 			NewBuiltin("pairs of $map", pairsOfMap, map[string]Type{
 				"map": MAP,
 			}),
+
+			NewBuiltin("prompt $prefix", promptPrefix, map[string]Type{
+				"prefix": STRING,
+			}),
 		}
 	}
 
@@ -194,13 +200,36 @@ func formatWithArgs(args args, ctx *Context) Object {
 	return &String{Value: result}
 }
 
+// prompt $prefix
+func promptPrefix(args args, ctx *Context) Object {
+	var (
+		prefix = args["prefix"].(*String)
+		reader = bufio.NewReader(os.Stdin)
+	)
+
+	fmt.Print(prefix.Value)
+
+	if text, err := reader.ReadString('\n'); err != nil {
+		panic(err)
+	} else {
+		return &String{Value: strings.TrimSpace(text)}
+	}
+}
+
 func evalBlock(block *Block, args []Object, ctx *Context) Object {
 	if len(block.Params) != len(args) {
+		var params []string
+
+		for _, param := range block.Params {
+			params = append(params, param.(*ast.Identifier).Value)
+		}
+
 		return err(
 			ctx,
-			"wrong number of arguments applied to a block. expected %d, got %d", "TypeError",
+			"wrong number of arguments applied to a block. expected %d, got %d (params: %s)", "TypeError",
 			len(block.Params),
 			len(args),
+			strings.Join(params, ", "),
 		)
 	}
 

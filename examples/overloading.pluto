@@ -22,7 +22,7 @@ class Vector {
   # Similar to __str__
   # Returns a string representation of the vector
   def string {
-    format "(%s, %s)" with (self.x, self.y)
+    format "({}, {})" with (self.x, self.y)
   }
 }
 

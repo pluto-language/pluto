@@ -4,10 +4,10 @@ def print two times $n {
 
 print two times 5
 
-printf "the 5th root of 10 is %s" with (\5th root of 10,)
+print "the 5th root of 10 is %s" with (\5th root of 10,)
 
 # basic types
-π = 3.14159
+pi = 3.14159
 i_am_a_bool = true
 nothing = null
 

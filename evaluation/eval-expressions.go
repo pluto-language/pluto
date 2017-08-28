@@ -374,9 +374,6 @@ func evalAssignExpression(node ast.AssignExpression, ctx *Context) Object {
 
 	if dot, ok := node.Name.(*ast.DotExpression); ok {
 		o := eval(dot.Left, ctx)
-		if isErr(o) {
-			return o
-		}
 
 		ctr, ok := o.(Container)
 		if !ok {
@@ -443,9 +440,6 @@ func evalDeclareExpression(node ast.DeclareExpression, ctx *Context) Object {
 
 func evalDotExpression(node ast.DotExpression, ctx *Context) Object {
 	left := eval(node.Left, ctx)
-	if isErr(left) {
-		return left
-	}
 
 	if field, ok := node.Right.(*ast.Identifier); ok {
 		if cnt, ok := left.(Container); ok {
@@ -830,7 +824,10 @@ func evalTryExpression(node ast.TryExpression, ctx *Context) Object {
 	}
 
 	if matched != nil {
-		errObj := &Map{}
+		errObj := &Map{
+			Values: make(map[string]Object),
+			Keys:   make(map[string]Object),
+		}
 
 		errObj.Set(&String{Value: "tag"}, tag)
 		errObj.Set(&String{Value: "msg"}, msg)

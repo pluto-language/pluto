@@ -3,6 +3,7 @@ input = ""
 
 # while-loops are exactly as you'd expect
 while (input != "quit") {
+  print(input)
   input = prompt ">> "
 }
 
@@ -21,7 +22,7 @@ new line
 word = "foo"
 
 for (i : range $word) {
-  print (index $i of $word)
+  print (word[i])
 }
 
 new line

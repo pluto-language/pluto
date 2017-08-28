@@ -3,24 +3,24 @@ triple = { |x| -> x * 3 }
 
 # you can run a block with the `run $block [with $args]` builtin
 do { print "No arguments!" }
-six = do $triple with [2]
+six = do $triple with (2,)
 
 # they are used in a lot of builtins
-squares = map { |x| -> x ** 2 } over (\1 to 11)
-printf "Squares: %s" with (squares,)
+squares = map { |_, x| -> x ** 2 } over (\1 to 11)
+print "Squares: {}" with (squares,)
 
 # they make it easy to define lots of functions
 def $n factorial {
-  left fold (\1 to (n + 1)) with { |result, n| -> result * n }
+  fold (\1 to (n + 1)) with { |result, n| -> result * n }
 }
 
-printf "5! = %s" with (\5 factorial,)
+print "5! = {}" with (\5 factorial,)
 
 # the declare operator (:=)
 #   when using the normal assignment operator (=), the assignment can affect parent scopes.
 #   the declaration operator explicitly defines a variable in the scope it's in.
 
-a = 0
+a := 0
 
 while (true) {
   a = a + 1

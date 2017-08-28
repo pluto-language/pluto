@@ -5,7 +5,7 @@ class Animal {
   }
   
   def speak {
-    printf "%s the %s says hello!" with (self.name, self.species)
+    print "{} the {} says hello!" with (self.name, self.species)
   }
 }
 
