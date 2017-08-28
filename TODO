@@ -23,3 +23,4 @@ LANGUAGE
   + a module system?
   + a special string interpolation syntax?
   + a regex literal?
+  + macros (matches and transforms part of an AST)?
