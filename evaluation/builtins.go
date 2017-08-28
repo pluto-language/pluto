@@ -2,6 +2,7 @@ package evaluation
 
 import (
 	"fmt"
+	"math"
 	"strings"
 
 	"github.com/Zac-Garby/pluto/ast"
@@ -115,6 +116,18 @@ func GetBuiltins() []Builtin {
 					"predicate":  BLOCK,
 				},
 			),
+
+			NewBuiltin("round $number", roundNumber, map[string]Type{
+				"number": NUMBER,
+			}),
+
+			NewBuiltin("floor $number", floorNumber, map[string]Type{
+				"number": NUMBER,
+			}),
+
+			NewBuiltin("ceil $number", ceilNumber, map[string]Type{
+				"number": NUMBER,
+			}),
 		}
 	}
 
@@ -331,4 +344,22 @@ func filterCollectionByPredicate(args args, ctx *Context) Object {
 	}
 
 	return MakeCollection(col.Type(), filtered, ctx)
+}
+
+func roundNumber(args args, ctx *Context) Object {
+	num := args["number"].(*Number).Value
+
+	return &Number{Value: math.Floor(num + 0.5)}
+}
+
+func floorNumber(args args, ctx *Context) Object {
+	num := args["number"].(*Number).Value
+
+	return &Number{Value: math.Floor(num)}
+}
+
+func ceilNumber(args args, ctx *Context) Object {
+	num := args["number"].(*Number).Value
+
+	return &Number{Value: math.Ceil(num)}
 }
