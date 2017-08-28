@@ -4,8 +4,19 @@ def print $a plus $b plus $c {
   print (a + b + c)
 }
 
+# The syntax will be either this:
 fn = #"print $ plus $"
 fn!["a": 1, "b": 2, "c": 3] #=> 6
 fn <- ["a": 2]
 fn <- ["b": 5, "c": 3]
 fn! #=> 10
+
+# .. or this:
+fn = func "print $ plus $"
+apply $fn with (["a": 1, "b": 2, "c": 3]) #=> 6
+fn = apply $fn "a" 2
+fn = apply $fn (["b": 5, "c": 3])
+fn = apply $fn
+
+# it will probably be the bottom one, since it looks nicer and is
+# easier to implement
