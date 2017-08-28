@@ -41,17 +41,15 @@ func main() {
 	}
 
 	if len(opts.Args.File) == 0 {
-		runREPL()
+		runREPL(&evaluation.Context{
+			Store: make(map[string]evaluation.Object),
+		})
 	} else {
 		executeFile(opts.Args.File)
 	}
 }
 
-func runREPL() {
-	ctx := &evaluation.Context{
-		Store: make(map[string]evaluation.Object),
-	}
-
+func runREPL(ctx *evaluation.Context) {
 	if !opts.NoPrelude {
 		importPrelude(ctx)
 	}
@@ -73,7 +71,15 @@ func executeFile(name string) {
 			Store: make(map[string]evaluation.Object),
 		}
 
+		if !opts.NoPrelude {
+			importPrelude(ctx)
+		}
+
 		execute(string(code), false, ctx)
+
+		if opts.Interactive {
+			runREPL(ctx)
+		}
 	}
 }
 
@@ -86,7 +92,11 @@ func importPrelude(ctx *evaluation.Context) {
 	if prelude, err := ioutil.ReadFile(srcPath); err != nil {
 		panic(err)
 	} else {
+		oldTreeFlag := opts.Tree
+
+		opts.Tree = false
 		execute(string(prelude), false, ctx)
+		opts.Tree = oldTreeFlag
 	}
 }
 
