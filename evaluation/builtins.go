@@ -106,6 +106,15 @@ func GetBuiltins() []Builtin {
 					"end":        NUMBER,
 				},
 			),
+
+			NewBuiltin(
+				"filter $collection by $predicate",
+				filterCollectionByPredicate,
+				map[string]Type{
+					"collection": COLLECTION,
+					"predicate":  BLOCK,
+				},
+			),
 		}
 	}
 
@@ -296,4 +305,30 @@ func sliceCollectionToEnd(args args, ctx *Context) Object {
 	}
 
 	return &Array{Value: elems[:index]}
+}
+
+func filterCollectionByPredicate(args args, ctx *Context) Object {
+	var (
+		col  = args["collection"].(Collection)
+		pred = args["predicate"].(*Block)
+
+		filtered = []Object{}
+	)
+
+	for i, item := range col.Elements() {
+		result := evalBlock(pred, []Object{
+			&Number{Value: float64(i)},
+			item,
+		}, ctx)
+
+		if isErr(result) {
+			return result
+		}
+
+		if isTruthy(result) {
+			filtered = append(filtered, item)
+		}
+	}
+
+	return MakeCollection(col.Type(), filtered, ctx)
 }
