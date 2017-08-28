@@ -262,6 +262,7 @@ func startToEnd(args args, ctx *Context) Object {
 	return &Array{Value: []Object{start}}
 }
 
+// slice $collection from $start to $end
 func sliceCollectionFromStartToEnd(args args, ctx *Context) Object {
 	var (
 		col   = args["collection"].(Collection)
@@ -288,6 +289,7 @@ func sliceCollectionFromStartToEnd(args args, ctx *Context) Object {
 	return &Array{Value: elems[sVal:eVal]}
 }
 
+// slice $collection from $start
 func sliceCollectionFromStart(args args, ctx *Context) Object {
 	var (
 		col   = args["collection"].(Collection)
@@ -304,6 +306,7 @@ func sliceCollectionFromStart(args args, ctx *Context) Object {
 	return &Array{Value: elems[index:]}
 }
 
+// slice $collection to $end
 func sliceCollectionToEnd(args args, ctx *Context) Object {
 	var (
 		col = args["collection"].(Collection)
@@ -320,6 +323,7 @@ func sliceCollectionToEnd(args args, ctx *Context) Object {
 	return &Array{Value: elems[:index]}
 }
 
+// filter $collection by $predicate
 func filterCollectionByPredicate(args args, ctx *Context) Object {
 	var (
 		col  = args["collection"].(Collection)
@@ -346,18 +350,21 @@ func filterCollectionByPredicate(args args, ctx *Context) Object {
 	return MakeCollection(col.Type(), filtered, ctx)
 }
 
+// round $number
 func roundNumber(args args, ctx *Context) Object {
 	num := args["number"].(*Number).Value
 
 	return &Number{Value: math.Floor(num + 0.5)}
 }
 
+// floor $number
 func floorNumber(args args, ctx *Context) Object {
 	num := args["number"].(*Number).Value
 
 	return &Number{Value: math.Floor(num)}
 }
 
+// ceil $number
 func ceilNumber(args args, ctx *Context) Object {
 	num := args["number"].(*Number).Value
 
