@@ -73,6 +73,11 @@ func GetBuiltins() []Builtin {
 				"format": STRING,
 				"args":   COLLECTION,
 			}),
+
+			NewBuiltin("$start to $end", startToEnd, map[string]Type{
+				"start": NUMBER,
+				"end":   NUMBER,
+			}),
 		}
 	}
 
@@ -174,4 +179,37 @@ func mapBlockOverCollection(args args, ctx *Context) Object {
 	}
 
 	return MakeCollection(col.Type(), result, ctx)
+}
+
+// $start to $end
+func startToEnd(args args, ctx *Context) Object {
+	var (
+		start = args["start"].(*Number)
+		end   = args["end"].(*Number)
+
+		sVal = int(start.Value)
+		eVal = int(end.Value)
+	)
+
+	fmt.Println(sVal, eVal)
+
+	if eVal < sVal {
+		result := &Array{Value: []Object{}}
+
+		for i := sVal; i >= eVal; i-- {
+			result.Value = append(result.Value, &Number{Value: float64(i)})
+		}
+
+		return result
+	} else if eVal > sVal {
+		result := &Array{Value: []Object{}}
+
+		for i := sVal; i < eVal+1; i++ {
+			result.Value = append(result.Value, &Number{Value: float64(i)})
+		}
+
+		return result
+	}
+
+	return &Array{Value: []Object{start}}
 }
