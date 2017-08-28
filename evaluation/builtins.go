@@ -52,6 +52,11 @@ func GetBuiltins() []Builtin {
 		builtins = []Builtin{
 			NewBuiltin("print $obj", printObj, empty),
 
+			NewBuiltin("print $format with $args", printObjWithArgs, map[string]Type{
+				"format": STRING,
+				"args":   COLLECTION,
+			}),
+
 			NewBuiltin("do $block", doBlock, map[string]Type{
 				"block": BLOCK,
 			}),
@@ -153,21 +158,38 @@ func printObj(args args, ctx *Context) Object {
 	return O_NULL
 }
 
+// Not a builtin
+// Formats a string according to args
+func format(format string, args []Object) string {
+	for _, f := range args {
+		format = strings.Replace(format, "{}", f.String(), 1)
+	}
+
+	return format
+}
+
+// print $format with $args
+func printObjWithArgs(args args, ctx *Context) Object {
+	var (
+		str   = args["format"].(*String)
+		elems = args["args"].(Collection)
+	)
+
+	result := format(str.Value, elems.Elements())
+
+	fmt.Println(result)
+
+	return O_NULL
+}
+
 // format $format with $args
 func formatWithArgs(args args, ctx *Context) Object {
 	var (
-		format  = args["format"].(*String)
-		formats = args["args"].(Collection)
+		str   = args["format"].(*String)
+		elems = args["args"].(Collection)
 	)
 
-	// if format = "Hello, {}!" and args = ["world"]
-	// the result will be "Hello, world!"
-
-	result := format.Value
-
-	for _, f := range formats.Elements() {
-		result = strings.Replace(result, "{}", f.String(), 1)
-	}
+	result := format(str.Value, elems.Elements())
 
 	return &String{Value: result}
 }
