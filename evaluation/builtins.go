@@ -151,6 +151,14 @@ func GetBuiltins() []Builtin {
 			NewBuiltin("prompt $prefix", promptPrefix, map[string]Type{
 				"prefix": STRING,
 			}),
+
+			NewBuiltin("type of $instance", typeOfInstance, map[string]Type{
+				"instance": INSTANCE,
+			}),
+
+			NewBuiltin("new $class", newClass, map[string]Type{
+				"class": CLASS,
+			}),
 		}
 	}
 
@@ -478,4 +486,19 @@ func pairsOfMap(args args, ctx *Context) Object {
 	}
 
 	return &Array{Value: pairs}
+}
+
+// type of $instance
+func typeOfInstance(args args, ctx *Context) Object {
+	return args["instance"].(*Instance).Base
+}
+
+// new $class
+func newClass(args args, ctx *Context) Object {
+	class := args["class"].(*Class)
+
+	return &Instance{
+		Base: class,
+		Data: make(map[string]Object),
+	}
 }
