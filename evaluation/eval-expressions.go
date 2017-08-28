@@ -565,7 +565,7 @@ func evalFunctionCall(node ast.FunctionCall, ctx *Context) Object {
 			}
 		}
 
-		enclosed := ctx.EncloseWith(args)
+		enclosed := function.Context.EncloseWith(args)
 
 		if function.OnCall != nil {
 			onCallResult := function.OnCall(function, ctx, enclosed)
