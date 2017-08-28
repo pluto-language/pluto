@@ -78,6 +78,34 @@ func GetBuiltins() []Builtin {
 				"start": NUMBER,
 				"end":   NUMBER,
 			}),
+
+			NewBuiltin(
+				"slice $collection from $start to $end",
+				sliceCollectionFromStartToEnd,
+				map[string]Type{
+					"collection": COLLECTION,
+					"start":      NUMBER,
+					"end":        NUMBER,
+				},
+			),
+
+			NewBuiltin(
+				"slice $collection from $start",
+				sliceCollectionFromStart,
+				map[string]Type{
+					"collection": COLLECTION,
+					"start":      NUMBER,
+				},
+			),
+
+			NewBuiltin(
+				"slice $collection to $end",
+				sliceCollectionToEnd,
+				map[string]Type{
+					"collection": COLLECTION,
+					"end":        NUMBER,
+				},
+			),
 		}
 	}
 
@@ -210,4 +238,62 @@ func startToEnd(args args, ctx *Context) Object {
 	}
 
 	return &Array{Value: []Object{start}}
+}
+
+func sliceCollectionFromStartToEnd(args args, ctx *Context) Object {
+	var (
+		col   = args["collection"].(Collection)
+		start = args["start"].(*Number)
+		end   = args["end"].(*Number)
+
+		elems = col.Elements()
+		sVal  = int(start.Value)
+		eVal  = int(end.Value)
+	)
+
+	if sVal >= eVal {
+		return err(ctx, "$start must be less than $end", "OutOfBoundsError")
+	}
+
+	if sVal < 0 || eVal < 0 {
+		return err(ctx, "neither $start nor $end can be less than 0", "OutOfBoundsError")
+	}
+
+	if eVal >= len(elems) {
+		return err(ctx, "$end must be contained by $collection", "OutOfBoundsError")
+	}
+
+	return &Array{Value: elems[sVal:eVal]}
+}
+
+func sliceCollectionFromStart(args args, ctx *Context) Object {
+	var (
+		col   = args["collection"].(Collection)
+		start = args["start"].(*Number)
+
+		elems = col.Elements()
+		index = int(start.Value)
+	)
+
+	if index < 0 || index >= len(elems) {
+		return err(ctx, "$start is out of bounds", "OutOfBoundsError")
+	}
+
+	return &Array{Value: elems[index:]}
+}
+
+func sliceCollectionToEnd(args args, ctx *Context) Object {
+	var (
+		col = args["collection"].(Collection)
+		end = args["end"].(*Number)
+
+		elems = col.Elements()
+		index = int(end.Value)
+	)
+
+	if index < 0 || index >= len(elems) {
+		return err(ctx, "$end is out of bounds", "OutOfBoundsError")
+	}
+
+	return &Array{Value: elems[:index]}
 }
