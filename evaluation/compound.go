@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/Zac-Garby/pluto/ast"
+	"github.com/fatih/color"
 )
 
 /* Structs */
@@ -187,7 +188,8 @@ func (c *Class) String() string {
 
 func (i *Instance) String() string {
 	if i.Base.(*Class).Name == "Error" {
-		return fmt.Sprintf("%s: %s", i.Get(&String{"tag"}), i.Get(&String{"msg"}))
+		tag := color.New(color.FgRed, color.Bold).Sprint(i.Get(&String{"tag"}))
+		return fmt.Sprintf("%s\t%s", tag, i.Get(&String{"msg"}))
 	}
 
 	stringMethod := i.Base.(*Class).GetMethod("string")
