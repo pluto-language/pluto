@@ -5,6 +5,7 @@ META
   extend the standard library
   split standard library into modules
   add a literate Pluto file type (maybe .lpluto)
+  make a Windows install script
 
 LANGUAGE
   only require explicit (\) function calls when the pattern len == 1

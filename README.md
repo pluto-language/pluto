@@ -445,10 +445,19 @@ The second one is very similar. It has the exact same semantics, except instead 
 
 ## Installation
 
+To install on a UNIX-based system, run the following commands:
+
+```bash
+wget https://raw.githubusercontent.com/Zac-Garby/pluto/master/setup.sh
+chmod a+x setup.sh
+./setup.sh
+rm setup.sh
 ```
-$ go get -u github.com/Zac-Garby/pluto   # installs Pluto
-$ pluto                                  # runs the REPL
-```
+
+This will `go get -u` the repository, and copy the libraries into `$PLUTO/libraries`. If `$PLUTO`
+isn't defined, it defaults to `$HOME/pluto`.
+
+At some point, I'll make a Windows install script too.
 
 There are also a number of arguments you can use:
 
