@@ -2,6 +2,7 @@ package parser
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/Zac-Garby/pluto/token"
 )
@@ -88,8 +89,27 @@ func (p *Parser) printError(index int) {
 	fmt.Printf("%s → %s\t%s\n", err.Start.String(), err.End.String(), err.Message)
 }
 
+func (p *Parser) printErrorVerbose(index int) {
+	err := p.Errors[index]
+	lines := strings.Split(p.text, "\n")
+
+	fmt.Printf("    %d| %s\n", err.Start.Line, lines[err.Start.Line-1])
+	fmt.Printf(
+		"    %s %s%s\n",
+		strings.Repeat(" ", len(fmt.Sprintf("%d", err.Start.Line))),
+		strings.Repeat(" ", err.Start.Column),
+		strings.Repeat("^", err.End.Column-err.Start.Column+1),
+	)
+
+	fmt.Printf("%s → %s\t%s\n\n", err.Start.String(), err.End.String(), err.Message)
+}
+
 func (p *Parser) PrintErrors() {
 	for i := range p.Errors {
-		p.printError(i)
+		if i == 0 {
+			p.printErrorVerbose(i)
+		} else {
+			p.printError(i)
+		}
 	}
 }
