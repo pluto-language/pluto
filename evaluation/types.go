@@ -1,6 +1,6 @@
 package evaluation
 
-type Type = string
+type Type string
 
 const (
 	/* Internal Types */
