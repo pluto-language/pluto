@@ -94,7 +94,7 @@ func (p *Parser) printErrorVerbose(index int) {
 	err := p.Errors[index]
 	lines := strings.Split(p.text, "\n")
 
-	red := color.New(color.FgRed)
+	red := color.New(color.FgRed).Add(color.Bold)
 	grey := color.New(color.FgHiWhite)
 
 	grey.Printf("    %d| ", err.Start.Line)
