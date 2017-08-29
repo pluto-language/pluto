@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/Zac-Garby/pluto/token"
+	"github.com/fatih/color"
 )
 
 type Error struct {
@@ -93,15 +94,20 @@ func (p *Parser) printErrorVerbose(index int) {
 	err := p.Errors[index]
 	lines := strings.Split(p.text, "\n")
 
-	fmt.Printf("    %d| %s\n", err.Start.Line, lines[err.Start.Line-1])
-	fmt.Printf(
+	red := color.New(color.FgRed)
+	grey := color.New(color.FgHiWhite)
+
+	grey.Printf("    %d| ", err.Start.Line)
+	fmt.Printf("%s\n", lines[err.Start.Line-1])
+	red.Printf(
 		"    %s %s%s\n",
 		strings.Repeat(" ", len(fmt.Sprintf("%d", err.Start.Line))),
 		strings.Repeat(" ", err.Start.Column),
 		strings.Repeat("^", err.End.Column-err.Start.Column+1),
 	)
 
-	fmt.Printf("%s → %s\t%s\n\n", err.Start.String(), err.End.String(), err.Message)
+	red.Printf("%s → %s", err.Start.String(), err.End.String())
+	fmt.Printf("\t%s\n\n", err.Message)
 }
 
 func (p *Parser) PrintErrors() {
