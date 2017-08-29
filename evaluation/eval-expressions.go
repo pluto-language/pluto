@@ -86,7 +86,7 @@ func evalPrefix(op string, right Object, ctx *Context) Object {
 	case "!":
 		return boolObj(!isTruthy(right))
 	default:
-		return err(ctx, "unknown operator: %s%s", "NotFoundError", op, right.Type)
+		return err(ctx, "unknown operator: %s%s", "TypeError", op, right.Type)
 	}
 }
 
@@ -111,7 +111,7 @@ func evalInstancePrefix(op string, right *Instance, ctx *Context) Object {
 
 func evalMinusPrefix(right Object, ctx *Context) Object {
 	if right.Type() != NUMBER {
-		return err(ctx, "unknown operator: -%s", "NotFoundError", right.Type())
+		return err(ctx, "unknown operator: -%s", "TypeError", right.Type())
 	}
 
 	return &Number{Value: -right.(*Number).Value}
@@ -187,7 +187,7 @@ func evalInfixExpression(node ast.InfixExpression, ctx *Context) Object {
 		}
 	}
 
-	return err(ctx, "unknown operator: %s %s %s", "NotFoundError", left.Type(), op, right.Type())
+	return err(ctx, "unknown operator: %s %s %s", "TypeError", left.Type(), op, right.Type())
 }
 
 func evalCollectionInfix(op string, left, right Collection, ctx *Context) Object {
@@ -258,7 +258,7 @@ func evalCollectionInfix(op string, left, right Collection, ctx *Context) Object
 
 		return MakeCollection(left.Type(), elems, ctx)
 	default:
-		return err(ctx, "unknown operator: %s %s %s", "NotFoundError", left.Type(), op, right.Type())
+		return err(ctx, "unknown operator: %s %s %s", "TypeError", left.Type(), op, right.Type())
 	}
 }
 
@@ -294,7 +294,7 @@ func evalNumberInfix(op string, left, right *Number, ctx *Context) Object {
 	case ">=":
 		return boolObj(l >= r)
 	default:
-		return err(ctx, "unknown operator: %s %s %s", "NotFoundError", left.Type(), op, right.Type())
+		return err(ctx, "unknown operator: %s %s %s", "TypeError", left.Type(), op, right.Type())
 	}
 }
 
@@ -327,7 +327,7 @@ func evalCharStringInfix(op string, left, right Object, ctx *Context) Object {
 
 		return &String{Value: val}
 	default:
-		return err(ctx, "unknown operator: %s %s %s", "NotFoundError", left.Type(), op, right.Type())
+		return err(ctx, "unknown operator: %s %s %s", "TypeError", left.Type(), op, right.Type())
 	}
 }
 
