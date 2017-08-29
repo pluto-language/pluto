@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"os/user"
 	"path/filepath"
 
 	"github.com/Zac-Garby/pluto/evaluation"
@@ -28,9 +29,25 @@ type options struct {
 	} `positional-args:"yes"`
 }
 
-var opts options
+var (
+	opts options
+	root string
+)
 
 func main() {
+	if r, exists := os.LookupEnv("PLUTO"); exists {
+		root = r
+	} else {
+		usr, err := user.Current()
+		if err != nil {
+			panic(err)
+		}
+
+		root = filepath.Join(usr.HomeDir, "pluto")
+	}
+
+	fmt.Println(root)
+
 	if _, err := flags.Parse(&opts); err != nil {
 		return
 	}
@@ -86,10 +103,7 @@ func executeFile(name string) {
 }
 
 func importPrelude(ctx *evaluation.Context) {
-	srcPath, err := filepath.Abs("libraries/prelude.pluto")
-	if err != nil {
-		panic(err)
-	}
+	srcPath := filepath.Join(root, "libraries", "prelude.pluto")
 
 	if prelude, err := ioutil.ReadFile(srcPath); err != nil {
 		panic(err)
