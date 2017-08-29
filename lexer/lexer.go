@@ -90,6 +90,7 @@ func Lexer(str string) func() token.Token {
 
 						for index < len(str) && unicode.IsSpace(rune(str[index])) && str[index] != '\n' {
 							index++
+							col++
 						}
 
 						if index < len(str) && str[index] == '#' {
