@@ -39,18 +39,18 @@ func Lexer(str string) func() token.Token {
 
 				for index < len(str) && (unicode.IsSpace(rune(str[index])) || str[index] == '#') {
 					if unicode.IsSpace(rune(str[index])) {
-						index += 1
-						col += 1
+						index++
+						col++
 
 						if str[index-1] == '\n' {
 							col = 1
-							line += 1
+							line++
 						}
 
 						foundSpace = true
 					} else {
 						for index < len(str) && str[index] != '\n' {
-							index += 1
+							index++
 						}
 
 						col = 1
@@ -81,20 +81,21 @@ func Lexer(str string) func() token.Token {
 						ch <- token.Token{
 							Type:    t,
 							Literal: literal,
-							Start:   token.Position{line, col},
-							End:     token.Position{line, col + l - 1},
+							Start:   token.Position{Line: line, Column: col},
+							End:     token.Position{Line: line, Column: col + l - 1},
 						}
 
 						index += l
 						col += l
 
 						for index < len(str) && unicode.IsSpace(rune(str[index])) && str[index] != '\n' {
-							index += 1
+							index++
+							col++
 						}
 
 						if index < len(str) && str[index] == '#' {
 							for index < len(str) && str[index] != '\n' {
-								index += 1
+								index++
 							}
 						}
 
@@ -110,8 +111,8 @@ func Lexer(str string) func() token.Token {
 							ch <- token.Token{
 								Type:    token.SEMI,
 								Literal: ";",
-								Start:   token.Position{line, col},
-								End:     token.Position{line, col},
+								Start:   token.Position{Line: line, Column: col},
+								End:     token.Position{Line: line, Column: col},
 							}
 						}
 
@@ -123,22 +124,22 @@ func Lexer(str string) func() token.Token {
 					ch <- token.Token{
 						Type:    token.ILLEGAL,
 						Literal: string(str[index]),
-						Start:   token.Position{line, col},
-						End:     token.Position{line, col},
+						Start:   token.Position{Line: line, Column: col},
+						End:     token.Position{Line: line, Column: col},
 					}
 
-					index += 1
-					col += 1
+					index++
+					col++
 				}
 			} else {
-				index += 1
-				col += 1
+				index++
+				col++
 
 				ch <- token.Token{
 					Type:    token.EOF,
 					Literal: "",
-					Start:   token.Position{line, col},
-					End:     token.Position{line, col},
+					Start:   token.Position{Line: line, Column: col},
+					End:     token.Position{Line: line, Column: col},
 				}
 			}
 		}

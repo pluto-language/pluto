@@ -2,8 +2,10 @@ package parser
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/Zac-Garby/pluto/token"
+	"github.com/fatih/color"
 )
 
 type Error struct {
@@ -88,8 +90,32 @@ func (p *Parser) printError(index int) {
 	fmt.Printf("%s → %s\t%s\n", err.Start.String(), err.End.String(), err.Message)
 }
 
+func (p *Parser) printErrorVerbose(index int) {
+	err := p.Errors[index]
+	lines := strings.Split(p.text, "\n")
+
+	red := color.New(color.FgRed).Add(color.Bold)
+	grey := color.New(color.FgHiWhite)
+
+	grey.Printf("    %d| ", err.Start.Line)
+	fmt.Printf("%s\n", lines[err.Start.Line-1])
+	red.Printf(
+		"    %s %s%s\n",
+		strings.Repeat(" ", len(fmt.Sprintf("%d", err.Start.Line))),
+		strings.Repeat(" ", err.Start.Column),
+		strings.Repeat("^", err.End.Column-err.Start.Column+1),
+	)
+
+	red.Printf("%s → %s", err.Start.String(), err.End.String())
+	fmt.Printf("\t%s\n\n", err.Message)
+}
+
 func (p *Parser) PrintErrors() {
 	for i := range p.Errors {
-		p.printError(i)
+		if i == 0 {
+			p.printErrorVerbose(i)
+		} else {
+			p.printError(i)
+		}
 	}
 }

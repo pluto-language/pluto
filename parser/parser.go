@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/Zac-Garby/pluto/ast"
+	"github.com/Zac-Garby/pluto/lexer"
 	"github.com/Zac-Garby/pluto/token"
 )
 
@@ -14,15 +15,17 @@ type Parser struct {
 	Errors []Error
 
 	lex       func() token.Token
+	text      string
 	cur, peek token.Token
 	prefixes  map[token.Type]prefixParser
 	infixes   map[token.Type]infixParser
 	argTokens []token.Type
 }
 
-func New(lexer func() token.Token) *Parser {
+func New(text string) *Parser {
 	p := &Parser{
-		lex:    lexer,
+		lex:    lexer.Lexer(text),
+		text:   text,
 		Errors: []Error{},
 	}
 

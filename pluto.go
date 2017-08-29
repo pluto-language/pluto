@@ -8,9 +8,8 @@ import (
 	"path/filepath"
 
 	"github.com/Zac-Garby/pluto/evaluation"
-
-	"github.com/Zac-Garby/pluto/lexer"
 	"github.com/Zac-Garby/pluto/parser"
+	"github.com/fatih/color"
 	"github.com/jessevdk/go-flags"
 )
 
@@ -21,6 +20,7 @@ type options struct {
 	Tree        bool `short:"t" long:"tree" description:"Pretty-print the AST."`
 	Interactive bool `short:"i" long:"interactive" description:"Enter interactive mode after the file has been run"`
 	NoPrelude   bool `short:"n" long:"no-prelude" description:"Don't load the prelude. Probably a bad idea."`
+	NoColour    bool `short:"c" long:"no-colour" description:"Don't use coloured output."`
 	Version     bool `short:"v" long:"version" description:"Print the version then quit"`
 
 	Args struct {
@@ -34,6 +34,8 @@ func main() {
 	if _, err := flags.Parse(&opts); err != nil {
 		return
 	}
+
+	color.NoColor = opts.NoColour
 
 	if opts.Version {
 		fmt.Printf("Pluto v%s\n", version)
@@ -101,14 +103,13 @@ func importPrelude(ctx *evaluation.Context) {
 }
 
 func execute(code string, showOutput bool, ctx *evaluation.Context) {
-	next := lexer.Lexer(code)
-	parse := parser.New(next)
+	parse := parser.New(code)
 	program := parse.Parse()
 
 	if len(parse.Errors) > 0 {
 		parse.PrintErrors()
-		fmt.Println("\nExiting...")
-		os.Exit(1)
+
+		return
 	}
 
 	if opts.Parse || opts.Tree {
