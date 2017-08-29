@@ -8,8 +8,6 @@ import (
 	"path/filepath"
 
 	"github.com/Zac-Garby/pluto/evaluation"
-
-	"github.com/Zac-Garby/pluto/lexer"
 	"github.com/Zac-Garby/pluto/parser"
 	"github.com/jessevdk/go-flags"
 )
@@ -101,14 +99,13 @@ func importPrelude(ctx *evaluation.Context) {
 }
 
 func execute(code string, showOutput bool, ctx *evaluation.Context) {
-	next := lexer.Lexer(code)
-	parse := parser.New(next)
+	parse := parser.New(code)
 	program := parse.Parse()
 
 	if len(parse.Errors) > 0 {
 		parse.PrintErrors()
-		fmt.Println("\nExiting...")
-		os.Exit(1)
+
+		return
 	}
 
 	if opts.Parse || opts.Tree {
