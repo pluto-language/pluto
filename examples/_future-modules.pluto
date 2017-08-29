@@ -1,0 +1,31 @@
+# Note: This will be added in a later version
+
+# 'module <name>' says that this file is in the module <name>.
+# every file in a module can access other bits of code in that module.
+module test
+
+# other modules can be imported with 'import <name>'
+import random
+
+# or submodules
+import net/http
+
+# or specific variables defined in the module
+import consts : a, b, hello
+
+# or functions and variables
+import stuff : a, b, x, y : perform $something, do something else
+
+# or just functions
+import random :: from $min to $max
+
+# something from a module can be accessed via the :: operator
+stuff::a + stuff::b
+random::from 1 to 10
+
+# imports are always qualified, i.e. imported items must be prefixed with the module name
+# the code below will throw an error, since it isn't qualified
+# it'd be nice for it to notice that it *is* in an imported module, just it's not qualified
+from 1 to 10
+
+# modules might not be called modules. other possible names include: packages, namespaces
