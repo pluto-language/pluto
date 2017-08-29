@@ -25,3 +25,6 @@ LANGUAGE
   + a special string interpolation syntax?
   + a regex literal?
   + macros (matches and transforms part of an AST)?
+  + postfix increment/decrement
+  + prefix increment/decrement
+  + shorthand assignment (+=, *=, ...)
