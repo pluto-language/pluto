@@ -13,9 +13,12 @@ then
     echo "libraries already exist. skipping"
 else
     echo "libraries don't exist. creating them"
+    
+    # make the libraries directory
+    mkdir -p $ROOT/libraries
 
     # copy the libraries over
     cp -R $GOPATH/src/github.com/Zac-Garby/pluto/libraries $ROOT
 fi
 
-echo $ROOT
+echo "Pluto is installed! Type 'pluto' to run the REPL."

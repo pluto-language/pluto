@@ -46,8 +46,6 @@ func main() {
 		root = filepath.Join(usr.HomeDir, "pluto")
 	}
 
-	fmt.Println(root)
-
 	if _, err := flags.Parse(&opts); err != nil {
 		return
 	}
