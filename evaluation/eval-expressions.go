@@ -573,7 +573,7 @@ func evalQualifiedFunctionCall(node ast.QualifiedFunctionCall, ctx *Context) Obj
 
 	pkg, ok := ctx.Packages[pkgName]
 	if !ok {
-		return err(ctx, "a package named '%s' cannot be found. are you sure you've imported it?", "NotFoundError")
+		return err(ctx, "a package named '%s' cannot be found. are you sure you've imported it?", "NotFoundError", pkgName)
 	}
 
 	fn := pkg.GetFunction(node.Pattern)
