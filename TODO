@@ -25,4 +25,6 @@ LANGUAGE
   + postfix increment/decrement
   + prefix increment/decrement
   + function arguments which look like ids but transform into strings
-  + allow forward references (hoisting) of functions and classes
+  + hoisting of functions and classes
+  + 'import "..." as "..."' statements
+  + 'import "fn $ pattern", ... from "..."' statements 
