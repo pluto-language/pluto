@@ -1,16 +1,7 @@
 package evaluation
 
 import (
-	"bufio"
-	"bytes"
-	"fmt"
-	"os"
-	"os/user"
-	"path/filepath"
-
 	"github.com/Zac-Garby/pluto/ast"
-
-	"gopkg.in/yaml.v2"
 )
 
 type Context struct {
@@ -66,55 +57,6 @@ func (c *Context) Assign(key string, obj Object) {
 
 func (c *Context) Declare(key string, obj Object) {
 	c.Store[key] = obj
-}
-
-func (c *Context) Import(name string) Object {
-	var root string
-
-	if r, exists := os.LookupEnv("PLUTO"); exists {
-		root = r
-	} else {
-		usr, err := user.Current()
-		if err != nil {
-			panic(err)
-		}
-
-		root = filepath.Join(usr.HomeDir, "pluto")
-	}
-
-	var pkgFile *os.File
-
-	path := filepath.Join(root, "libraries", name)
-
-	// if the package can be found in $PLUTO/libraries
-	if _, err := os.Stat(path); err != nil {
-		return Err(c, "package '%s' not found in %s", "ImportError", name, filepath.Join(root, "libraries"))
-	} else {
-		metaPath := filepath.Join(path, fmt.Sprintf("%s.yaml", name))
-		pkgFile, err = os.Open(metaPath)
-
-		if err != nil {
-			return Err(c, "'%s' not found in %s", "ImportError", name+".yaml", path)
-		}
-	}
-
-	pkgReader := bufio.NewReader(pkgFile)
-
-	buf := new(bytes.Buffer)
-	if _, err := buf.ReadFrom(pkgReader); err != nil {
-		panic(err)
-	}
-
-	pkgData := buf.String()
-
-	pkg := &Package{
-		Context: c,
-		Used:    false,
-	}
-
-	yaml.Unmarshal([]byte(pkgData), &pkg.Meta)
-
-	return O_NULL
 }
 
 func (c *Context) AddFunction(fn Object) {
