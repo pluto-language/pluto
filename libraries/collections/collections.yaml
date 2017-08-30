@@ -1,0 +1,14 @@
+title: Collections
+description: Various useful functions for working with collections
+version: 0.1.0
+
+tags:
+  - collections
+  - utility
+  - functions
+
+authors:
+  - Zac Garby <me@zacgarby.co.uk>
+
+sources:
+  - "*.pluto"

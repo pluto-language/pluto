@@ -1,0 +1,18 @@
+## Folds $collection starting from the left,
+## with the accumulator starting with $start.
+def fold $collection with $block from $start {
+    acc = start
+
+    for (i : collection) {
+        acc = do $block with (acc, i)
+    }
+
+    return acc
+}
+
+## Folds $collection starting from the left,
+## with the accumulator starting with the
+## first element.
+def fold $collection with $block {
+    fold (slice $collection from 1) with $block from (collection[0])
+}
