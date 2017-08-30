@@ -96,6 +96,8 @@ func eval(n ast.Node, ctx *Context) Object {
 		result = evalMethodCall(*node, ctx)
 	case *ast.NextStatement:
 		result = O_NEXT
+	case *ast.QualifiedFunctionCall:
+		result = evalQualifiedFunctionCall(*node, ctx)
 	case *ast.ReturnStatement:
 		result = evalReturnStatement(*node, ctx)
 	case *ast.PrefixExpression:
