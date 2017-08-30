@@ -104,6 +104,8 @@ func eval(n ast.Node, ctx *Context) Object {
 		result = evalPrefixExpression(*node, ctx)
 	case *ast.TryExpression:
 		result = evalTryExpression(*node, ctx)
+	case *ast.UseStatement:
+		result = evalUseStatement(*node, ctx)
 	case *ast.WhileLoop:
 		result = evalWhileLoop(*node, ctx)
 

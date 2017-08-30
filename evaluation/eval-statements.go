@@ -111,3 +111,20 @@ func evalReturnStatement(node ast.ReturnStatement, ctx *Context) Object {
 func evalImportStatement(node ast.ImportStatement, ctx *Context) Object {
 	return ctx.Import(node.Package)
 }
+
+func evalUseStatement(node ast.UseStatement, ctx *Context) Object {
+	name := node.Package
+
+	if pkg, imported := ctx.Packages[name]; imported {
+		pkg.Used = true
+	} else {
+		imp := ctx.Import(name)
+		if isErr(imp) {
+			return imp
+		}
+
+		ctx.Packages[name].Used = true
+	}
+
+	return O_NULL
+}
