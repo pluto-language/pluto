@@ -1,3 +1,5 @@
+use "collections"
+
 print `
    +   Adds 1
    -   Subtracts 1
