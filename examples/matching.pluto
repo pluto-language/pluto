@@ -1,3 +1,5 @@
+#!/usr/bin/env pluto
+
 a = 7
 
 string = match (a) {

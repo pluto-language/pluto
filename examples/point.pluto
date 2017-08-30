@@ -1,3 +1,5 @@
+#!/usr/bin/env pluto
+
 class Point {
   init at $x $y {
     self.x = x

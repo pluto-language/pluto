@@ -1,3 +1,5 @@
+#!/usr/bin/env pluto
+
 use "collections"
 
 print "Type 'quit' to exit the loop"

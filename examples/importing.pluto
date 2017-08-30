@@ -1,3 +1,5 @@
+#!/usr/bin/env pluto
+
 # qualified import
 # looks in $PLUTO/libraries and .
 import "collections"

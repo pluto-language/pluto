@@ -1,3 +1,5 @@
+#!/usr/bin/env pluto
+
 class Animal {
   init of type $species called $name {
     self.species = species

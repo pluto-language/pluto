@@ -1,3 +1,5 @@
+#!/usr/bin/env pluto
+
 class Vector {
   init at $x $y {
     self.x = x

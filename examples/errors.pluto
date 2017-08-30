@@ -1,3 +1,5 @@
+#!/usr/bin/env pluto
+
 def throws an error {
   Error $IO "An error :)"
 }
