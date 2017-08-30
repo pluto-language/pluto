@@ -21,6 +21,7 @@ func NewContext() *Context {
 
 func (c *Context) Enclose() *Context {
 	return &Context{
+		Store:    make(map[string]Object),
 		Outer:    c,
 		Packages: make(map[string]Package),
 	}
