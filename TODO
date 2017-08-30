@@ -27,4 +27,4 @@ LANGUAGE
   + macros (matches and transforms part of an AST)?
   + postfix increment/decrement
   + prefix increment/decrement
-  + shorthand assignment (+=, *=, ...)
+  + function arguments which look like ids but transform into strings
