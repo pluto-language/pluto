@@ -252,66 +252,7 @@ func (p *Parser) parseFunctionCallStartingWith(start ast.Expression) ast.Express
 		expr.Pattern = append(expr.Pattern, start)
 	}
 
-	keywordTokens := []token.Type{}
-	for _, t := range token.Keywords {
-		keywordTokens = append(keywordTokens, t)
-	}
-
-	for p.peekIs(p.argTokens...) || p.peekIs(keywordTokens...) {
-		p.next()
-
-		if p.curIs(keywordTokens...) {
-			expr.Pattern = append(expr.Pattern, &ast.Identifier{
-				Tok:   p.cur,
-				Value: p.cur.Literal,
-			})
-			continue
-		}
-
-		arg := func(val ast.Expression) ast.Expression {
-			return &ast.Argument{
-				Tok:   p.cur,
-				Value: val,
-			}
-		}
-
-		type Handler func() ast.Expression
-
-		handlers := map[token.Type]Handler{
-			token.ID: func() ast.Expression {
-				return &ast.Identifier{
-					Tok: p.cur, Value: p.cur.Literal,
-				}
-			},
-			token.PARAM: func() ast.Expression {
-				return arg(&ast.Identifier{
-					Tok: p.cur, Value: p.cur.Literal,
-				})
-			},
-		}
-
-		found := false
-		for k, v := range p.prefixes {
-			if _, hasHandler := handlers[k]; hasHandler {
-				continue
-			}
-
-			if k == p.cur.Type {
-				expr.Pattern = append(expr.Pattern, arg(v()))
-				found = true
-			}
-		}
-
-		if !found {
-			handler := handlers[p.cur.Type]
-			expr.Pattern = append(expr.Pattern, handler())
-		}
-	}
-
-	if len(expr.Pattern) == 0 {
-		p.defaultErr("expected at least one item in a pattern")
-		return nil
-	}
+	expr.Pattern = append(expr.Pattern, p.parsePattern()...)
 
 	return expr
 }
@@ -517,16 +458,29 @@ func (p *Parser) parseIndexExpression(left ast.Expression) ast.Expression {
 }
 
 func (p *Parser) parseMethodCall(left ast.Expression) ast.Expression {
-	expr := &ast.MethodCall{
+	return &ast.MethodCall{
 		Tok:      p.cur,
 		Instance: left,
+		Pattern:  p.parsePattern(),
 	}
+}
+
+func (p *Parser) parseQualifiedFunctionCall(left ast.Expression) ast.Expression {
+	return &ast.QualifiedFunctionCall{
+		Tok:     p.cur,
+		Package: left,
+		Pattern: p.parsePattern(),
+	}
+}
+
+func (p *Parser) parsePattern() []ast.Expression {
+	var pattern []ast.Expression
 
 	for p.peekIs(p.argTokens...) || token.IsKeyword(p.peek.Type) {
 		p.next()
 
 		if token.IsKeyword(p.cur.Type) {
-			expr.Pattern = append(expr.Pattern, &ast.Identifier{
+			pattern = append(pattern, &ast.Identifier{
 				Tok:   p.cur,
 				Value: p.cur.Literal,
 			})
@@ -549,46 +503,36 @@ func (p *Parser) parseMethodCall(left ast.Expression) ast.Expression {
 					Value: p.cur.Literal,
 				}
 			},
-			token.LPAREN: func() ast.Expression {
-				return arg(p.parseGroupedExpression())
-			},
-			token.NUM: func() ast.Expression {
-				return arg(p.parseNum())
-			},
-			token.NULL: func() ast.Expression {
-				return arg(p.parseNull())
-			},
-			token.TRUE: func() ast.Expression {
-				return arg(p.parseBool())
-			},
-			token.FALSE: func() ast.Expression {
-				return arg(p.parseBool())
-			},
-			token.STR: func() ast.Expression {
-				return arg(p.parseString())
-			},
 			token.PARAM: func() ast.Expression {
 				return arg(&ast.Identifier{
 					Tok:   p.cur,
 					Value: p.cur.Literal,
 				})
 			},
-			token.LSQUARE: func() ast.Expression {
-				return arg(p.parseArrayOrMap())
-			},
-			token.LBRACE: func() ast.Expression {
-				return arg(p.parseBlockLiteral())
-			},
 		}
 
-		handler := handlers[p.cur.Type]
-		expr.Pattern = append(expr.Pattern, handler())
+		found := false
+		for k, v := range p.prefixes {
+			if _, hasHandler := handlers[k]; hasHandler {
+				continue
+			}
+
+			if k == p.cur.Type {
+				pattern = append(pattern, arg(v()))
+				found = true
+			}
+		}
+
+		if !found {
+			handler := handlers[p.cur.Type]
+			pattern = append(pattern, handler())
+		}
 	}
 
-	if len(expr.Pattern) == 0 {
+	if len(pattern) == 0 {
 		p.defaultErr("expected at least one item in a pattern")
 		return nil
 	}
 
-	return expr
+	return pattern
 }

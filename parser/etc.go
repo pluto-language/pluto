@@ -55,6 +55,7 @@ var precedences = map[token.Type]int{
 	token.F_DIV:    EXP,
 	token.BANG:     PREFIX,
 	token.COLON:    METHOD_CALL,
+	token.D_COLON:  METHOD_CALL,
 	token.DOT:      INDEX,
 	token.LSQUARE:  INDEX,
 }
