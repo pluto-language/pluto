@@ -16,12 +16,10 @@ LANGUAGE
   convert some language constructs to builtins
 
   + type conversions
-  + a way of importing code
   + list and map comprehensions
   + meta-programming support
   + stacktraces in errors
   + function references
-  + a module system?
   + a special string interpolation syntax?
   + a regex literal?
   + macros (matches and transforms part of an AST)?
