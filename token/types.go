@@ -79,4 +79,6 @@ const (
 	MATCH   = "match"
 	TRY     = "try"
 	CATCH   = "catch"
+	IMPORT  = "import"
+	USE     = "use"
 )
