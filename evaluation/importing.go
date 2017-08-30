@@ -4,10 +4,12 @@ import (
 	"bufio"
 	"bytes"
 	"fmt"
+	"io/ioutil"
 	"os"
 	"os/user"
 	"path/filepath"
 
+	"github.com/Zac-Garby/pluto/parser"
 	yaml "gopkg.in/yaml.v2"
 )
 
@@ -25,20 +27,19 @@ func (c *Context) Import(name string) Object {
 		root = filepath.Join(usr.HomeDir, "pluto")
 	}
 
-	var pkgFile *os.File
-
 	path := filepath.Join(root, "libraries", name)
 
-	// if the package can be found in $PLUTO/libraries
+	// if the package can't be found in $PLUTO/libraries
 	if _, err := os.Stat(path); err != nil {
 		return Err(c, "package '%s' not found in %s", "ImportError", name, filepath.Join(root, "libraries"))
-	} else {
-		metaPath := filepath.Join(path, fmt.Sprintf("%s.yaml", name))
-		pkgFile, err = os.Open(metaPath)
+	}
 
-		if err != nil {
-			return Err(c, "'%s' not found in %s", "ImportError", name+".yaml", path)
-		}
+	metaPath := filepath.Join(path, fmt.Sprintf("%s.yaml", name))
+	pkgFile, err := os.Open(metaPath)
+
+	// if there is no <pkg id>.yaml
+	if err != nil {
+		return Err(c, "'%s' not found in %s", "ImportError", name+".yaml", path)
 	}
 
 	pkgReader := bufio.NewReader(pkgFile)
@@ -63,7 +64,30 @@ func (c *Context) Import(name string) Object {
 	pkg.Context.Declare("__description", &String{Value: pkg.Meta.Description})
 	pkg.Context.Declare("__version", &String{Value: pkg.Meta.Version})
 
+	for _, source := range pkg.Sources {
+		c.importFile(source)
+	}
+
+	c.Packages[name] = pkg
+
 	return O_NULL
+}
+
+func (c *Context) importFile(path string) Object {
+	if code, err := ioutil.ReadFile(path); err != nil {
+		panic(err)
+	} else {
+		parse := parser.New(string(code))
+		program := parse.Parse()
+
+		if len(parse.Errors) > 0 {
+			parse.PrintErrors()
+
+			return O_NULL
+		}
+
+		return EvaluateProgram(program, c)
+	}
 }
 
 func getSourceFiles(path string, globs []string) []string {
