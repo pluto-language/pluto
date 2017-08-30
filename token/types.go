@@ -46,6 +46,7 @@ const (
 	DOT     = "dot"
 	F_ARROW = "fat-arrow"
 	BANG    = "bang"
+	D_COLON = "double-colon"
 
 	A_PLUS   = "assign-plus"
 	A_MINUS  = "assign-minus"
