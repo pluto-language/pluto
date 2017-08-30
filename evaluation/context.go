@@ -9,6 +9,8 @@ import (
 	"path/filepath"
 
 	"github.com/Zac-Garby/pluto/ast"
+
+	"gopkg.in/yaml.v2"
 )
 
 type Context struct {
@@ -80,7 +82,7 @@ func (c *Context) Import(name string) Object {
 		root = filepath.Join(usr.HomeDir, "pluto")
 	}
 
-	var pkg *os.File
+	var pkgFile *os.File
 
 	path := filepath.Join(root, "libraries", name)
 
@@ -89,19 +91,28 @@ func (c *Context) Import(name string) Object {
 		return Err(c, "package '%s' not found in %s", "ImportError", name, filepath.Join(root, "libraries"))
 	} else {
 		metaPath := filepath.Join(path, fmt.Sprintf("%s.yaml", name))
-		pkg, err = os.Open(metaPath)
+		pkgFile, err = os.Open(metaPath)
 
 		if err != nil {
 			return Err(c, "'%s' not found in %s", "ImportError", name+".yaml", path)
 		}
 	}
 
-	pkgReader := bufio.NewReader(pkg)
+	pkgReader := bufio.NewReader(pkgFile)
 
 	buf := new(bytes.Buffer)
-	buf.ReadFrom(pkgReader)
+	if _, err := buf.ReadFrom(pkgReader); err != nil {
+		panic(err)
+	}
 
-	fmt.Println(buf.String())
+	pkgData := buf.String()
+
+	pkg := &Package{
+		Context: c,
+		Used:    false,
+	}
+
+	yaml.Unmarshal([]byte(pkgData), &pkg.Meta)
 
 	return O_NULL
 }
