@@ -27,8 +27,6 @@ class Error {
 
 ### Functions
 
-# Misc
-
 ## Returns true if $obj is truthy,
 ## otherwise false
 def $obj is truthy {
@@ -53,32 +51,4 @@ def assert $predicate else $msg {
     if (!do $predicate) {
         Error $Assertion $msg
     }
-}
-
-
-# Maths
-
-## Calculates the square root of $n.
-def square root of $n {
-    n ** (1 / 2)
-}
-
-## Calculates the $root'th root of $n.
-def $root st root of $n {
-    n ** (1 / root)
-}
-
-## Calculates the $root'th root of $n.
-def $root nd root of $n {
-    n ** (1 / root)
-}
-
-## Calculates the $root'th root of $n.
-def $root rd root of $n {
-    n ** (1 / root)
-}
-
-## Calculates the $root'th root of $n.
-def $root th root of $n {
-    n ** (1 / root)
 }
