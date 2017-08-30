@@ -456,6 +456,26 @@ func (p *Parser) parseAssignExpression(left ast.Expression) ast.Expression {
 	return expr
 }
 
+func (p *Parser) parseShorthandAssignment(left ast.Expression) ast.Expression {
+	expr := &ast.AssignExpression{
+		Tok:  p.cur,
+		Name: left,
+	}
+
+	op := p.cur.Literal
+
+	p.next()
+	right := p.parseExpression(LOWEST)
+
+	expr.Value = &ast.InfixExpression{
+		Left:     left,
+		Operator: op[:len(op)-1],
+		Right:    right,
+	}
+
+	return expr
+}
+
 func (p *Parser) parseDeclareExpression(left ast.Expression) ast.Expression {
 	expr := &ast.DeclareExpression{
 		Tok:  p.cur,
