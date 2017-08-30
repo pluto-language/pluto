@@ -1,3 +1,7 @@
+#!/usr/bin/env pluto
+
+use "collections"
+
 # a block is kind of like a conventional function
 triple = { |x| -> x * 3 }
 

@@ -1,0 +1,38 @@
+## Returns the amount of elements
+## in $collection.
+def len $collection {
+    fold $collection with { |acc, _| -> acc + 1 } from 0
+}
+
+## Returns $collection with $item
+## appended to the end.
+def append $item to $collection {
+    collection + [item]
+}
+
+## Returns an array of integers representing
+## each index in a collection.
+def range $collection {
+    \0 to (len $collection - 1)
+}
+
+## Returns a boolean indicating whether
+## $collection contains an element equal
+## to $item.
+def $collection contains $item {
+    fold $collection with { |acc, o| -> acc || o == item } from (false)
+}
+
+## Returns $collection with its elements
+## reversed.
+def reverse $collection {
+    len = len $collection
+
+    for (i : \0 to (len / 2)) {
+        temp = collection[i]
+        collection[i] = collection[len - i - 1]
+        collection[len - i - 1] = temp
+    }
+
+    collection
+}

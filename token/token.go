@@ -39,6 +39,8 @@ var Keywords = map[string]Type{
 	"match":   MATCH,
 	"try":     TRY,
 	"catch":   CATCH,
+	"import":  IMPORT,
+	"use":     USE,
 }
 
 func IsKeyword(t Type) bool {

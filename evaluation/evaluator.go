@@ -84,6 +84,8 @@ func eval(n ast.Node, ctx *Context) Object {
 		result = evalFunctionCall(*node, ctx)
 	case *ast.IfExpression:
 		result = evalIfExpression(*node, ctx)
+	case *ast.ImportStatement:
+		result = evalImportStatement(*node, ctx)
 	case *ast.IndexExpression:
 		result = evalIndexExpression(*node, ctx)
 	case *ast.InfixExpression:
@@ -94,12 +96,16 @@ func eval(n ast.Node, ctx *Context) Object {
 		result = evalMethodCall(*node, ctx)
 	case *ast.NextStatement:
 		result = O_NEXT
+	case *ast.QualifiedFunctionCall:
+		result = evalQualifiedFunctionCall(*node, ctx)
 	case *ast.ReturnStatement:
 		result = evalReturnStatement(*node, ctx)
 	case *ast.PrefixExpression:
 		result = evalPrefixExpression(*node, ctx)
 	case *ast.TryExpression:
 		result = evalTryExpression(*node, ctx)
+	case *ast.UseStatement:
+		result = evalUseStatement(*node, ctx)
 	case *ast.WhileLoop:
 		result = evalWhileLoop(*node, ctx)
 

@@ -107,3 +107,11 @@ func evalReturnStatement(node ast.ReturnStatement, ctx *Context) Object {
 
 	return &ReturnValue{Value: val}
 }
+
+func evalImportStatement(node ast.ImportStatement, ctx *Context) Object {
+	return ctx.Import(node.Package)
+}
+
+func evalUseStatement(node ast.UseStatement, ctx *Context) Object {
+	return ctx.Use(node.Package)
+}

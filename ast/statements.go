@@ -74,3 +74,21 @@ type ClassStatement struct {
 
 func (_ ClassStatement) Stmt()              {}
 func (n ClassStatement) Token() token.Token { return n.Tok }
+
+/* ImportStatement */
+type ImportStatement struct {
+	Tok     token.Token
+	Package string
+}
+
+func (_ ImportStatement) Stmt()              {}
+func (n ImportStatement) Token() token.Token { return n.Tok }
+
+/* UseStatement */
+type UseStatement struct {
+	Tok     token.Token
+	Package string
+}
+
+func (_ UseStatement) Stmt()              {}
+func (n UseStatement) Token() token.Token { return n.Tok }

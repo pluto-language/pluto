@@ -6,25 +6,27 @@ META
   split standard library into modules
   add a literate Pluto file type (maybe .lpluto)
   make a Windows install script
+  'pluto get ...' command to install a package
+  'pluto publish' command to publish a package
 
 LANGUAGE
   only require explicit (\) function calls when the pattern len == 1
   only throw one syntax error per statement
   compile Pluto to bytecode to speed up execution?
-  improve error messages (syntax and evaluation)
   allow blocks to be curried
   convert some language constructs to builtins
 
   + type conversions
-  + a way of importing code
   + list and map comprehensions
   + meta-programming support
   + stacktraces in errors
   + function references
-  + a module system?
   + a special string interpolation syntax?
   + a regex literal?
   + macros (matches and transforms part of an AST)?
   + postfix increment/decrement
   + prefix increment/decrement
-  + shorthand assignment (+=, *=, ...)
+  + function arguments which look like ids but transform into strings
+  + hoisting of functions and classes
+  + 'import "..." as "..."' statements
+  + 'import "fn $ pattern", ... from "..."' statements 

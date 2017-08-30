@@ -1,3 +1,5 @@
+#!/usr/bin/env pluto
+
 my_map = [
   "x": 10,
   "y": 5,

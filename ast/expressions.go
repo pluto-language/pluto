@@ -175,6 +175,16 @@ type FunctionCall struct {
 func (_ FunctionCall) Expr()              {}
 func (n FunctionCall) Token() token.Token { return n.Tok }
 
+/* QualifiedFunctionCall */
+type QualifiedFunctionCall struct {
+	Tok     token.Token
+	Package Expression
+	Pattern []Expression
+}
+
+func (_ QualifiedFunctionCall) Expr()              {}
+func (n QualifiedFunctionCall) Token() token.Token { return n.Tok }
+
 /* IfExpression */
 type IfExpression struct {
 	Tok                      token.Token

@@ -1,0 +1,45 @@
+## Sorts $collection, comparing elements
+## using $block. $block should return 0
+## if the elements are equal, <0 if a < b,
+## and >0 otherwise.
+def sort $collection by $block {
+    less = pivot_list = more = []
+
+    if (len $collection <= 1) {
+        return collection
+    }
+
+    pivot = collection[0]
+
+    for (i : collection) {
+        cmp = do $block with (i, pivot)
+
+        if (cmp < 0) {
+            less = append $i to $less
+        } elif (cmp > 0) {
+            more = append $i to $more
+        } else {
+            pivot_list = append $i to $pivot_list
+        }
+    }
+
+    less = sort $less by $block
+    more = sort $more by $block
+
+    less + pivot_list + more
+}
+
+## Sorts $collection, ordering
+## elements using the < and >
+## operators.
+def sort $collection {
+    sort $collection by { |a, b| ->
+        if (a < b) {
+            -1
+        } elif (a > b) {
+            +1
+        } else {
+            0
+        }
+    }
+}

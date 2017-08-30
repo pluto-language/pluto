@@ -100,6 +100,7 @@ var lexicalDictionary = []lexicalPair{
 	{regex: `^=`, handler: lexemeHandler(token.ASSIGN, 0, none)},
 	{regex: `^:=`, handler: lexemeHandler(token.DECLARE, 0, none)},
 	{regex: `^\,`, handler: lexemeHandler(token.COMMA, 0, none)},
+	{regex: `^::`, handler: lexemeHandler(token.D_COLON, 0, none)},
 	{regex: `^:`, handler: lexemeHandler(token.COLON, 0, none)},
 	{regex: `^%=`, handler: lexemeHandler(token.A_MOD, 0, none)},
 	{regex: `^%`, handler: lexemeHandler(token.MOD, 0, none)},

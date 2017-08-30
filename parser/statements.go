@@ -20,6 +20,10 @@ func (p *Parser) parseStatement() ast.Statement {
 		stmt = p.parseBreakStatement()
 	} else if p.curIs(token.CLASS) {
 		stmt = p.parseClassDeclaration()
+	} else if p.curIs(token.IMPORT) {
+		stmt = p.parseImportStatement()
+	} else if p.curIs(token.USE) {
+		stmt = p.parseUseStatement()
 	} else {
 		stmt = p.parseExpressionStatement()
 	}
@@ -177,6 +181,34 @@ func (p *Parser) parseClassDeclaration() ast.Statement {
 	if !p.expect(token.RBRACE) {
 		return nil
 	}
+
+	return stmt
+}
+
+func (p *Parser) parseImportStatement() ast.Statement {
+	stmt := &ast.ImportStatement{
+		Tok: p.cur,
+	}
+
+	if !p.expect(token.STR) {
+		return nil
+	}
+
+	stmt.Package = p.cur.Literal
+
+	return stmt
+}
+
+func (p *Parser) parseUseStatement() ast.Statement {
+	stmt := &ast.UseStatement{
+		Tok: p.cur,
+	}
+
+	if !p.expect(token.STR) {
+		return nil
+	}
+
+	stmt.Package = p.cur.Literal
 
 	return stmt
 }

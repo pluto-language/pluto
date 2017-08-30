@@ -10,15 +10,15 @@ go get -u github.com/Zac-Garby/pluto
 # they're not already there
 if [ -e $ROOT/libraries ]
 then
-    echo "libraries already exist. skipping"
+    echo "libraries already exist"
 else
     echo "libraries don't exist. creating them"
     
     # make the libraries directory
     mkdir -p $ROOT/libraries
-
-    # copy the libraries over
-    cp -R $GOPATH/src/github.com/Zac-Garby/pluto/libraries $ROOT
 fi
+
+# copy the libraries over
+cp -R $GOPATH/src/github.com/Zac-Garby/pluto/libraries $ROOT
 
 echo "Pluto is installed! Type 'pluto' to run the REPL."

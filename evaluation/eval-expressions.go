@@ -524,19 +524,9 @@ func evalFunctionCall(node ast.FunctionCall, ctx *Context) Object {
 	fn := ctx.GetFunction(node.Pattern)
 
 	if fn == nil {
-		var patternStrings []string
+		ps := patternString(node.Pattern)
 
-		for _, item := range node.Pattern {
-			if id, ok := item.(*ast.Identifier); ok {
-				patternStrings = append(patternStrings, id.Value)
-			} else {
-				patternStrings = append(patternStrings, "$")
-			}
-		}
-
-		patternString := strings.Join(patternStrings, " ")
-
-		return err(ctx, "no function matching the pattern: %s", "NotFoundError", patternString)
+		return err(ctx, "no function matching the pattern: %s", "NotFoundError", ps)
 	}
 
 	args := make(map[string]Object)
@@ -544,35 +534,7 @@ func evalFunctionCall(node ast.FunctionCall, ctx *Context) Object {
 	var result Object
 
 	if function, ok := fn.(*Function); ok {
-		for i, item := range node.Pattern {
-			fItem := function.Pattern[i]
-
-			if arg, ok := item.(*ast.Argument); ok {
-				if param, ok := fItem.(*ast.Parameter); ok {
-					evaled := eval(arg.Value, ctx)
-					if isErr(evaled) {
-						return evaled
-					}
-
-					args[param.Name] = evaled
-				}
-			}
-		}
-
-		enclosed := function.Context.EncloseWith(args)
-
-		if function.OnCall != nil {
-			onCallResult := function.OnCall(function, ctx, enclosed)
-
-			if onCallResult != nil || isErr(onCallResult) {
-				return onCallResult
-			}
-		}
-
-		result = eval(function.Body, enclosed)
-		if isErr(result) {
-			return result
-		}
+		result = applyFunction(function, node.Pattern, ctx)
 	}
 
 	if function, ok := fn.(Builtin); ok {
@@ -599,6 +561,79 @@ func evalFunctionCall(node ast.FunctionCall, ctx *Context) Object {
 	}
 
 	return unwrapReturnValue(result)
+}
+
+func evalQualifiedFunctionCall(node ast.QualifiedFunctionCall, ctx *Context) Object {
+	pkgID, ok := node.Package.(*ast.Identifier)
+	if !ok {
+		return err(ctx, "the package name (before ::) must be an identifier", "SyntaxError")
+	}
+
+	pkgName := pkgID.Value
+
+	pkg, ok := ctx.Packages[pkgName]
+	if !ok {
+		return err(ctx, "a package named '%s' cannot be found. are you sure you've imported it?", "NotFoundError", pkgName)
+	}
+
+	fn := pkg.GetFunction(node.Pattern)
+
+	if fn == nil {
+		ps := patternString(node.Pattern)
+
+		return err(ctx, "no function in package '%s' matching the pattern: %s", "NotFoundError", pkgName, ps)
+	}
+
+	if function, ok := fn.(*Function); ok {
+		return applyFunction(function, node.Pattern, ctx)
+	}
+
+	return O_NULL
+}
+
+func patternString(pattern []ast.Expression) string {
+	var patternStrings []string
+
+	for _, item := range pattern {
+		if id, ok := item.(*ast.Identifier); ok {
+			patternStrings = append(patternStrings, id.Value)
+		} else {
+			patternStrings = append(patternStrings, "$")
+		}
+	}
+
+	return strings.Join(patternStrings, " ")
+}
+
+func applyFunction(fn *Function, pattern []ast.Expression, ctx *Context) Object {
+	args := make(map[string]Object)
+
+	for i, item := range pattern {
+		fItem := fn.Pattern[i]
+
+		if arg, ok := item.(*ast.Argument); ok {
+			if param, ok := fItem.(*ast.Parameter); ok {
+				evaled := eval(arg.Value, ctx)
+				if isErr(evaled) {
+					return evaled
+				}
+
+				args[param.Name] = evaled
+			}
+		}
+	}
+
+	enclosed := fn.Context.EncloseWith(args)
+
+	if fn.OnCall != nil {
+		result := fn.OnCall(fn, ctx, enclosed)
+
+		if result != nil || isErr(result) {
+			return result
+		}
+	}
+
+	return unwrapReturnValue(eval(fn.Body, enclosed))
 }
 
 func evalFunctionDefinition(node ast.FunctionDefinition, ctx *Context) Object {

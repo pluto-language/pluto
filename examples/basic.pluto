@@ -1,3 +1,5 @@
+#!/usr/bin/env pluto
+
 def print two times $n {
   print (2 * n)
 }

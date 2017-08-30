@@ -88,6 +88,7 @@ func New(text string) *Parser {
 		token.DECLARE:  p.parseDeclareExpression,
 		token.DOT:      p.parseDotExpression,
 		token.COLON:    p.parseMethodCall,
+		token.D_COLON:  p.parseQualifiedFunctionCall,
 		token.LSQUARE:  p.parseIndexExpression,
 	}
 

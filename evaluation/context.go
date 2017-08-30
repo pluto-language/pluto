@@ -1,24 +1,37 @@
 package evaluation
 
-import "github.com/Zac-Garby/pluto/ast"
+import (
+	"github.com/Zac-Garby/pluto/ast"
+)
 
 type Context struct {
 	Store     map[string]Object
 	Functions []*Function
+	Packages  map[string]*Package
 
 	Outer *Context
 }
 
+func NewContext() *Context {
+	return &Context{
+		Store:    make(map[string]Object),
+		Packages: make(map[string]*Package),
+	}
+}
+
 func (c *Context) Enclose() *Context {
 	return &Context{
-		Outer: c,
+		Store:    make(map[string]Object),
+		Outer:    c,
+		Packages: make(map[string]*Package),
 	}
 }
 
 func (c *Context) EncloseWith(args map[string]Object) *Context {
 	return &Context{
-		Store: args,
-		Outer: c,
+		Store:    args,
+		Outer:    c,
+		Packages: make(map[string]*Package),
 	}
 }
 
