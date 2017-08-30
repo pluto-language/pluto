@@ -58,9 +58,7 @@ func main() {
 	}
 
 	if len(opts.Args.File) == 0 {
-		runREPL(&evaluation.Context{
-			Store: make(map[string]evaluation.Object),
-		})
+		runREPL(evaluation.NewContext())
 	} else {
 		executeFile(opts.Args.File)
 	}
@@ -84,10 +82,7 @@ func executeFile(name string) {
 	if code, err := ioutil.ReadFile(name); err != nil {
 		panic(err)
 	} else {
-		ctx := &evaluation.Context{
-			Store: make(map[string]evaluation.Object),
-		}
-
+		ctx := evaluation.NewContext()
 		if !opts.NoPrelude {
 			importPrelude(ctx)
 		}
