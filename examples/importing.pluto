@@ -2,14 +2,16 @@
 # looks in $PLUTO/libraries and .
 import "collections"
 
-a = [1, 2, 3, 4, 5]
+str = "Hello"
 
-b = collections::reverse $a
+collections::reverse $str
 
-print $b
+print $str
 
 # add all "collections" functions into current scope
 # if "collections" wasn't already imported, it'd implicitly import it
-# use "collections"
+use "collections"
 
-# reverse $a   # [5, 4, 3, 2, 1]
+c = reverse $str
+
+print $str

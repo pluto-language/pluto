@@ -65,10 +65,28 @@ func (c *Context) Import(name string) Object {
 	pkg.Context.Declare("__version", &String{Value: pkg.Meta.Version})
 
 	for _, source := range pkg.Sources {
-		c.importFile(source)
+		pkg.Context.importFile(source)
 	}
 
 	c.Packages[name] = pkg
+
+	return O_NULL
+}
+
+func (c *Context) Use(name string) Object {
+	if _, imported := c.Packages[name]; !imported {
+		if res := c.Import(name); isErr(res) {
+			return res
+		}
+	}
+
+	pkg := c.Packages[name]
+
+	if !pkg.Used {
+		pkg.Used = true
+
+		c.Functions = append(c.Functions, pkg.Context.Functions...)
+	}
 
 	return O_NULL
 }
