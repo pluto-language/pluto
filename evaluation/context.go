@@ -7,7 +7,7 @@ import (
 type Context struct {
 	Store     map[string]Object
 	Functions []*Function
-	Packages  map[string]Package
+	Packages  map[string]*Package
 
 	Outer *Context
 }
@@ -15,7 +15,7 @@ type Context struct {
 func NewContext() *Context {
 	return &Context{
 		Store:    make(map[string]Object),
-		Packages: make(map[string]Package),
+		Packages: make(map[string]*Package),
 	}
 }
 
@@ -23,7 +23,7 @@ func (c *Context) Enclose() *Context {
 	return &Context{
 		Store:    make(map[string]Object),
 		Outer:    c,
-		Packages: make(map[string]Package),
+		Packages: make(map[string]*Package),
 	}
 }
 
@@ -31,7 +31,7 @@ func (c *Context) EncloseWith(args map[string]Object) *Context {
 	return &Context{
 		Store:    args,
 		Outer:    c,
-		Packages: make(map[string]Package),
+		Packages: make(map[string]*Package),
 	}
 }
 
