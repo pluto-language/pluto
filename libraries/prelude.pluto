@@ -18,10 +18,10 @@ class Base {}
 
 ## The error class.
 class Error {
-  init $tag $msg {
-    self.tag = tag
-    self.msg = msg
-  }
+    init $tag $msg {
+        self.tag = tag
+        self.msg = msg
+    }
 }
 
 
@@ -32,27 +32,27 @@ class Error {
 ## Returns true if $obj is truthy,
 ## otherwise false
 def $obj is truthy {
-  if (obj) { true } else { false }
+    if (obj) { true } else { false }
 }
 
 ## Outputs a newline
 def new line {
-  print ""
+    print ""
 }
 
 ## Throws an error if $predicate returns `false`
 def assert $predicate {
-  if (!do $predicate) {
-    Error $Assertion "An assertion failed!"
-  }
+    if (!do $predicate) {
+        Error $Assertion "An assertion failed!"
+    }
 }
 
 ## Throws an error if $predicate returns `false`,
 ## with a given message ($msg)
 def assert $predicate else $msg {
-  if (!do $predicate) {
-    Error $Assertion $msg
-  }
+    if (!do $predicate) {
+        Error $Assertion $msg
+    }
 }
 
 # Collections
@@ -60,59 +60,59 @@ def assert $predicate else $msg {
 ## Returns the amount of elements
 ## in $collection.
 def len $collection {
-  fold $collection with { |acc, _| -> acc + 1 } from 0
+    fold $collection with { |acc, _| -> acc + 1 } from 0
 }
 
 ## Returns $collection with $item
 ## appended to the end.
 def append $item to $collection {
-  collection + [item]
+    collection + [item]
 }
 
 ## Returns an array of integers representing
 ## each index in a collection.
 def range $collection {
-  \0 to (len $collection - 1)
+    \0 to (len $collection - 1)
 }
 
 ## Returns a boolean indicating whether
 ## $collection contains an element equal
 ## to $item.
 def $collection contains $item {
-  fold $collection with { |acc, o| -> acc || o == item } from (false)
+    fold $collection with { |acc, o| -> acc || o == item } from (false)
 }
 
 ## Returns $collection with its elements
 ## reversed.
 def reverse $collection {
-  len = len $collection
+    len = len $collection
 
-  for (i : \0 to (len / 2)) {
-    temp = collection[i]
-    collection[i] = collection[len - i - 1]
-    collection[len - i - 1] = temp
-  }
+    for (i : \0 to (len / 2)) {
+        temp = collection[i]
+        collection[i] = collection[len - i - 1]
+        collection[len - i - 1] = temp
+    }
 
-  collection
+    collection
 }
 
 ## Folds $collection starting from the left,
 ## with the accumulator starting with $start.
 def fold $collection with $block from $start {
-  acc = start
+    acc = start
 
-  for (i : collection) {
-    acc = do $block with (acc, i)
-  }
+    for (i : collection) {
+        acc = do $block with (acc, i)
+    }
 
-  return acc
+    return acc
 }
 
 ## Folds $collection starting from the left,
 ## with the accumulator starting with the
 ## first element.
 def fold $collection with $block {
-  fold (slice $collection from 1) with $block from (collection[0])
+    fold (slice $collection from 1) with $block from (collection[0])
 }
 
 ## Sorts $collection, comparing elements
@@ -120,47 +120,45 @@ def fold $collection with $block {
 ## if the elements are equal, <0 if a < b,
 ## and >0 otherwise.
 def sort $collection by $block {
-  less = pivot_list = more = []
+    less = pivot_list = more = []
 
-  if (len $collection <= 1) {
-    return collection
-  }
-
-  pivot = collection[0]
-
-  for (i : collection) {
-    cmp = do $block with (i, pivot)
-
-    if (cmp < 0) {
-      less = append $i to $less
-    } elif (cmp > 0) {
-      more = append $i to $more
-    } else {
-      pivot_list = append $i to $pivot_list
+    if (len $collection <= 1) {
+        return collection
     }
-  }
 
-  # print(less + pivot_list + more)
+    pivot = collection[0]
 
-  less = sort $less by $block
-  more = sort $more by $block
+    for (i : collection) {
+        cmp = do $block with (i, pivot)
 
-  less + pivot_list + more
+        if (cmp < 0) {
+            less = append $i to $less
+        } elif (cmp > 0) {
+            more = append $i to $more
+        } else {
+            pivot_list = append $i to $pivot_list
+        }
+    }
+
+    less = sort $less by $block
+    more = sort $more by $block
+
+    less + pivot_list + more
 }
 
 ## Sorts $collection, ordering
 ## elements using the < and >
 ## operators.
 def sort $collection {
-  sort $collection by { |a, b| ->
-    if (a < b) {
-      -1
-    } elif (a > b) {
-      +1
-    } else {
-      0
+    sort $collection by { |a, b| ->
+        if (a < b) {
+            -1
+        } elif (a > b) {
+            +1
+        } else {
+            0
+        }
     }
-  }
 }
 
 
@@ -168,25 +166,25 @@ def sort $collection {
 
 ## Calculates the square root of $n.
 def square root of $n {
-  n ** (1 / 2)
+    n ** (1 / 2)
 }
 
 ## Calculates the $root'th root of $n.
 def $root st root of $n {
-  n ** (1 / root)
+    n ** (1 / root)
 }
 
 ## Calculates the $root'th root of $n.
 def $root nd root of $n {
-  n ** (1 / root)
+    n ** (1 / root)
 }
 
 ## Calculates the $root'th root of $n.
 def $root rd root of $n {
-  n ** (1 / root)
+    n ** (1 / root)
 }
 
 ## Calculates the $root'th root of $n.
 def $root th root of $n {
-  n ** (1 / root)
+    n ** (1 / root)
 }
