@@ -1,0 +1,13 @@
+# qualified import
+# looks in $PLUTO/libraries and .
+import "collections"
+
+a = [1, 2, 3, 4, 5]
+
+collections::reverse $a   # [5, 4, 3, 2, 1]
+
+# add all "collections" functions into current scope
+# if "collections" wasn't already imported, it'd implicitly import it
+use "collections"
+
+reverse $a   # [5, 4, 3, 2, 1]
