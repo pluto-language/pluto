@@ -1,5 +1,3 @@
-## What?
-
 Pluto is a dynamically typed, interpreted language with a cool function definition/call syntax. Basically,
 instead of functions being called with their arguments in parentheses after the name, they are represented
 by their *patterns*:
