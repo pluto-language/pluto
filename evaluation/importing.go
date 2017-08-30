@@ -51,13 +51,17 @@ func (c *Context) Import(name string) Object {
 	pkgData := buf.String()
 
 	pkg := &Package{
-		Context: c,
+		Context: c.Enclose(),
 		Used:    false,
 	}
 
 	yaml.Unmarshal([]byte(pkgData), &pkg.Meta)
 
 	pkg.Sources = getSourceFiles(path, pkg.Meta.Sources)
+
+	pkg.Context.Declare("__title", &String{Value: pkg.Meta.Title})
+	pkg.Context.Declare("__description", &String{Value: pkg.Meta.Description})
+	pkg.Context.Declare("__version", &String{Value: pkg.Meta.Version})
 
 	return O_NULL
 }
