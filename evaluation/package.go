@@ -4,8 +4,8 @@ import "github.com/Zac-Garby/pluto/ast"
 
 // Package represents an imported package
 type Package struct {
-	Context Context // the context containing the package's functions
-	Used    bool    // whether 'use <this package>' has been called
+	Context *Context // the context containing the package's functions
+	Used    bool     // whether 'use <this package>' has been called
 
 	/* metadata read from 'collections.yaml' */
 	Meta struct {
