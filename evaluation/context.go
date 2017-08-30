@@ -5,6 +5,7 @@ import "github.com/Zac-Garby/pluto/ast"
 type Context struct {
 	Store     map[string]Object
 	Functions []*Function
+	Packages  map[string]Package
 
 	Outer *Context
 }
