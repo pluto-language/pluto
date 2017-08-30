@@ -6,6 +6,8 @@ META
   split standard library into modules
   add a literate Pluto file type (maybe .lpluto)
   make a Windows install script
+  'pluto get ...' command to install a package
+  'pluto publish' command to publish a package
 
 LANGUAGE
   only require explicit (\) function calls when the pattern len == 1
