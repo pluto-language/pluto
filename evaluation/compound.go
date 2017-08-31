@@ -8,18 +8,20 @@ import (
 	"github.com/fatih/color"
 )
 
-/* Structs */
 type (
 	/* Collections and collection-likes */
 
+	// Tuple is a tuple value, such as (1, "foo", false)
 	Tuple struct {
 		Value []Object
 	}
 
+	// Array is an array value, such as [1, 5, "baz", true]
 	Array struct {
 		Value []Object
 	}
 
+	// Map is a mapping of keys to values, such as ["x": 2, "y": 5]
 	Map struct {
 		Values map[string]Object
 		Keys   map[string]Object
@@ -27,17 +29,20 @@ type (
 
 	/* Others */
 
+	// Block is an anonymous function
 	Block struct {
 		Params []ast.Expression
 		Body   ast.Statement
 	}
 
+	// Class is a class, containing methods and a parent
 	Class struct {
 		Name    string
 		Parent  Object
 		Methods []Object
 	}
 
+	// Instance is an instance of a class
 	Instance struct {
 		Base Object
 		Data map[string]Object
@@ -45,14 +50,28 @@ type (
 )
 
 /* Type() methods */
-func (_ *Tuple) Type() Type    { return TUPLE }
-func (_ *Array) Type() Type    { return ARRAY }
-func (_ *Map) Type() Type      { return MAP }
-func (_ *Block) Type() Type    { return BLOCK }
-func (_ *Class) Type() Type    { return CLASS }
-func (_ *Instance) Type() Type { return INSTANCE }
+
+// Type returns the type of this object
+func (t *Tuple) Type() Type { return TUPLE }
+
+// Type returns the type of this object
+func (a *Array) Type() Type { return ARRAY }
+
+// Type returns the type of this object
+func (m *Map) Type() Type { return MAP }
+
+// Type returns the type of this object
+func (b *Block) Type() Type { return BLOCK }
+
+// Type returns the type of this object
+func (c *Class) Type() Type { return CLASS }
+
+// Type returns the type of this object
+func (i *Instance) Type() Type { return INSTANCE }
 
 /* Equals() methods */
+
+// Equals checks if two objects are equal to each other
 func (t *Tuple) Equals(o Object) bool {
 	if other, ok := o.(*Tuple); ok {
 		if len(other.Value) != len(t.Value) {
@@ -71,6 +90,7 @@ func (t *Tuple) Equals(o Object) bool {
 	return false
 }
 
+// Equals checks if two objects are equal to each other
 func (a *Array) Equals(o Object) bool {
 	if other, ok := o.(*Array); ok {
 		if len(other.Value) != len(a.Value) {
@@ -89,6 +109,7 @@ func (a *Array) Equals(o Object) bool {
 	return false
 }
 
+// Equals checks if two objects are equal to each other
 func (m *Map) Equals(o Object) bool {
 	if other, ok := o.(*Map); ok {
 		if len(other.Values) != len(m.Values) {
@@ -111,11 +132,13 @@ func (m *Map) Equals(o Object) bool {
 	return false
 }
 
-func (_ *Block) Equals(o Object) bool {
+// Equals checks if two objects are equal to each other
+func (b *Block) Equals(o Object) bool {
 	_, ok := o.(*Block)
 	return ok
 }
 
+// Equals checks if two objects are equal to each other
 func (c *Class) Equals(o Object) bool {
 	if other, ok := o.(*Class); ok {
 		return other.Name == c.Name
@@ -124,6 +147,7 @@ func (c *Class) Equals(o Object) bool {
 	return false
 }
 
+// Equals checks if two objects are equal to each other
 func (i *Instance) Equals(o Object) bool {
 	if other, ok := o.(*Instance); ok {
 		if !other.Base.Equals(i.Base) {
@@ -209,10 +233,13 @@ func (i *Instance) String() string {
 }
 
 /* Collection implementations */
+
+// Elements returns the elements in a collection
 func (t *Tuple) Elements() []Object {
 	return t.Value
 }
 
+// GetIndex returns the ith element in a collection
 func (t *Tuple) GetIndex(i int) Object {
 	if i >= len(t.Value) || i < 0 {
 		return O_NULL
@@ -221,6 +248,7 @@ func (t *Tuple) GetIndex(i int) Object {
 	return t.Value[i]
 }
 
+// SetIndex sets the ith element in a collection to o
 func (t *Tuple) SetIndex(i int, o Object) {
 	if i >= len(t.Value) || i < 0 {
 		return
@@ -229,10 +257,12 @@ func (t *Tuple) SetIndex(i int, o Object) {
 	t.Value[i] = o
 }
 
+// Elements returns the elements in a collection
 func (a *Array) Elements() []Object {
 	return a.Value
 }
 
+// GetIndex returns the ith element in a collection
 func (a *Array) GetIndex(i int) Object {
 	if i >= len(a.Value) || i < 0 {
 		return O_NULL
@@ -241,6 +271,7 @@ func (a *Array) GetIndex(i int) Object {
 	return a.Value[i]
 }
 
+// SetIndex sets the ith element in a collection to o
 func (a *Array) SetIndex(i int, o Object) {
 	if i >= len(a.Value) || i < 0 {
 		return
@@ -250,18 +281,23 @@ func (a *Array) SetIndex(i int, o Object) {
 }
 
 /* Container implementations */
-func (m *Map) Get(key Object) Object {
-	if hasher, ok := key.(Hasher); !ok {
-		return O_NULL
-	} else {
-		if val, ok := m.Values[hasher.Hash()]; ok {
-			return val
-		}
 
+// Get gets an object at the given key
+func (m *Map) Get(key Object) Object {
+	hasher, ok := key.(Hasher)
+
+	if !ok {
 		return O_NULL
 	}
+
+	if val, ok := m.Values[hasher.Hash()]; ok {
+		return val
+	}
+
+	return O_NULL
 }
 
+// Set sets an object at the given key
 func (m *Map) Set(key, value Object) {
 	if hasher, ok := key.(Hasher); ok {
 		hash := hasher.Hash()
@@ -270,18 +306,22 @@ func (m *Map) Set(key, value Object) {
 	}
 }
 
+// Get gets an object at the given key
 func (i *Instance) Get(key Object) Object {
-	if strkey, ok := key.(*String); !ok {
-		return O_NULL
-	} else {
-		if val, ok := i.Data[strkey.Value]; ok {
-			return val
-		}
+	strkey, ok := key.(*String)
 
+	if !ok {
 		return O_NULL
 	}
+
+	if val, ok := i.Data[strkey.Value]; ok {
+		return val
+	}
+
+	return O_NULL
 }
 
+// Set sets an object at the given key
 func (i *Instance) Set(key, value Object) {
 	if strkey, ok := key.(*String); ok {
 		i.Data[strkey.Value] = value
@@ -289,6 +329,8 @@ func (i *Instance) Set(key, value Object) {
 }
 
 /* Other methods */
+
+// GetMethods returns a slice of methods of a class
 func (c *Class) GetMethods() []Method {
 	var methods []Method
 
@@ -305,6 +347,7 @@ func (c *Class) GetMethods() []Method {
 	return methods
 }
 
+// GetMethod returns a method matching the given pattern
 func (c *Class) GetMethod(pattern string) *Method {
 	fnPattern := strings.Split(pattern, " ")
 
