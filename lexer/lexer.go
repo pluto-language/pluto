@@ -9,19 +9,19 @@ import (
 
 var lineEndings = []token.Type{
 	token.ID,
-	token.STR,
-	token.CHAR,
-	token.NUM,
-	token.TRUE,
-	token.FALSE,
-	token.NULL,
-	token.PARAM,
-	token.BREAK,
-	token.NEXT,
-	token.RETURN,
-	token.RPAREN,
-	token.RSQUARE,
-	token.RBRACE,
+	token.String,
+	token.Char,
+	token.Number,
+	token.True,
+	token.False,
+	token.Null,
+	token.Param,
+	token.Break,
+	token.Next,
+	token.Return,
+	token.RightParen,
+	token.RightSquare,
+	token.RightBrace,
 }
 
 func Lexer(str string) func() token.Token {
@@ -109,7 +109,7 @@ func Lexer(str string) func() token.Token {
 
 						if (isLineEnding && index < len(str) && (str[index] == '\n' || str[index] == '}')) || index >= len(str) {
 							ch <- token.Token{
-								Type:    token.SEMI,
+								Type:    token.Semi,
 								Literal: ";",
 								Start:   token.Position{Line: line, Column: col},
 								End:     token.Position{Line: line, Column: col},
@@ -122,7 +122,7 @@ func Lexer(str string) func() token.Token {
 
 				if !found {
 					ch <- token.Token{
-						Type:    token.ILLEGAL,
+						Type:    token.Illegal,
 						Literal: string(str[index]),
 						Start:   token.Position{Line: line, Column: col},
 						End:     token.Position{Line: line, Column: col},
