@@ -4,7 +4,9 @@
 ROOT=${PLUTO:-$HOME/pluto}
 
 # get the repository
-go get -u github.com/Zac-Garby/pluto
+echo -n "installing pluto... "
+go get -u github.com/pluto-language/pluto
+echo "DONE"
 
 # copy the libraries to $ROOT/libraries if
 # they're not already there
@@ -21,4 +23,9 @@ fi
 # copy the libraries over
 cp -R $GOPATH/src/github.com/Zac-Garby/pluto/libraries $ROOT
 
-echo "Pluto is installed! Type 'pluto' to run the REPL."
+# install plp
+echo -n "installing plp... "
+go get -u github.com/pluto-language/plp
+echo "DONE"
+
+echo "pluto and plp are installed!"
