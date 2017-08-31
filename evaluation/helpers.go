@@ -4,6 +4,7 @@ import (
 	"strings"
 )
 
+// MakeCollection creates a collection of type t with the elements provided
 func MakeCollection(t Type, elems []Object, ctx *Context) Object {
 	switch t {
 	case ARRAY:
