@@ -15,9 +15,9 @@ func evalBlockStatement(block ast.BlockStatement, ctx *Context) Object {
 		result = eval(stmt, ctx)
 
 		if IsErr(result) || result != nil &&
-			(result.Type() == RETURN_VALUE ||
-				result.Type() == NEXT ||
-				result.Type() == BREAK) {
+			(result.Type() == ReturnValueType ||
+				result.Type() == NextType ||
+				result.Type() == BreakType) {
 			return result
 		}
 	}

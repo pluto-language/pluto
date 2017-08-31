@@ -62,45 +62,45 @@ func GetBuiltins() []Builtin {
 			NewBuiltin("print $obj", printObj, empty),
 
 			NewBuiltin("print $format with $args", printObjWithArgs, map[string]Type{
-				"format": STRING,
-				"args":   COLLECTION,
+				"format": StringType,
+				"args":   CollectionType,
 			}),
 
 			NewBuiltin("do $block", doBlock, map[string]Type{
-				"block": BLOCK,
+				"block": BlockType,
 			}),
 
 			NewBuiltin("do $block with $args", doBlockWithArgs, map[string]Type{
-				"block": BLOCK,
-				"args":  COLLECTION,
+				"block": BlockType,
+				"args":  CollectionType,
 			}),
 
 			NewBuiltin("do $block on $arg", doBlockOnArg, map[string]Type{
-				"block": BLOCK,
+				"block": BlockType,
 			}),
 
 			NewBuiltin("map $block over $collection", mapBlockOverCollection, map[string]Type{
-				"block":      BLOCK,
-				"collection": COLLECTION,
+				"block":      BlockType,
+				"collection": CollectionType,
 			}),
 
 			NewBuiltin("format $format with $args", formatWithArgs, map[string]Type{
-				"format": STRING,
-				"args":   COLLECTION,
+				"format": StringType,
+				"args":   CollectionType,
 			}),
 
 			NewBuiltin("$start to $end", startToEnd, map[string]Type{
-				"start": NUMBER,
-				"end":   NUMBER,
+				"start": NumberType,
+				"end":   NumberType,
 			}),
 
 			NewBuiltin(
 				"slice $collection from $start to $end",
 				sliceCollectionFromStartToEnd,
 				map[string]Type{
-					"collection": COLLECTION,
-					"start":      NUMBER,
-					"end":        NUMBER,
+					"collection": CollectionType,
+					"start":      NumberType,
+					"end":        NumberType,
 				},
 			),
 
@@ -108,8 +108,8 @@ func GetBuiltins() []Builtin {
 				"slice $collection from $start",
 				sliceCollectionFromStart,
 				map[string]Type{
-					"collection": COLLECTION,
-					"start":      NUMBER,
+					"collection": CollectionType,
+					"start":      NumberType,
 				},
 			),
 
@@ -117,8 +117,8 @@ func GetBuiltins() []Builtin {
 				"slice $collection to $end",
 				sliceCollectionToEnd,
 				map[string]Type{
-					"collection": COLLECTION,
-					"end":        NUMBER,
+					"collection": CollectionType,
+					"end":        NumberType,
 				},
 			),
 
@@ -126,45 +126,45 @@ func GetBuiltins() []Builtin {
 				"filter $collection by $predicate",
 				filterCollectionByPredicate,
 				map[string]Type{
-					"collection": COLLECTION,
-					"predicate":  BLOCK,
+					"collection": CollectionType,
+					"predicate":  BlockType,
 				},
 			),
 
 			NewBuiltin("round $number", roundNumber, map[string]Type{
-				"number": NUMBER,
+				"number": NumberType,
 			}),
 
 			NewBuiltin("floor $number", floorNumber, map[string]Type{
-				"number": NUMBER,
+				"number": NumberType,
 			}),
 
 			NewBuiltin("ceil $number", ceilNumber, map[string]Type{
-				"number": NUMBER,
+				"number": NumberType,
 			}),
 
 			NewBuiltin("keys of $map", keysOfMap, map[string]Type{
-				"map": MAP,
+				"map": MapType,
 			}),
 
 			NewBuiltin("values of $map", valuesOfMap, map[string]Type{
-				"map": MAP,
+				"map": MapType,
 			}),
 
 			NewBuiltin("pairs of $map", pairsOfMap, map[string]Type{
-				"map": MAP,
+				"map": MapType,
 			}),
 
 			NewBuiltin("prompt $prefix", promptPrefix, map[string]Type{
-				"prefix": STRING,
+				"prefix": StringType,
 			}),
 
 			NewBuiltin("type of $instance", typeOfInstance, map[string]Type{
-				"instance": INSTANCE,
+				"instance": InstanceType,
 			}),
 
 			NewBuiltin("new $class", newClass, map[string]Type{
-				"class": CLASS,
+				"class": ClassType,
 			}),
 		}
 	}

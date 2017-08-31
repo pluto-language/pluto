@@ -39,22 +39,22 @@ type (
 /* Type() methods */
 
 // Type returns the type of the object
-func (r *ReturnValue) Type() Type { return RETURN_VALUE }
+func (r *ReturnValue) Type() Type { return ReturnValueType }
 
 // Type returns the type of the object
-func (n *Next) Type() Type { return NEXT }
+func (n *Next) Type() Type { return NextType }
 
 // Type returns the type of the object
-func (b *Break) Type() Type { return BREAK }
+func (b *Break) Type() Type { return BreakType }
 
 // Type returns the type of the object
-func (f *Function) Type() Type { return FUNCTION }
+func (f *Function) Type() Type { return FunctionType }
 
 // Type returns the type of the object
-func (i *InitMethod) Type() Type { return INIT }
+func (i *InitMethod) Type() Type { return InitType }
 
 // Type returns the type of the object
-func (m *Method) Type() Type { return METHOD }
+func (m *Method) Type() Type { return MethodType }
 
 /* Equals() methods */
 

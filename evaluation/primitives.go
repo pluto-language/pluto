@@ -33,19 +33,19 @@ type (
 /* Type() methods */
 
 // Type returns the type of this object
-func (n *Number) Type() Type { return NUMBER }
+func (n *Number) Type() Type { return NumberType }
 
 // Type returns the type of this object
-func (b *Boolean) Type() Type { return BOOLEAN }
+func (b *Boolean) Type() Type { return BooleanType }
 
 // Type returns the type of this object
-func (s *String) Type() Type { return STRING }
+func (s *String) Type() Type { return StringType }
 
 // Type returns the type of this object
-func (c *Char) Type() Type { return CHAR }
+func (c *Char) Type() Type { return CharType }
 
 // Type returns the type of this object
-func (n *Null) Type() Type { return NULL }
+func (n *Null) Type() Type { return NullType }
 
 /* Equals() methods */
 

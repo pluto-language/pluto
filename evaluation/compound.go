@@ -52,22 +52,22 @@ type (
 /* Type() methods */
 
 // Type returns the type of this object
-func (t *Tuple) Type() Type { return TUPLE }
+func (t *Tuple) Type() Type { return TupleType }
 
 // Type returns the type of this object
-func (a *Array) Type() Type { return ARRAY }
+func (a *Array) Type() Type { return ArrayType }
 
 // Type returns the type of this object
-func (m *Map) Type() Type { return MAP }
+func (m *Map) Type() Type { return MapType }
 
 // Type returns the type of this object
-func (b *Block) Type() Type { return BLOCK }
+func (b *Block) Type() Type { return BlockType }
 
 // Type returns the type of this object
-func (c *Class) Type() Type { return CLASS }
+func (c *Class) Type() Type { return ClassType }
 
 // Type returns the type of this object
-func (i *Instance) Type() Type { return INSTANCE }
+func (i *Instance) Type() Type { return InstanceType }
 
 /* Equals() methods */
 

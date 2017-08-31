@@ -110,7 +110,7 @@ func evalInstancePrefix(op string, right *Instance, ctx *Context) Object {
 }
 
 func evalMinusPrefix(right Object, ctx *Context) Object {
-	if right.Type() != NUMBER {
+	if right.Type() != NumberType {
 		return Err(ctx, "unknown operator: -%s", "TypeError", right.Type())
 	}
 
@@ -157,16 +157,16 @@ func evalInfixExpression(node ast.InfixExpression, ctx *Context) Object {
 		return left
 	}
 
-	if left.Type() == NUMBER && right.Type() == NUMBER {
+	if left.Type() == NumberType && right.Type() == NumberType {
 		return evalNumberInfix(op, left.(*Number), right.(*Number), ctx)
 	}
 
-	if (left.Type() == CHAR || left.Type() == STRING) &&
-		(right.Type() == CHAR || right.Type() == STRING) {
+	if (left.Type() == CharType || left.Type() == StringType) &&
+		(right.Type() == CharType || right.Type() == StringType) {
 		return evalCharStringInfix(op, left, right, ctx)
 	}
 
-	if left.Type() == CHAR && right.Type() == NUMBER {
+	if left.Type() == CharType && right.Type() == NumberType {
 		ch := string(left.(*Char).Value)
 		amount := int(math.Floor(right.(*Number).Value))
 
@@ -174,7 +174,7 @@ func evalInfixExpression(node ast.InfixExpression, ctx *Context) Object {
 	}
 
 	if lCol, ok := left.(Collection); ok {
-		if right.Type() == NUMBER && op == "*" {
+		if right.Type() == NumberType && op == "*" {
 			var result []Object
 			elems := lCol.Elements()
 			amount := int(math.Floor(right.(*Number).Value))
@@ -470,7 +470,7 @@ func evalWhileLoop(node ast.WhileLoop, ctx *Context) Object {
 			return result
 		}
 
-		if result.Type() == BREAK {
+		if result.Type() == BreakType {
 			break
 		}
 
@@ -510,7 +510,7 @@ func evalForLoop(node ast.ForLoop, ctx *Context) Object {
 			return result
 		}
 
-		if result.Type() == BREAK {
+		if result.Type() == BreakType {
 			break
 		}
 
@@ -837,7 +837,7 @@ func evalTryExpression(node ast.TryExpression, ctx *Context) Object {
 					return e
 				}
 
-				if e.Type() != STRING {
+				if e.Type() != StringType {
 					return Err(
 						ctx,
 						"all catch-arm predicate values must be strings. found %s",
