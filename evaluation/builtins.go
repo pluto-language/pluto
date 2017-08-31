@@ -13,11 +13,16 @@ import (
 type args map[string]Object
 type builtinFn func(args, *Context) Object
 
+// Builtin represents a builtin function, i.e. a
+// function which is implemented in Go, as opposed
+// to Pluto
 type Builtin struct {
 	Pattern []string
 	Fn      builtinFn
 }
 
+// NewBuiltin returns a builtin with the given pattern and function,
+// and performs type checking on the arguments
 func NewBuiltin(ptn string, fn builtinFn, types map[string]Type) Builtin {
 	pattern := strings.Split(ptn, " ")
 
@@ -49,6 +54,8 @@ var empty = make(map[string]Type)
 
 var builtins = []Builtin{}
 
+// GetBuiltins returns a slice of all defined builtins,
+// and defines them if they aren't already
 func GetBuiltins() []Builtin {
 	if len(builtins) == 0 {
 		builtins = []Builtin{
