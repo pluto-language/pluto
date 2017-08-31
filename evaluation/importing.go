@@ -13,6 +13,7 @@ import (
 	yaml "gopkg.in/yaml.v2"
 )
 
+// Import imports the package called 'name' into the context
 func (c *Context) Import(name string) Object {
 	var root string
 
@@ -70,12 +71,13 @@ func (c *Context) Import(name string) Object {
 
 	c.Packages[name] = pkg
 
-	return O_NULL
+	return NullObj
 }
 
+// Use imports the functions from a package into the context
 func (c *Context) Use(name string) Object {
 	if _, imported := c.Packages[name]; !imported {
-		if res := c.Import(name); isErr(res) {
+		if res := c.Import(name); IsErr(res) {
 			return res
 		}
 	}
@@ -88,7 +90,7 @@ func (c *Context) Use(name string) Object {
 		c.Functions = append(c.Functions, pkg.Context.Functions...)
 	}
 
-	return O_NULL
+	return NullObj
 }
 
 func (c *Context) importFile(path string) Object {
@@ -101,7 +103,7 @@ func (c *Context) importFile(path string) Object {
 		if len(parse.Errors) > 0 {
 			parse.PrintErrors()
 
-			return O_NULL
+			return NullObj
 		}
 
 		return EvaluateProgram(program, c)

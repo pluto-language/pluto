@@ -2,93 +2,125 @@ package ast
 
 import "github.com/Zac-Garby/pluto/token"
 
-/* ExpressionStatement */
-type ExpressionStatement struct {
-	Tok  token.Token
-	Expr Expression
-}
+type (
+	// ExpressionStatement is an expression which acts a statement
+	ExpressionStatement struct {
+		Tok  token.Token
+		Expr Expression
+	}
 
-func (_ ExpressionStatement) Stmt()              {}
+	// BlockStatement is a list of statements
+	BlockStatement struct {
+		Tok        token.Token
+		Statements []Statement
+	}
+
+	// FunctionDefinition defines a function
+	FunctionDefinition struct {
+		Tok     token.Token
+		Pattern []Expression
+		Body    Statement
+	}
+
+	// InitDefinition defines an initialisation method
+	InitDefinition struct {
+		Tok     token.Token
+		Pattern []Expression
+		Body    Statement
+	}
+
+	// ReturnStatement returns an expression from a BlockStatement
+	ReturnStatement struct {
+		Tok   token.Token
+		Value Expression
+	}
+
+	// NextStatement goes to the next iteration of a loop
+	NextStatement struct {
+		Tok token.Token
+	}
+
+	// BreakStatement breaks a loop
+	BreakStatement struct {
+		Tok token.Token
+	}
+
+	// ClassStatement defines a class
+	ClassStatement struct {
+		Tok          token.Token
+		Name, Parent Expression
+		Methods      []Statement
+	}
+
+	// ImportStatement imports a package
+	ImportStatement struct {
+		Tok     token.Token
+		Package string
+	}
+
+	// UseStatement imports a package into the current scope
+	UseStatement struct {
+		Tok     token.Token
+		Package string
+	}
+)
+
+// Stmt tells the compiler this node is a statement
+func (n ExpressionStatement) Stmt() {}
+
+//Token returns this node's token
 func (n ExpressionStatement) Token() token.Token { return n.Tok }
 
-/* BlockStatement */
-type BlockStatement struct {
-	Tok        token.Token
-	Statements []Statement
-}
+// Stmt tells the compiler this node is a statement
+func (n BlockStatement) Stmt() {}
 
-func (_ BlockStatement) Stmt()              {}
+//Token returns this node's token
 func (n BlockStatement) Token() token.Token { return n.Tok }
 
-/* FunctionDefinition */
-type FunctionDefinition struct {
-	Tok     token.Token
-	Pattern []Expression
-	Body    Statement
-}
+// Stmt tells the compiler this node is a statement
+func (n FunctionDefinition) Stmt() {}
 
-func (_ FunctionDefinition) Stmt()              {}
+//Token returns this node's token
 func (n FunctionDefinition) Token() token.Token { return n.Tok }
 
-/* InitDefinition */
-type InitDefinition struct {
-	Tok     token.Token
-	Pattern []Expression
-	Body    Statement
-}
+// Stmt tells the compiler this node is a statement
+func (n InitDefinition) Stmt() {}
 
-func (_ InitDefinition) Stmt()              {}
+//Token returns this node's token
 func (n InitDefinition) Token() token.Token { return n.Tok }
 
-/* ReturnStatement */
-type ReturnStatement struct {
-	Tok   token.Token
-	Value Expression
-}
+// Stmt tells the compiler this node is a statement
+func (n ReturnStatement) Stmt() {}
 
-func (_ ReturnStatement) Stmt()              {}
+//Token returns this node's token
 func (n ReturnStatement) Token() token.Token { return n.Tok }
 
-/* NextStatement */
-type NextStatement struct {
-	Tok token.Token
-}
+// Stmt tells the compiler this node is a statement
+func (n NextStatement) Stmt() {}
 
-func (_ NextStatement) Stmt()              {}
+//Token returns this node's token
 func (n NextStatement) Token() token.Token { return n.Tok }
 
-/* BreakStatement */
-type BreakStatement struct {
-	Tok token.Token
-}
+// Stmt tells the compiler this node is a statement
+func (n BreakStatement) Stmt() {}
 
-func (_ BreakStatement) Stmt()              {}
+//Token returns this node's token
 func (n BreakStatement) Token() token.Token { return n.Tok }
 
-/* ClassStatement */
-type ClassStatement struct {
-	Tok          token.Token
-	Name, Parent Expression
-	Methods      []Statement
-}
+// Stmt tells the compiler this node is a statement
+func (n ClassStatement) Stmt() {}
 
-func (_ ClassStatement) Stmt()              {}
+//Token returns this node's token
 func (n ClassStatement) Token() token.Token { return n.Tok }
 
-/* ImportStatement */
-type ImportStatement struct {
-	Tok     token.Token
-	Package string
-}
+// Stmt tells the compiler this node is a statement
+func (n ImportStatement) Stmt() {}
 
-func (_ ImportStatement) Stmt()              {}
+//Token returns this node's token
 func (n ImportStatement) Token() token.Token { return n.Tok }
 
-/* UseStatement */
-type UseStatement struct {
-	Tok     token.Token
-	Package string
-}
+// Stmt tells the compiler this node is a statement
+func (n UseStatement) Stmt() {}
 
-func (_ UseStatement) Stmt()              {}
+//Token returns this node's token
 func (n UseStatement) Token() token.Token { return n.Tok }

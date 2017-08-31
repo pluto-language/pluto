@@ -10,7 +10,7 @@ func evalExpressions(exprs []ast.Expression, ctx *Context) []Object {
 	for _, expr := range exprs {
 		o := eval(expr, ctx)
 
-		if isErr(o) {
+		if IsErr(o) {
 			return []Object{o}
 		}
 
@@ -29,7 +29,7 @@ func unwrapReturnValue(o Object) Object {
 }
 
 func isTruthy(o Object) bool {
-	if o.Equals(O_NULL) || o.Equals(O_FALSE) {
+	if o.Equals(NullObj) || o.Equals(FalseObj) {
 		return false
 	}
 
@@ -46,8 +46,8 @@ func isTruthy(o Object) bool {
 
 func boolObj(t bool) Object {
 	if t {
-		return O_TRUE
+		return TrueObj
 	}
 
-	return O_FALSE
+	return FalseObj
 }

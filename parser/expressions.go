@@ -18,7 +18,7 @@ func (p *Parser) parseExpression(precedence int) ast.Expression {
 
 	left := prefix()
 
-	for !p.peekIs(token.SEMI) && precedence < p.peekPrecedence() {
+	for !p.peekIs(token.Semi) && precedence < p.peekPrecedence() {
 		infix, infixExists := p.infixes[p.peek.Type]
 
 		if !infixExists {
@@ -62,20 +62,21 @@ func (p *Parser) parseNum() ast.Expression {
 		Tok: p.cur,
 	}
 
-	if val, err := strconv.ParseFloat(p.cur.Literal, 64); err != nil {
+	val, err := strconv.ParseFloat(p.cur.Literal, 64)
+	if err != nil {
 		msg := fmt.Sprintf("could not parse %s as a number", p.cur.Literal)
 		p.defaultErr(msg)
 		return nil
-	} else {
-		lit.Value = val
-		return lit
 	}
+
+	lit.Value = val
+	return lit
 }
 
 func (p *Parser) parseBool() ast.Expression {
 	return &ast.Boolean{
 		Tok:   p.cur,
-		Value: p.cur.Type == token.TRUE,
+		Value: p.cur.Type == token.True,
 	}
 }
 
@@ -106,7 +107,7 @@ func (p *Parser) parsePrefix() ast.Expression {
 	}
 
 	p.next()
-	expr.Right = p.parseExpression(PREFIX)
+	expr.Right = p.parseExpression(prefix)
 
 	return expr
 }
@@ -114,16 +115,16 @@ func (p *Parser) parsePrefix() ast.Expression {
 func (p *Parser) parseGroupedExpression() ast.Expression {
 	p.next()
 
-	if p.curIs(token.RPAREN) {
+	if p.curIs(token.RightParen) {
 		return &ast.Tuple{
 			Tok: p.cur,
 		}
 	}
 
-	expr := p.parseExpression(LOWEST)
+	expr := p.parseExpression(lowest)
 	isTuple := false
 
-	if p.peekIs(token.COMMA) {
+	if p.peekIs(token.Comma) {
 		isTuple = true
 
 		p.next()
@@ -133,12 +134,12 @@ func (p *Parser) parseGroupedExpression() ast.Expression {
 			Tok: expr.Token(),
 			Value: append(
 				[]ast.Expression{expr},
-				p.parseExpressionList(token.RPAREN)...,
+				p.parseExpressionList(token.RightParen)...,
 			),
 		}
 	}
 
-	if !isTuple && !p.expect(token.RPAREN) {
+	if !isTuple && !p.expect(token.RightParen) {
 		return nil
 	}
 
@@ -148,18 +149,18 @@ func (p *Parser) parseGroupedExpression() ast.Expression {
 func (p *Parser) parseArrayOrMap() ast.Expression {
 	p.next()
 
-	if p.peekIs(token.COLON) || p.curIs(token.COLON) {
-		pairs := p.parseExpressionPairs(token.RSQUARE)
+	if p.peekIs(token.Colon) || p.curIs(token.Colon) {
+		pairs := p.parseExpressionPairs(token.RightSquare)
 
 		return &ast.Map{
 			Tok:   p.cur,
 			Pairs: pairs,
 		}
-	} else {
-		return &ast.Array{
-			Tok:      p.cur,
-			Elements: p.parseExpressionList(token.RSQUARE),
-		}
+	}
+
+	return &ast.Array{
+		Tok:      p.cur,
+		Elements: p.parseExpressionList(token.RightSquare),
 	}
 }
 
@@ -168,11 +169,11 @@ func (p *Parser) parseBlockLiteral() ast.Expression {
 		Tok: p.cur,
 	}
 
-	if p.peekIs(token.B_OR) {
+	if p.peekIs(token.BitOr) {
 		p.next()
-		expr.Params = p.parseParams(token.B_OR)
+		expr.Params = p.parseParams(token.BitOr)
 
-		if !p.expect(token.ARROW) {
+		if !p.expect(token.Arrow) {
 			return nil
 		}
 	}
@@ -187,18 +188,18 @@ func (p *Parser) parseWhileLoop() ast.Expression {
 		Tok: p.cur,
 	}
 
-	if !p.expect(token.LPAREN) {
+	if !p.expect(token.LeftParen) {
 		return nil
 	}
 
 	p.next()
-	expr.Condition = p.parseExpression(LOWEST)
+	expr.Condition = p.parseExpression(lowest)
 
-	if !p.expect(token.RPAREN) {
+	if !p.expect(token.RightParen) {
 		return nil
 	}
 
-	if !p.expect(token.LBRACE) {
+	if !p.expect(token.LeftBrace) {
 		return nil
 	}
 
@@ -212,25 +213,25 @@ func (p *Parser) parseForLoop() ast.Expression {
 		Tok: p.cur,
 	}
 
-	if !p.expect(token.LPAREN) {
+	if !p.expect(token.LeftParen) {
 		return nil
 	}
 
 	p.next()
 	expr.Var = p.parseNonFnID()
 
-	if !p.expect(token.COLON) {
+	if !p.expect(token.Colon) {
 		return nil
 	}
 
 	p.next()
-	expr.Collection = p.parseExpression(LOWEST)
+	expr.Collection = p.parseExpression(lowest)
 
-	if !p.expect(token.RPAREN) {
+	if !p.expect(token.RightParen) {
 		return nil
 	}
 
-	if !p.expect(token.LBRACE) {
+	if !p.expect(token.LeftBrace) {
 		return nil
 	}
 
@@ -262,32 +263,32 @@ func (p *Parser) parseIfExpression() ast.Expression {
 		Tok: p.cur,
 	}
 
-	if !p.expect(token.LPAREN) {
+	if !p.expect(token.LeftParen) {
 		return nil
 	}
 
 	p.next()
-	expr.Condition = p.parseExpression(LOWEST)
+	expr.Condition = p.parseExpression(lowest)
 
-	if !p.expect(token.RPAREN) {
+	if !p.expect(token.RightParen) {
 		return nil
 	}
 
-	if !p.expect(token.LBRACE) {
+	if !p.expect(token.LeftBrace) {
 		return nil
 	}
 
 	expr.Consequence = p.parseBlockStatement()
 
-	if p.peekIs(token.ELSE) {
+	if p.peekIs(token.Else) {
 		p.next()
 
-		if !p.expect(token.LBRACE) {
+		if !p.expect(token.LeftBrace) {
 			return nil
 		}
 
 		expr.Alternative = p.parseBlockStatement()
-	} else if p.peekIs(token.ELIF) {
+	} else if p.peekIs(token.Elif) {
 		p.next()
 
 		expr.Alternative = &ast.BlockStatement{
@@ -309,18 +310,18 @@ func (p *Parser) parseMatchExpression() ast.Expression {
 		Tok: p.cur,
 	}
 
-	if !p.expect(token.LPAREN) {
+	if !p.expect(token.LeftParen) {
 		return nil
 	}
 
 	p.next()
-	expr.Exp = p.parseExpression(LOWEST)
+	expr.Exp = p.parseExpression(lowest)
 
-	if !p.expect(token.RPAREN) {
+	if !p.expect(token.RightParen) {
 		return nil
 	}
 
-	if !p.expect(token.LBRACE) {
+	if !p.expect(token.LeftBrace) {
 		return nil
 	}
 
@@ -337,28 +338,28 @@ func (p *Parser) parseTryExpression() ast.Expression {
 		Tok: p.cur,
 	}
 
-	if !p.expect(token.LBRACE) {
+	if !p.expect(token.LeftBrace) {
 		return nil
 	}
 
 	expr.Body = p.parseBlockStatement()
 
-	if !p.expect(token.CATCH) {
+	if !p.expect(token.Catch) {
 		return nil
 	}
 
-	if !p.expect(token.LPAREN) {
+	if !p.expect(token.LeftParen) {
 		return nil
 	}
 
 	p.next()
 	expr.ErrName = p.parseNonFnID()
 
-	if !p.expect(token.RPAREN) {
+	if !p.expect(token.RightParen) {
 		return nil
 	}
 
-	if !p.expect(token.LBRACE) {
+	if !p.expect(token.LeftBrace) {
 		return nil
 	}
 
@@ -392,7 +393,7 @@ func (p *Parser) parseAssignExpression(left ast.Expression) ast.Expression {
 	}
 
 	p.next()
-	expr.Value = p.parseExpression(LOWEST)
+	expr.Value = p.parseExpression(lowest)
 
 	return expr
 }
@@ -406,7 +407,7 @@ func (p *Parser) parseShorthandAssignment(left ast.Expression) ast.Expression {
 	op := p.cur.Literal
 
 	p.next()
-	right := p.parseExpression(LOWEST)
+	right := p.parseExpression(lowest)
 
 	expr.Value = &ast.InfixExpression{
 		Left:     left,
@@ -424,7 +425,7 @@ func (p *Parser) parseDeclareExpression(left ast.Expression) ast.Expression {
 	}
 
 	p.next()
-	expr.Value = p.parseExpression(LOWEST)
+	expr.Value = p.parseExpression(lowest)
 
 	return expr
 }
@@ -436,7 +437,7 @@ func (p *Parser) parseDotExpression(left ast.Expression) ast.Expression {
 	}
 
 	p.next()
-	expr.Right = p.parseExpression(INDEX)
+	expr.Right = p.parseExpression(index)
 
 	return expr
 }
@@ -448,9 +449,9 @@ func (p *Parser) parseIndexExpression(left ast.Expression) ast.Expression {
 	}
 
 	p.next()
-	expr.Index = p.parseExpression(LOWEST)
+	expr.Index = p.parseExpression(lowest)
 
-	if !p.expect(token.RSQUARE) {
+	if !p.expect(token.RightSquare) {
 		return nil
 	}
 
@@ -503,7 +504,7 @@ func (p *Parser) parsePattern() []ast.Expression {
 					Value: p.cur.Literal,
 				}
 			},
-			token.PARAM: func() ast.Expression {
+			token.Param: func() ast.Expression {
 				return arg(&ast.Identifier{
 					Tok:   p.cur,
 					Value: p.cur.Literal,

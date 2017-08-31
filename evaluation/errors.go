@@ -2,6 +2,7 @@ package evaluation
 
 import "fmt"
 
+// Err returns an error object with the message and tag provided
 func Err(ctx *Context, msg, tag string, fmts ...interface{}) Object {
 	msg = fmt.Sprintf(msg, fmts...)
 
@@ -21,6 +22,7 @@ func Err(ctx *Context, msg, tag string, fmts ...interface{}) Object {
 	return e
 }
 
+// IsErr checks if an object is an instance of Error
 func IsErr(o Object) bool {
 	if instance, ok := o.(*Instance); ok {
 		return instance.Base.(*Class).Name == "Error"

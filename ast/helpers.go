@@ -24,6 +24,7 @@ func prefix(indent int, name string) string {
 	return str
 }
 
+// Tree returns a tree representation of a node
 func Tree(node Node, indent int, name string) string {
 	val := reflect.ValueOf(node)
 

@@ -8,27 +8,27 @@ import (
 func (p *Parser) parseStatement() ast.Statement {
 	var stmt ast.Statement
 
-	if p.curIs(token.SEMI) {
+	if p.curIs(token.Semi) {
 		return nil
-	} else if p.curIs(token.RETURN) {
+	} else if p.curIs(token.Return) {
 		stmt = p.parseReturnStatement()
-	} else if p.curIs(token.DEF) {
+	} else if p.curIs(token.Def) {
 		stmt = p.parseDefStatement()
-	} else if p.curIs(token.NEXT) {
+	} else if p.curIs(token.Next) {
 		stmt = p.parseNextStatement()
-	} else if p.curIs(token.BREAK) {
+	} else if p.curIs(token.Break) {
 		stmt = p.parseBreakStatement()
-	} else if p.curIs(token.CLASS) {
+	} else if p.curIs(token.Class) {
 		stmt = p.parseClassDeclaration()
-	} else if p.curIs(token.IMPORT) {
+	} else if p.curIs(token.Import) {
 		stmt = p.parseImportStatement()
-	} else if p.curIs(token.USE) {
+	} else if p.curIs(token.Use) {
 		stmt = p.parseUseStatement()
 	} else {
 		stmt = p.parseExpressionStatement()
 	}
 
-	if !p.expect(token.SEMI) {
+	if !p.expect(token.Semi) {
 		return nil
 	}
 
@@ -43,7 +43,7 @@ func (p *Parser) parseBlockStatement() ast.Statement {
 
 	p.next()
 
-	for !p.curIs(token.RBRACE) && !p.curIs(token.EOF) {
+	for !p.curIs(token.RightBrace) && !p.curIs(token.EOF) {
 		stmt := p.parseStatement()
 
 		if stmt != nil {
@@ -59,7 +59,7 @@ func (p *Parser) parseBlockStatement() ast.Statement {
 func (p *Parser) parseExpressionStatement() ast.Statement {
 	stmt := &ast.ExpressionStatement{
 		Tok:  p.cur,
-		Expr: p.parseExpression(LOWEST),
+		Expr: p.parseExpression(lowest),
 	}
 
 	if stmt.Expr == nil {
@@ -70,7 +70,7 @@ func (p *Parser) parseExpressionStatement() ast.Statement {
 }
 
 func (p *Parser) parseReturnStatement() ast.Statement {
-	if p.peek.Type == token.SEMI {
+	if p.peek.Type == token.Semi {
 		return &ast.ReturnStatement{
 			Tok: p.cur,
 		}
@@ -81,7 +81,7 @@ func (p *Parser) parseReturnStatement() ast.Statement {
 	}
 
 	p.next()
-	stmt.Value = p.parseExpression(LOWEST)
+	stmt.Value = p.parseExpression(lowest)
 
 	return stmt
 }
@@ -104,7 +104,7 @@ func (p *Parser) parseDefStatement() ast.Statement {
 	}
 
 	p.next()
-	stmt.Pattern = p.parsePatternCall(token.LBRACE)
+	stmt.Pattern = p.parsePatternCall(token.LeftBrace)
 
 	if len(stmt.Pattern) == 0 {
 		p.defaultErr("expected at least one item in a pattern")
@@ -122,7 +122,7 @@ func (p *Parser) parseInitStatement() ast.Statement {
 	}
 
 	p.next()
-	stmt.Pattern = p.parsePatternCall(token.LBRACE)
+	stmt.Pattern = p.parsePatternCall(token.LeftBrace)
 
 	if len(stmt.Pattern) == 0 {
 		p.defaultErr("expected at least one item in a pattern")
@@ -145,40 +145,40 @@ func (p *Parser) parseClassDeclaration() ast.Statement {
 
 	stmt.Name = p.parseNonFnID()
 
-	if p.peekIs(token.EXTENDS) {
+	if p.peekIs(token.Extends) {
 		p.next()
 		p.next()
 
 		stmt.Parent = p.parseNonFnID()
 	}
 
-	if !p.expect(token.LBRACE) {
+	if !p.expect(token.LeftBrace) {
 		return nil
 	}
 
 	p.next()
 
-	if p.curIs(token.RBRACE) {
+	if p.curIs(token.RightBrace) {
 		return stmt
 	}
 
-	for p.curIs(token.INIT, token.DEF) {
-		if p.curIs(token.INIT) {
+	for p.curIs(token.Init, token.Def) {
+		if p.curIs(token.Init) {
 			stmt.Methods = append(stmt.Methods, p.parseInitStatement())
 		} else {
 			stmt.Methods = append(stmt.Methods, p.parseDefStatement())
 		}
 
-		if !p.expect(token.SEMI) {
+		if !p.expect(token.Semi) {
 			return nil
 		}
 
-		if p.peekIs(token.INIT, token.DEF) {
+		if p.peekIs(token.Init, token.Def) {
 			p.next()
 		}
 	}
 
-	if !p.expect(token.RBRACE) {
+	if !p.expect(token.RightBrace) {
 		return nil
 	}
 
@@ -190,7 +190,7 @@ func (p *Parser) parseImportStatement() ast.Statement {
 		Tok: p.cur,
 	}
 
-	if !p.expect(token.STR) {
+	if !p.expect(token.String) {
 		return nil
 	}
 
@@ -204,7 +204,7 @@ func (p *Parser) parseUseStatement() ast.Statement {
 		Tok: p.cur,
 	}
 
-	if !p.expect(token.STR) {
+	if !p.expect(token.String) {
 		return nil
 	}
 

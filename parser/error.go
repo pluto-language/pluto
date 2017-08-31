@@ -8,12 +8,13 @@ import (
 	"github.com/fatih/color"
 )
 
+// Error represents a parsing error
 type Error struct {
 	Message    string
 	Start, End token.Position
 }
 
-func (p *Parser) err(msg string, start, end token.Position) {
+func (p *Parser) Err(msg string, start, end token.Position) {
 	err := Error{
 		Message: msg,
 		Start:   start,
@@ -49,10 +50,10 @@ func (p *Parser) peekErr(ts ...token.Type) {
 
 		msg += ", but got " + string(p.peek.Type)
 
-		p.err(msg, p.peek.Start, p.peek.End)
+		p.Err(msg, p.peek.Start, p.peek.End)
 	} else if len(ts) == 1 {
 		msg := fmt.Sprintf("expected %s, but got %s", ts[0], p.peek.Type)
-		p.err(msg, p.peek.Start, p.peek.End)
+		p.Err(msg, p.peek.Start, p.peek.End)
 	}
 }
 
@@ -72,10 +73,10 @@ func (p *Parser) curErr(ts ...token.Type) {
 
 		msg += ", but got " + string(p.cur.Type)
 
-		p.err(msg, p.cur.Start, p.cur.End)
+		p.Err(msg, p.cur.Start, p.cur.End)
 	} else if len(ts) == 1 {
 		msg := fmt.Sprintf("expected %s, but got %s", ts[0], p.cur.Type)
-		p.err(msg, p.cur.Start, p.cur.End)
+		p.Err(msg, p.cur.Start, p.cur.End)
 	}
 }
 
@@ -110,6 +111,7 @@ func (p *Parser) printErrorVerbose(index int) {
 	fmt.Printf("\t%s\n\n", err.Message)
 }
 
+// PrintErrors prints all parser errors in a nice format
 func (p *Parser) PrintErrors() {
 	for i := range p.Errors {
 		if i == 0 {

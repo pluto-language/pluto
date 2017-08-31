@@ -12,9 +12,9 @@ func (p *Parser) parseExpressionList(end token.Type) []ast.Expression {
 		return exprs
 	}
 
-	exprs = append(exprs, p.parseExpression(LOWEST))
+	exprs = append(exprs, p.parseExpression(lowest))
 
-	for p.peekIs(token.COMMA) {
+	for p.peekIs(token.Comma) {
 		p.next()
 
 		if p.peekIs(end) {
@@ -23,7 +23,7 @@ func (p *Parser) parseExpressionList(end token.Type) []ast.Expression {
 		}
 
 		p.next()
-		exprs = append(exprs, p.parseExpression(LOWEST))
+		exprs = append(exprs, p.parseExpression(lowest))
 	}
 
 	if !p.expect(end) {
@@ -36,7 +36,7 @@ func (p *Parser) parseExpressionList(end token.Type) []ast.Expression {
 func (p *Parser) parseExpressionPairs(end token.Type) map[ast.Expression]ast.Expression {
 	pairs := map[ast.Expression]ast.Expression{}
 
-	if p.curIs(token.COLON) {
+	if p.curIs(token.Colon) {
 		p.next()
 		return pairs
 	}
@@ -44,7 +44,7 @@ func (p *Parser) parseExpressionPairs(end token.Type) map[ast.Expression]ast.Exp
 	key, val := p.parsePair()
 	pairs[key] = val
 
-	for p.peekIs(token.COMMA) {
+	for p.peekIs(token.Comma) {
 		p.next()
 
 		if p.peekIs(end) {
@@ -65,15 +65,15 @@ func (p *Parser) parseExpressionPairs(end token.Type) map[ast.Expression]ast.Exp
 }
 
 func (p *Parser) parsePair() (ast.Expression, ast.Expression) {
-	key := p.parseExpression(INDEX)
+	key := p.parseExpression(index)
 
-	if !p.expect(token.COLON) {
+	if !p.expect(token.Colon) {
 		return nil, nil
 	}
 
 	p.next()
 
-	value := p.parseExpression(LOWEST)
+	value := p.parseExpression(lowest)
 
 	return key, value
 }
@@ -89,7 +89,7 @@ func (p *Parser) parseParams(end token.Type) []ast.Expression {
 	p.next()
 	params = append(params, p.parseNonFnID())
 
-	for p.peekIs(token.COMMA) {
+	for p.peekIs(token.Comma) {
 		p.next()
 		p.next()
 		params = append(params, p.parseNonFnID())
@@ -108,16 +108,16 @@ func (p *Parser) parseMatchArm() ast.Arm {
 		right ast.Statement
 	)
 
-	if p.curIs(token.STAR) {
+	if p.curIs(token.Star) {
 		left = nil
 		p.next()
 	} else {
-		left = p.parseExpressionList(token.F_ARROW)
+		left = p.parseExpressionList(token.FatArrow)
 	}
 
 	p.next()
 
-	if p.curIs(token.LBRACE) {
+	if p.curIs(token.LeftBrace) {
 		right = p.parseBlockStatement()
 		p.next()
 	} else {
@@ -133,13 +133,13 @@ func (p *Parser) parseMatchArm() ast.Arm {
 func (p *Parser) parseMatchArms() []ast.Arm {
 	var arms []ast.Arm
 
-	for !p.curIs(token.RBRACE) {
+	for !p.curIs(token.RightBrace) {
 		p.next()
 		arm := p.parseMatchArm()
 
 		arms = append(arms, arm)
 
-		if p.peekIs(token.RBRACE) {
+		if p.peekIs(token.RightBrace) {
 			p.next()
 		}
 	}
@@ -150,7 +150,7 @@ func (p *Parser) parseMatchArms() []ast.Arm {
 func (p *Parser) parsePatternCall(end token.Type) []ast.Expression {
 	var (
 		pattern      []ast.Expression
-		allowedItems = []token.Type{token.ID, token.PARAM}
+		allowedItems = []token.Type{token.ID, token.Param}
 	)
 
 	for _, t := range token.Keywords {

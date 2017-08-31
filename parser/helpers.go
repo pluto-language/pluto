@@ -26,18 +26,18 @@ func (p *Parser) expect(ts ...token.Type) bool {
 	if p.peekIs(ts...) {
 		p.next()
 		return true
-	} else {
-		p.peekErr(ts...)
-		return false
 	}
+
+	p.peekErr(ts...)
+	return false
 }
 
 func (p *Parser) expectCur(ts ...token.Type) bool {
 	if p.curIs(ts...) {
 		p.next()
 		return true
-	} else {
-		p.curErr(ts...)
-		return false
 	}
+
+	p.curErr(ts...)
+	return false
 }
