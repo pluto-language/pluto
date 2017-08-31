@@ -6,33 +6,50 @@ import (
 
 /* Structs */
 type (
+	// Number is a number object
 	Number struct {
 		Value float64
 	}
 
+	// Boolean is a boolean object
 	Boolean struct {
 		Value bool
 	}
 
+	// String is a string object
 	String struct {
 		Value string
 	}
 
+	// Char is a character object
 	Char struct {
 		Value rune
 	}
 
+	// Null is the null object
 	Null struct{}
 )
 
 /* Type() methods */
-func (_ *Number) Type() Type  { return NUMBER }
-func (_ *Boolean) Type() Type { return BOOLEAN }
-func (_ *String) Type() Type  { return STRING }
-func (_ *Char) Type() Type    { return CHAR }
-func (_ *Null) Type() Type    { return NULL }
+
+// Type returns the type of this object
+func (n *Number) Type() Type { return NUMBER }
+
+// Type returns the type of this object
+func (b *Boolean) Type() Type { return BOOLEAN }
+
+// Type returns the type of this object
+func (s *String) Type() Type { return STRING }
+
+// Type returns the type of this object
+func (c *Char) Type() Type { return CHAR }
+
+// Type returns the type of this object
+func (n *Null) Type() Type { return NULL }
 
 /* Equals() methods */
+
+// Equals checks if two objects are equal to each other
 func (n *Number) Equals(o Object) bool {
 	if other, ok := o.(*Number); ok {
 		return n.Value == other.Value
@@ -41,6 +58,7 @@ func (n *Number) Equals(o Object) bool {
 	return false
 }
 
+// Equals checks if two objects are equal to each other
 func (b *Boolean) Equals(o Object) bool {
 	if other, ok := o.(*Boolean); ok {
 		return b.Value == other.Value
@@ -49,6 +67,7 @@ func (b *Boolean) Equals(o Object) bool {
 	return false
 }
 
+// Equals checks if two objects are equal to each other
 func (s *String) Equals(o Object) bool {
 	if other, ok := o.(*String); ok {
 		return s.Value == other.Value
@@ -57,6 +76,7 @@ func (s *String) Equals(o Object) bool {
 	return false
 }
 
+// Equals checks if two objects are equal to each other
 func (c *Char) Equals(o Object) bool {
 	if other, ok := o.(*Char); ok {
 		return c.Value == other.Value
@@ -65,7 +85,8 @@ func (c *Char) Equals(o Object) bool {
 	return false
 }
 
-func (_ *Null) Equals(o Object) bool {
+// Equals checks if two objects are equal to each other
+func (n *Null) Equals(o Object) bool {
 	_, ok := o.(*Null)
 	return ok
 }
@@ -87,11 +108,13 @@ func (c *Char) String() string {
 	return string(c.Value)
 }
 
-func (_ *Null) String() string {
+func (n *Null) String() string {
 	return "null"
 }
 
 /* Collection implementations */
+
+// Elements returns the elements in a collection
 func (s *String) Elements() []Object {
 	chars := make([]Object, len(s.Value))
 
@@ -102,6 +125,7 @@ func (s *String) Elements() []Object {
 	return chars
 }
 
+// GetIndex returns the ith element in a collection
 func (s *String) GetIndex(i int) Object {
 	if i >= len(s.Value) || i < 0 {
 		return NullObj
@@ -110,6 +134,7 @@ func (s *String) GetIndex(i int) Object {
 	return &Char{Value: rune(s.Value[i])}
 }
 
+// SetIndex sets the ith element in a collection to o
 func (s *String) SetIndex(i int, o Object) {
 	if i >= len(s.Value) || i < 0 {
 		return
@@ -123,22 +148,28 @@ func (s *String) SetIndex(i int, o Object) {
 }
 
 /* Hasher implementations */
+
+// Hash returns a string unique to the current state of the object
 func (n *Number) Hash() string {
 	return fmt.Sprintf("number %g", n.Value)
 }
 
+// Hash returns a string unique to the current state of the object
 func (b *Boolean) Hash() string {
 	return fmt.Sprintf("boolean %t", b.Value)
 }
 
+// Hash returns a string unique to the current state of the object
 func (s *String) Hash() string {
 	return fmt.Sprintf("string %s", s.Value)
 }
 
+// Hash returns a string unique to the current state of the object
 func (c *Char) Hash() string {
 	return fmt.Sprintf("char %s", string(c.Value))
 }
 
+// Hash returns a string unique to the current state of the object
 func (n *Null) Hash() string {
 	return "null"
 }
