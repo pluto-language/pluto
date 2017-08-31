@@ -62,14 +62,15 @@ func (p *Parser) parseNum() ast.Expression {
 		Tok: p.cur,
 	}
 
-	if val, err := strconv.ParseFloat(p.cur.Literal, 64); err != nil {
+	val, err := strconv.ParseFloat(p.cur.Literal, 64)
+	if err != nil {
 		msg := fmt.Sprintf("could not parse %s as a number", p.cur.Literal)
 		p.defaultErr(msg)
 		return nil
-	} else {
-		lit.Value = val
-		return lit
 	}
+
+	lit.Value = val
+	return lit
 }
 
 func (p *Parser) parseBool() ast.Expression {
@@ -106,7 +107,7 @@ func (p *Parser) parsePrefix() ast.Expression {
 	}
 
 	p.next()
-	expr.Right = p.parseExpression(PREFIX)
+	expr.Right = p.parseExpression(prefix)
 
 	return expr
 }
@@ -120,7 +121,7 @@ func (p *Parser) parseGroupedExpression() ast.Expression {
 		}
 	}
 
-	expr := p.parseExpression(LOWEST)
+	expr := p.parseExpression(lowest)
 	isTuple := false
 
 	if p.peekIs(token.COMMA) {
@@ -155,11 +156,11 @@ func (p *Parser) parseArrayOrMap() ast.Expression {
 			Tok:   p.cur,
 			Pairs: pairs,
 		}
-	} else {
-		return &ast.Array{
-			Tok:      p.cur,
-			Elements: p.parseExpressionList(token.RSQUARE),
-		}
+	}
+
+	return &ast.Array{
+		Tok:      p.cur,
+		Elements: p.parseExpressionList(token.RSQUARE),
 	}
 }
 
@@ -192,7 +193,7 @@ func (p *Parser) parseWhileLoop() ast.Expression {
 	}
 
 	p.next()
-	expr.Condition = p.parseExpression(LOWEST)
+	expr.Condition = p.parseExpression(lowest)
 
 	if !p.expect(token.RPAREN) {
 		return nil
@@ -224,7 +225,7 @@ func (p *Parser) parseForLoop() ast.Expression {
 	}
 
 	p.next()
-	expr.Collection = p.parseExpression(LOWEST)
+	expr.Collection = p.parseExpression(lowest)
 
 	if !p.expect(token.RPAREN) {
 		return nil
@@ -267,7 +268,7 @@ func (p *Parser) parseIfExpression() ast.Expression {
 	}
 
 	p.next()
-	expr.Condition = p.parseExpression(LOWEST)
+	expr.Condition = p.parseExpression(lowest)
 
 	if !p.expect(token.RPAREN) {
 		return nil
@@ -314,7 +315,7 @@ func (p *Parser) parseMatchExpression() ast.Expression {
 	}
 
 	p.next()
-	expr.Exp = p.parseExpression(LOWEST)
+	expr.Exp = p.parseExpression(lowest)
 
 	if !p.expect(token.RPAREN) {
 		return nil
@@ -392,7 +393,7 @@ func (p *Parser) parseAssignExpression(left ast.Expression) ast.Expression {
 	}
 
 	p.next()
-	expr.Value = p.parseExpression(LOWEST)
+	expr.Value = p.parseExpression(lowest)
 
 	return expr
 }
@@ -406,7 +407,7 @@ func (p *Parser) parseShorthandAssignment(left ast.Expression) ast.Expression {
 	op := p.cur.Literal
 
 	p.next()
-	right := p.parseExpression(LOWEST)
+	right := p.parseExpression(lowest)
 
 	expr.Value = &ast.InfixExpression{
 		Left:     left,
@@ -424,7 +425,7 @@ func (p *Parser) parseDeclareExpression(left ast.Expression) ast.Expression {
 	}
 
 	p.next()
-	expr.Value = p.parseExpression(LOWEST)
+	expr.Value = p.parseExpression(lowest)
 
 	return expr
 }
@@ -436,7 +437,7 @@ func (p *Parser) parseDotExpression(left ast.Expression) ast.Expression {
 	}
 
 	p.next()
-	expr.Right = p.parseExpression(INDEX)
+	expr.Right = p.parseExpression(index)
 
 	return expr
 }
@@ -448,7 +449,7 @@ func (p *Parser) parseIndexExpression(left ast.Expression) ast.Expression {
 	}
 
 	p.next()
-	expr.Index = p.parseExpression(LOWEST)
+	expr.Index = p.parseExpression(lowest)
 
 	if !p.expect(token.RSQUARE) {
 		return nil

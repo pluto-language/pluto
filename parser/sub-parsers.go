@@ -12,7 +12,7 @@ func (p *Parser) parseExpressionList(end token.Type) []ast.Expression {
 		return exprs
 	}
 
-	exprs = append(exprs, p.parseExpression(LOWEST))
+	exprs = append(exprs, p.parseExpression(lowest))
 
 	for p.peekIs(token.COMMA) {
 		p.next()
@@ -23,7 +23,7 @@ func (p *Parser) parseExpressionList(end token.Type) []ast.Expression {
 		}
 
 		p.next()
-		exprs = append(exprs, p.parseExpression(LOWEST))
+		exprs = append(exprs, p.parseExpression(lowest))
 	}
 
 	if !p.expect(end) {
@@ -65,7 +65,7 @@ func (p *Parser) parseExpressionPairs(end token.Type) map[ast.Expression]ast.Exp
 }
 
 func (p *Parser) parsePair() (ast.Expression, ast.Expression) {
-	key := p.parseExpression(INDEX)
+	key := p.parseExpression(index)
 
 	if !p.expect(token.COLON) {
 		return nil, nil
@@ -73,7 +73,7 @@ func (p *Parser) parsePair() (ast.Expression, ast.Expression) {
 
 	p.next()
 
-	value := p.parseExpression(LOWEST)
+	value := p.parseExpression(lowest)
 
 	return key, value
 }

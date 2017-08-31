@@ -11,6 +11,8 @@ import (
 type prefixParser func() ast.Expression
 type infixParser func(ast.Expression) ast.Expression
 
+// Parser parses a string into an
+// abstract syntax tree
 type Parser struct {
 	Errors []Error
 
@@ -22,6 +24,8 @@ type Parser struct {
 	argTokens []token.Type
 }
 
+// New returns a new parser for the
+// given string
 func New(text string) *Parser {
 	p := &Parser{
 		lex:    lexer.Lexer(text),
@@ -113,7 +117,7 @@ func (p *Parser) peekPrecedence() int {
 		return precedence
 	}
 
-	return LOWEST
+	return lowest
 }
 
 func (p *Parser) curPrecedence() int {
@@ -121,7 +125,7 @@ func (p *Parser) curPrecedence() int {
 		return precedence
 	}
 
-	return LOWEST
+	return lowest
 }
 
 func (p *Parser) next() {
@@ -137,6 +141,7 @@ func (p *Parser) next() {
 	}
 }
 
+// Parse parses an entire program
 func (p *Parser) Parse() ast.Program {
 	prog := ast.Program{
 		Statements: []ast.Statement{},

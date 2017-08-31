@@ -8,6 +8,7 @@ import (
 	"github.com/fatih/color"
 )
 
+// Error represents a parsing error
 type Error struct {
 	Message    string
 	Start, End token.Position
@@ -110,6 +111,7 @@ func (p *Parser) printErrorVerbose(index int) {
 	fmt.Printf("\t%s\n\n", err.Message)
 }
 
+// PrintErrors prints all parser errors in a nice format
 func (p *Parser) PrintErrors() {
 	for i := range p.Errors {
 		if i == 0 {
