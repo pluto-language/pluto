@@ -176,7 +176,7 @@ func GetBuiltins() []Builtin {
 func printObj(args args, ctx *Context) Object {
 	fmt.Println(args["obj"])
 
-	return O_NULL
+	return NullObj
 }
 
 // Not a builtin
@@ -200,7 +200,7 @@ func printObjWithArgs(args args, ctx *Context) Object {
 
 	fmt.Println(result)
 
-	return O_NULL
+	return NullObj
 }
 
 // format $format with $args
@@ -239,7 +239,7 @@ func evalBlock(block *Block, args []Object, ctx *Context) Object {
 			params = append(params, param.(*ast.Identifier).Value)
 		}
 
-		return err(
+		return Err(
 			ctx,
 			"wrong number of arguments applied to a block. expected %d, got %d (params: %s)", "TypeError",
 			len(block.Params),
@@ -299,7 +299,7 @@ func mapBlockOverCollection(args args, ctx *Context) Object {
 			item,
 		}, ctx)
 
-		if isErr(mapped) {
+		if IsErr(mapped) {
 			return mapped
 		}
 
@@ -353,15 +353,15 @@ func sliceCollectionFromStartToEnd(args args, ctx *Context) Object {
 	)
 
 	if sVal >= eVal {
-		return err(ctx, "$start must be less than $end", "OutOfBoundsError")
+		return Err(ctx, "$start must be less than $end", "OutOfBoundsError")
 	}
 
 	if sVal < 0 || eVal < 0 {
-		return err(ctx, "neither $start nor $end can be less than 0", "OutOfBoundsError")
+		return Err(ctx, "neither $start nor $end can be less than 0", "OutOfBoundsError")
 	}
 
 	if eVal >= len(elems) {
-		return err(ctx, "$end must be contained by $collection", "OutOfBoundsError")
+		return Err(ctx, "$end must be contained by $collection", "OutOfBoundsError")
 	}
 
 	return &Array{Value: elems[sVal:eVal]}
@@ -378,7 +378,7 @@ func sliceCollectionFromStart(args args, ctx *Context) Object {
 	)
 
 	if index < 0 || index >= len(elems) {
-		return err(ctx, "$start is out of bounds", "OutOfBoundsError")
+		return Err(ctx, "$start is out of bounds", "OutOfBoundsError")
 	}
 
 	return &Array{Value: elems[index:]}
@@ -395,7 +395,7 @@ func sliceCollectionToEnd(args args, ctx *Context) Object {
 	)
 
 	if index < 0 || index >= len(elems) {
-		return err(ctx, "$end is out of bounds", "OutOfBoundsError")
+		return Err(ctx, "$end is out of bounds", "OutOfBoundsError")
 	}
 
 	return &Array{Value: elems[:index]}
@@ -416,7 +416,7 @@ func filterCollectionByPredicate(args args, ctx *Context) Object {
 			item,
 		}, ctx)
 
-		if isErr(result) {
+		if IsErr(result) {
 			return result
 		}
 

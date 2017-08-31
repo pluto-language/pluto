@@ -14,13 +14,13 @@ func evalIdentifier(node ast.Identifier, ctx *Context) Object {
 		return val
 	}
 
-	return err(ctx, "`%s` is not found", "NotFoundError", node.Value)
+	return Err(ctx, "`%s` is not found", "NotFoundError", node.Value)
 }
 
 func evalTuple(node ast.Tuple, ctx *Context) Object {
 	elements := evalExpressions(node.Value, ctx)
 
-	if len(elements) == 1 && isErr(elements[0]) {
+	if len(elements) == 1 && IsErr(elements[0]) {
 		return elements[0]
 	}
 
@@ -30,7 +30,7 @@ func evalTuple(node ast.Tuple, ctx *Context) Object {
 func evalArray(node ast.Array, ctx *Context) Object {
 	elements := evalExpressions(node.Elements, ctx)
 
-	if len(elements) == 1 && isErr(elements[0]) {
+	if len(elements) == 1 && IsErr(elements[0]) {
 		return elements[0]
 	}
 
@@ -45,12 +45,12 @@ func evalMap(node ast.Map, ctx *Context) Object {
 
 	for k, v := range node.Pairs {
 		key := eval(k, ctx)
-		if isErr(key) {
+		if IsErr(key) {
 			return key
 		}
 
 		value := eval(v, ctx)
-		if isErr(value) {
+		if IsErr(value) {
 			return value
 		}
 
@@ -66,7 +66,7 @@ func evalBlockLiteral(node ast.BlockLiteral, ctx *Context) Object {
 
 func evalPrefixExpression(node ast.PrefixExpression, ctx *Context) Object {
 	right := eval(node.Right, ctx)
-	if isErr(right) {
+	if IsErr(right) {
 		return right
 	}
 
@@ -86,14 +86,14 @@ func evalPrefix(op string, right Object, ctx *Context) Object {
 	case "!":
 		return boolObj(!isTruthy(right))
 	default:
-		return err(ctx, "unknown operator: %s%s", "TypeError", op, right.Type)
+		return Err(ctx, "unknown operator: %s%s", "TypeError", op, right.Type)
 	}
 }
 
 func evalInstancePrefix(op string, right *Instance, ctx *Context) Object {
 	fnName, ok := prefixOverloads[op]
 	if !ok {
-		return err(ctx, "cannot overload operator %s", "NotFoundError", op)
+		return Err(ctx, "cannot overload operator %s", "NotFoundError", op)
 	}
 
 	if method := right.Base.(*Class).GetMethod(fnName); method != nil {
@@ -106,12 +106,12 @@ func evalInstancePrefix(op string, right *Instance, ctx *Context) Object {
 		return eval(method.Fn.Body, enclosed)
 	}
 
-	return err(ctx, "unknown operator: %s%s. try overloading %s", "NotFoundError", op, right.Base.String(), fnName)
+	return Err(ctx, "unknown operator: %s%s. try overloading %s", "NotFoundError", op, right.Base.String(), fnName)
 }
 
 func evalMinusPrefix(right Object, ctx *Context) Object {
 	if right.Type() != NUMBER {
-		return err(ctx, "unknown operator: -%s", "TypeError", right.Type())
+		return Err(ctx, "unknown operator: -%s", "TypeError", right.Type())
 	}
 
 	return &Number{Value: -right.(*Number).Value}
@@ -119,12 +119,12 @@ func evalMinusPrefix(right Object, ctx *Context) Object {
 
 func evalInfixExpression(node ast.InfixExpression, ctx *Context) Object {
 	left := eval(node.Left, ctx)
-	if isErr(left) {
+	if IsErr(left) {
 		return left
 	}
 
 	right := eval(node.Right, ctx)
-	if isErr(right) {
+	if IsErr(right) {
 		return right
 	}
 
@@ -150,7 +150,7 @@ func evalInfixExpression(node ast.InfixExpression, ctx *Context) Object {
 	case "!=":
 		return boolObj(!left.Equals(right))
 	case "?":
-		if left == O_NULL {
+		if left == NullObj {
 			return right
 		}
 
@@ -187,7 +187,7 @@ func evalInfixExpression(node ast.InfixExpression, ctx *Context) Object {
 		}
 	}
 
-	return err(ctx, "unknown operator: %s %s %s", "TypeError", left.Type(), op, right.Type())
+	return Err(ctx, "unknown operator: %s %s %s", "TypeError", left.Type(), op, right.Type())
 }
 
 func evalCollectionInfix(op string, left, right Collection, ctx *Context) Object {
@@ -258,7 +258,7 @@ func evalCollectionInfix(op string, left, right Collection, ctx *Context) Object
 
 		return MakeCollection(left.Type(), elems, ctx)
 	default:
-		return err(ctx, "unknown operator: %s %s %s", "TypeError", left.Type(), op, right.Type())
+		return Err(ctx, "unknown operator: %s %s %s", "TypeError", left.Type(), op, right.Type())
 	}
 }
 
@@ -294,7 +294,7 @@ func evalNumberInfix(op string, left, right *Number, ctx *Context) Object {
 	case ">=":
 		return boolObj(l >= r)
 	default:
-		return err(ctx, "unknown operator: %s %s %s", "TypeError", left.Type(), op, right.Type())
+		return Err(ctx, "unknown operator: %s %s %s", "TypeError", left.Type(), op, right.Type())
 	}
 }
 
@@ -327,14 +327,14 @@ func evalCharStringInfix(op string, left, right Object, ctx *Context) Object {
 
 		return &String{Value: val}
 	default:
-		return err(ctx, "unknown operator: %s %s %s", "TypeError", left.Type(), op, right.Type())
+		return Err(ctx, "unknown operator: %s %s %s", "TypeError", left.Type(), op, right.Type())
 	}
 }
 
 func evalInstanceInfix(op string, left *Instance, right Object, ctx *Context) Object {
 	fnName, ok := infixOverloads[op]
 	if !ok {
-		return err(ctx, "cannot overload operator %s", "NotFoundError", op)
+		return Err(ctx, "cannot overload operator %s", "NotFoundError", op)
 	}
 
 	if method := left.Base.(*Class).GetMethod(fnName); method != nil {
@@ -356,7 +356,7 @@ func evalInstanceInfix(op string, left *Instance, right Object, ctx *Context) Ob
 		return eval(method.Fn.Body, enclosed)
 	}
 
-	return err(
+	return Err(
 		ctx, "unknown operator: %s %s %s. try overloading %s",
 		"NotFoundError",
 		left.Base.String(),
@@ -368,7 +368,7 @@ func evalInstanceInfix(op string, left *Instance, right Object, ctx *Context) Ob
 
 func evalAssignExpression(node ast.AssignExpression, ctx *Context) Object {
 	right := eval(node.Value, ctx)
-	if isErr(right) {
+	if IsErr(right) {
 		return right
 	}
 
@@ -377,7 +377,7 @@ func evalAssignExpression(node ast.AssignExpression, ctx *Context) Object {
 
 		ctr, ok := o.(Container)
 		if !ok {
-			return err(ctx, "can only access fields of containers", "TypeError")
+			return Err(ctx, "can only access fields of containers", "TypeError")
 		}
 
 		if id, ok := dot.Right.(*ast.Identifier); ok {
@@ -385,7 +385,7 @@ func evalAssignExpression(node ast.AssignExpression, ctx *Context) Object {
 			return right
 		}
 
-		return err(ctx, "an identifier is expected to follow a dot operator", "SyntaxError")
+		return Err(ctx, "an identifier is expected to follow a dot operator", "SyntaxError")
 	}
 
 	if left, ok := node.Name.(*ast.Identifier); ok {
@@ -395,38 +395,38 @@ func evalAssignExpression(node ast.AssignExpression, ctx *Context) Object {
 
 	if left, ok := node.Name.(*ast.IndexExpression); ok {
 		rightobj := eval(left.Index, ctx)
-		if isErr(rightobj) {
+		if IsErr(rightobj) {
 			return rightobj
 		}
 
 		leftobj := eval(left.Collection, ctx)
-		if isErr(leftobj) {
+		if IsErr(leftobj) {
 			return leftobj
 		}
 
 		if col, ok := leftobj.(Collection); ok {
 			if index, ok := rightobj.(*Number); ok {
 				col.SetIndex(int(index.Value), right)
-				return O_NULL
+				return NullObj
 			}
 
-			return err(ctx, "cannot index a collection with %s - expected a <number>", "TypeError", rightobj.Type())
+			return Err(ctx, "cannot index a collection with %s - expected a <number>", "TypeError", rightobj.Type())
 		}
 
 		if cont, ok := leftobj.(Container); ok {
 			cont.Set(rightobj, right)
-			return O_NULL
+			return NullObj
 		}
 
-		return err(ctx, "can only index collections and containers", "TypeError")
+		return Err(ctx, "can only index collections and containers", "TypeError")
 	}
 
-	return err(ctx, "can only assign to identifiers and index expressions!", "SyntaxError")
+	return Err(ctx, "can only assign to identifiers and index expressions!", "SyntaxError")
 }
 
 func evalDeclareExpression(node ast.DeclareExpression, ctx *Context) Object {
 	right := eval(node.Value, ctx)
-	if isErr(right) {
+	if IsErr(right) {
 		return right
 	}
 
@@ -435,7 +435,7 @@ func evalDeclareExpression(node ast.DeclareExpression, ctx *Context) Object {
 		return right
 	}
 
-	return err(ctx, "cannot declare a non-identifier!", "SyntaxError")
+	return Err(ctx, "cannot declare a non-identifier!", "SyntaxError")
 }
 
 func evalDotExpression(node ast.DotExpression, ctx *Context) Object {
@@ -446,10 +446,10 @@ func evalDotExpression(node ast.DotExpression, ctx *Context) Object {
 			return cnt.Get(&String{Value: field.Value})
 		}
 
-		return err(ctx, "cannot access fields of %s", "TypeError", left.Type())
+		return Err(ctx, "cannot access fields of %s", "TypeError", left.Type())
 	}
 
-	return err(ctx, "an identifier is expected after a dot '.'", "SyntaxError")
+	return Err(ctx, "an identifier is expected after a dot '.'", "SyntaxError")
 }
 
 func evalWhileLoop(node ast.WhileLoop, ctx *Context) Object {
@@ -457,7 +457,7 @@ func evalWhileLoop(node ast.WhileLoop, ctx *Context) Object {
 
 	for {
 		condition := eval(node.Condition, ctx)
-		if isErr(condition) {
+		if IsErr(condition) {
 			return condition
 		}
 
@@ -466,7 +466,7 @@ func evalWhileLoop(node ast.WhileLoop, ctx *Context) Object {
 		}
 
 		result := eval(node.Body, ctx.Enclose())
-		if isErr(result) {
+		if IsErr(result) {
 			return result
 		}
 
@@ -487,7 +487,7 @@ func evalForLoop(node ast.ForLoop, ctx *Context) Object {
 		col  = eval(node.Collection, ctx)
 	)
 
-	if isErr(col) {
+	if IsErr(col) {
 		return col
 	}
 
@@ -495,7 +495,7 @@ func evalForLoop(node ast.ForLoop, ctx *Context) Object {
 	if collection, ok := col.(Collection); ok {
 		items = collection.Elements()
 	} else {
-		return err(ctx, "cannot perform a for-loop over the non-collection type: %s", "TypeError", col.Type())
+		return Err(ctx, "cannot perform a for-loop over the non-collection type: %s", "TypeError", col.Type())
 	}
 
 	var steps []Object
@@ -506,7 +506,7 @@ func evalForLoop(node ast.ForLoop, ctx *Context) Object {
 		})
 
 		result := eval(body, enclosed)
-		if isErr(result) {
+		if IsErr(result) {
 			return result
 		}
 
@@ -526,7 +526,7 @@ func evalFunctionCall(node ast.FunctionCall, ctx *Context) Object {
 	if fn == nil {
 		ps := patternString(node.Pattern)
 
-		return err(ctx, "no function matching the pattern: %s", "NotFoundError", ps)
+		return Err(ctx, "no function matching the pattern: %s", "NotFoundError", ps)
 	}
 
 	args := make(map[string]Object)
@@ -544,7 +544,7 @@ func evalFunctionCall(node ast.FunctionCall, ctx *Context) Object {
 			if arg, ok := item.(*ast.Argument); ok {
 				if fItem[0] == '$' {
 					evaled := eval(arg.Value, ctx)
-					if isErr(evaled) {
+					if IsErr(evaled) {
 						return evaled
 					}
 
@@ -557,7 +557,7 @@ func evalFunctionCall(node ast.FunctionCall, ctx *Context) Object {
 	}
 
 	if result == nil {
-		return O_NULL
+		return NullObj
 	}
 
 	return unwrapReturnValue(result)
@@ -566,14 +566,14 @@ func evalFunctionCall(node ast.FunctionCall, ctx *Context) Object {
 func evalQualifiedFunctionCall(node ast.QualifiedFunctionCall, ctx *Context) Object {
 	pkgID, ok := node.Package.(*ast.Identifier)
 	if !ok {
-		return err(ctx, "the package name (before ::) must be an identifier", "SyntaxError")
+		return Err(ctx, "the package name (before ::) must be an identifier", "SyntaxError")
 	}
 
 	pkgName := pkgID.Value
 
 	pkg, ok := ctx.Packages[pkgName]
 	if !ok {
-		return err(ctx, "a package named '%s' cannot be found. are you sure you've imported it?", "NotFoundError", pkgName)
+		return Err(ctx, "a package named '%s' cannot be found. are you sure you've imported it?", "NotFoundError", pkgName)
 	}
 
 	fn := pkg.GetFunction(node.Pattern)
@@ -581,14 +581,14 @@ func evalQualifiedFunctionCall(node ast.QualifiedFunctionCall, ctx *Context) Obj
 	if fn == nil {
 		ps := patternString(node.Pattern)
 
-		return err(ctx, "no function in package '%s' matching the pattern: %s", "NotFoundError", pkgName, ps)
+		return Err(ctx, "no function in package '%s' matching the pattern: %s", "NotFoundError", pkgName, ps)
 	}
 
 	if function, ok := fn.(*Function); ok {
 		return applyFunction(function, node.Pattern, ctx)
 	}
 
-	return O_NULL
+	return NullObj
 }
 
 func patternString(pattern []ast.Expression) string {
@@ -614,7 +614,7 @@ func applyFunction(fn *Function, pattern []ast.Expression, ctx *Context) Object 
 		if arg, ok := item.(*ast.Argument); ok {
 			if param, ok := fItem.(*ast.Parameter); ok {
 				evaled := eval(arg.Value, ctx)
-				if isErr(evaled) {
+				if IsErr(evaled) {
 					return evaled
 				}
 
@@ -628,7 +628,7 @@ func applyFunction(fn *Function, pattern []ast.Expression, ctx *Context) Object 
 	if fn.OnCall != nil {
 		result := fn.OnCall(fn, ctx, enclosed)
 
-		if result != nil || isErr(result) {
+		if result != nil || IsErr(result) {
 			return result
 		}
 	}
@@ -645,12 +645,12 @@ func evalFunctionDefinition(node ast.FunctionDefinition, ctx *Context) Object {
 
 	ctx.AddFunction(function)
 
-	return O_NULL
+	return NullObj
 }
 
 func evalIfExpression(node ast.IfExpression, ctx *Context) Object {
 	condition := eval(node.Condition, ctx)
-	if isErr(condition) {
+	if IsErr(condition) {
 		return condition
 	}
 
@@ -659,13 +659,13 @@ func evalIfExpression(node ast.IfExpression, ctx *Context) Object {
 	} else if node.Alternative != nil {
 		return eval(node.Alternative, ctx)
 	} else {
-		return O_NULL
+		return NullObj
 	}
 }
 
 func evalMatchExpression(node ast.MatchExpression, ctx *Context) Object {
 	val := eval(node.Exp, ctx)
-	if isErr(val) {
+	if IsErr(val) {
 		return val
 	}
 
@@ -684,7 +684,7 @@ func evalMatchExpression(node ast.MatchExpression, ctx *Context) Object {
 		} else {
 			for _, expr := range exprs {
 				e := eval(expr, ctx)
-				if isErr(e) {
+				if IsErr(e) {
 					return e
 				}
 
@@ -705,18 +705,18 @@ func evalMatchExpression(node ast.MatchExpression, ctx *Context) Object {
 		return unwrapReturnValue(result)
 	}
 
-	return O_NULL
+	return NullObj
 }
 
 func evalMethodCall(node ast.MethodCall, ctx *Context) Object {
 	inst := eval(node.Instance, ctx)
-	if isErr(inst) {
+	if IsErr(inst) {
 		return inst
 	}
 
 	instance, ok := inst.(*Instance)
 	if !ok {
-		return err(ctx, "can only call a method on type <instance>. got %s", "TypeError", inst.Type())
+		return Err(ctx, "can only call a method on type <instance>. got %s", "TypeError", inst.Type())
 	}
 
 	base := instance.Base.(*Class)
@@ -768,7 +768,7 @@ func evalMethodCall(node ast.MethodCall, ctx *Context) Object {
 
 		patternString := strings.Join(patternStrings, " ")
 
-		return err(
+		return Err(
 			ctx,
 			"could not find a method of %s matching %s",
 			"NotFoundError",
@@ -785,7 +785,7 @@ func evalMethodCall(node ast.MethodCall, ctx *Context) Object {
 		if arg, ok := item.(*ast.Argument); ok {
 			if param, ok := fItem.(*ast.Parameter); ok {
 				evaled := eval(arg.Value, ctx)
-				if isErr(evaled) {
+				if IsErr(evaled) {
 					return evaled
 				}
 
@@ -805,17 +805,17 @@ func evalTryExpression(node ast.TryExpression, ctx *Context) Object {
 
 	val, ok := v.(*Instance)
 	if !ok || val.Base.(*Class).Name != "Error" {
-		return err(ctx, "the error value in a try-expression must be an Error instance", "TypeError")
+		return Err(ctx, "the error value in a try-expression must be an Error instance", "TypeError")
 	}
 
 	tag, ok := val.Data["tag"]
 	if !ok {
-		return err(ctx, "error value doesn't have a 'tag' field", "NotFoundError")
+		return Err(ctx, "error value doesn't have a 'tag' field", "NotFoundError")
 	}
 
 	msg, ok := val.Data["msg"]
 	if !ok {
-		return err(ctx, "error value doesn't have a 'msg' field", "NotFoundError")
+		return Err(ctx, "error value doesn't have a 'msg' field", "NotFoundError")
 	}
 
 	var matched ast.Statement
@@ -833,12 +833,12 @@ func evalTryExpression(node ast.TryExpression, ctx *Context) Object {
 		} else {
 			for _, expr := range exprs {
 				e := eval(expr, ctx)
-				if isErr(e) {
+				if IsErr(e) {
 					return e
 				}
 
 				if e.Type() != STRING {
-					return err(
+					return Err(
 						ctx,
 						"all catch-arm predicate values must be strings. found %s",
 						"TypeError",
@@ -885,12 +885,12 @@ func evalIndexExpression(node ast.IndexExpression, ctx *Context) Object {
 	)
 
 	leftobj := eval(left, ctx)
-	if isErr(leftobj) {
+	if IsErr(leftobj) {
 		return leftobj
 	}
 
 	rightobj := eval(right, ctx)
-	if isErr(rightobj) {
+	if IsErr(rightobj) {
 		return rightobj
 	}
 
@@ -899,12 +899,12 @@ func evalIndexExpression(node ast.IndexExpression, ctx *Context) Object {
 			return col.GetIndex(int(index.Value))
 		}
 
-		return err(ctx, "cannot index a collection with %s - expected a <number>", "TypeError", rightobj.Type())
+		return Err(ctx, "cannot index a collection with %s - expected a <number>", "TypeError", rightobj.Type())
 	}
 
 	if cont, ok := leftobj.(Container); ok {
 		return cont.Get(rightobj)
 	}
 
-	return err(ctx, "can only index collections and containers", "TypeError")
+	return Err(ctx, "can only index collections and containers", "TypeError")
 }

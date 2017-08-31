@@ -7,15 +7,20 @@ import (
 )
 
 var (
-	O_NEXT  = new(Next)
-	O_BREAK = new(Break)
+	// NextObj is a predefined instance of Next
+	NextObj = new(Next)
 
-	O_NULL  = new(Null)
-	O_TRUE  = &Boolean{Value: true}
-	O_FALSE = &Boolean{Value: false}
+	// BreakObj is a predefined instance of Break
+	BreakObj = new(Break)
 
-	err   = Err
-	isErr = IsErr
+	// NullObj is a predefined instance of Null
+	NullObj = new(Null)
+
+	// TrueObj is a predefined instance of Boolean, whose value is true
+	TrueObj = &Boolean{Value: true}
+
+	// FalseObj is a predefined instance of Boolean, whose value is false
+	FalseObj = &Boolean{Value: false}
 )
 
 var (
@@ -42,6 +47,7 @@ var (
 	}
 )
 
+// EvaluateProgram evaluates a program in the given context
 func EvaluateProgram(prog ast.Program, ctx *Context) Object {
 	return evalProgram(&prog, ctx)
 }
@@ -67,7 +73,7 @@ func eval(n ast.Node, ctx *Context) Object {
 	case *ast.BlockStatement:
 		result = evalBlockStatement(*node, ctx)
 	case *ast.BreakStatement:
-		result = O_BREAK
+		result = BreakObj
 	case *ast.ClassStatement:
 		result = evalClassStatement(*node, ctx)
 	case *ast.DeclareExpression:
@@ -95,7 +101,7 @@ func eval(n ast.Node, ctx *Context) Object {
 	case *ast.MethodCall:
 		result = evalMethodCall(*node, ctx)
 	case *ast.NextStatement:
-		result = O_NEXT
+		result = NextObj
 	case *ast.QualifiedFunctionCall:
 		result = evalQualifiedFunctionCall(*node, ctx)
 	case *ast.ReturnStatement:
@@ -123,7 +129,7 @@ func eval(n ast.Node, ctx *Context) Object {
 	case *ast.Map:
 		result = evalMap(*node, ctx)
 	case *ast.Null:
-		result = O_NULL
+		result = NullObj
 	case *ast.Number:
 		result = &Number{Value: node.Value}
 	case *ast.String:
@@ -131,7 +137,7 @@ func eval(n ast.Node, ctx *Context) Object {
 	case *ast.Tuple:
 		result = evalTuple(*node, ctx)
 	default:
-		return err(ctx, "evaluation for %s not yet implemented", "NotImplementedError", reflect.TypeOf(n))
+		return Err(ctx, "evaluation for %s not yet implemented", "NotImplementedError", reflect.TypeOf(n))
 	}
 
 	return result
@@ -139,7 +145,7 @@ func eval(n ast.Node, ctx *Context) Object {
 
 func evalProgram(prog *ast.Program, ctx *Context) Object {
 	if len(prog.Statements) == 0 {
-		return O_NULL
+		return NullObj
 	}
 
 	var result Object
@@ -147,7 +153,7 @@ func evalProgram(prog *ast.Program, ctx *Context) Object {
 	for _, stmt := range prog.Statements {
 		result = eval(stmt, ctx)
 
-		if isErr(result) {
+		if IsErr(result) {
 			return result
 		}
 
@@ -155,7 +161,7 @@ func evalProgram(prog *ast.Program, ctx *Context) Object {
 		case *ReturnValue:
 			return obj.Value
 		case *Next, *Break:
-			return O_NULL
+			return NullObj
 		}
 	}
 

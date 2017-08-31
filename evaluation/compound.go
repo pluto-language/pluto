@@ -242,7 +242,7 @@ func (t *Tuple) Elements() []Object {
 // GetIndex returns the ith element in a collection
 func (t *Tuple) GetIndex(i int) Object {
 	if i >= len(t.Value) || i < 0 {
-		return O_NULL
+		return NullObj
 	}
 
 	return t.Value[i]
@@ -265,7 +265,7 @@ func (a *Array) Elements() []Object {
 // GetIndex returns the ith element in a collection
 func (a *Array) GetIndex(i int) Object {
 	if i >= len(a.Value) || i < 0 {
-		return O_NULL
+		return NullObj
 	}
 
 	return a.Value[i]
@@ -287,14 +287,14 @@ func (m *Map) Get(key Object) Object {
 	hasher, ok := key.(Hasher)
 
 	if !ok {
-		return O_NULL
+		return NullObj
 	}
 
 	if val, ok := m.Values[hasher.Hash()]; ok {
 		return val
 	}
 
-	return O_NULL
+	return NullObj
 }
 
 // Set sets an object at the given key
@@ -311,14 +311,14 @@ func (i *Instance) Get(key Object) Object {
 	strkey, ok := key.(*String)
 
 	if !ok {
-		return O_NULL
+		return NullObj
 	}
 
 	if val, ok := i.Data[strkey.Value]; ok {
 		return val
 	}
 
-	return O_NULL
+	return NullObj
 }
 
 // Set sets an object at the given key

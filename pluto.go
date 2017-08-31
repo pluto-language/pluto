@@ -129,7 +129,7 @@ func execute(code string, showOutput bool, ctx *evaluation.Context) {
 
 	result := evaluation.EvaluateProgram(program, ctx)
 
-	if (showOutput && !result.Equals(evaluation.O_NULL)) || evaluation.IsErr(result) {
+	if (showOutput && !result.Equals(evaluation.NullObj)) || evaluation.IsErr(result) {
 		fmt.Println(result.String())
 	}
 }

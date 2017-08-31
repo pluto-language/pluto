@@ -6,7 +6,7 @@ import (
 
 func evalBlockStatement(block ast.BlockStatement, ctx *Context) Object {
 	if len(block.Statements) == 0 {
-		return O_NULL
+		return NullObj
 	}
 
 	var result Object
@@ -14,7 +14,7 @@ func evalBlockStatement(block ast.BlockStatement, ctx *Context) Object {
 	for _, stmt := range block.Statements {
 		result = eval(stmt, ctx)
 
-		if isErr(result) || result != nil &&
+		if IsErr(result) || result != nil &&
 			(result.Type() == RETURN_VALUE ||
 				result.Type() == NEXT ||
 				result.Type() == BREAK) {
@@ -30,7 +30,7 @@ func evalClassStatement(node ast.ClassStatement, ctx *Context) Object {
 
 	if node.Parent != nil {
 		o.Parent = eval(node.Parent, ctx)
-		if isErr(o.Parent) {
+		if IsErr(o.Parent) {
 			return o.Parent
 		}
 	} else if o.Name != "Base" {
@@ -70,7 +70,7 @@ func evalClassStatement(node ast.ClassStatement, ctx *Context) Object {
 				enclosed.Assign("self", &Instance{Base: o, Data: make(map[string]Object)})
 
 				result := eval(self.Body, enclosed)
-				if isErr(result) {
+				if IsErr(result) {
 					return result
 				}
 
@@ -97,11 +97,11 @@ func evalClassStatement(node ast.ClassStatement, ctx *Context) Object {
 
 func evalReturnStatement(node ast.ReturnStatement, ctx *Context) Object {
 	if node.Value == nil {
-		return &ReturnValue{Value: O_NULL}
+		return &ReturnValue{Value: NullObj}
 	}
 
 	val := eval(node.Value, ctx)
-	if isErr(val) {
+	if IsErr(val) {
 		return val
 	}
 

@@ -133,7 +133,7 @@ func (p *Parser) next() {
 	p.peek = p.lex()
 
 	if p.peek.Type == token.Illegal {
-		p.err(
+		p.Err(
 			fmt.Sprintf("illegal token found: `%s`", p.peek.Literal),
 			p.peek.Start,
 			p.peek.End,
