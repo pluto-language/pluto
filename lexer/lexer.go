@@ -24,6 +24,9 @@ var lineEndings = []token.Type{
 	token.RightBrace,
 }
 
+// Lexer takes a string and returns a stream of tokens
+// The stream of tokens is in the form of a function
+// which returns the next token.
 func Lexer(str string) func() token.Token {
 	var (
 		index = 0
