@@ -28,4 +28,9 @@ echo -n "installing plp... "
 go get -u github.com/pluto-language/plp
 echo "DONE"
 
-echo "pluto and plp are installed!"
+# install standard libraries
+echo "installing standard libraries... "
+plp +maths +collections > /dev/null
+
+echo
+echo "pluto and plp have been installed!"
