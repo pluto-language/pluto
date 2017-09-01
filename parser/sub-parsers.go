@@ -87,12 +87,12 @@ func (p *Parser) parseParams(end token.Type) []ast.Expression {
 	}
 
 	p.next()
-	params = append(params, p.parseNonFnID())
+	params = append(params, p.parseID())
 
 	for p.peekIs(token.Comma) {
 		p.next()
 		p.next()
-		params = append(params, p.parseNonFnID())
+		params = append(params, p.parseID())
 	}
 
 	if !p.expect(end) {

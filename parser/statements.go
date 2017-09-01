@@ -143,13 +143,13 @@ func (p *Parser) parseClassDeclaration() ast.Statement {
 		return nil
 	}
 
-	stmt.Name = p.parseNonFnID()
+	stmt.Name = p.parseID()
 
 	if p.peekIs(token.Extends) {
 		p.next()
 		p.next()
 
-		stmt.Parent = p.parseNonFnID()
+		stmt.Parent = p.parseID()
 	}
 
 	if !p.expect(token.LeftBrace) {
