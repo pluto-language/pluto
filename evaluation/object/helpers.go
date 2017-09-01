@@ -1,4 +1,4 @@
-package evaluation
+package object
 
 func unwrapReturnValue(o Object) Object {
 	if ret, ok := o.(*ReturnValue); ok {

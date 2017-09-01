@@ -1,4 +1,4 @@
-package evaluation
+package object
 
 // Type is an object type
 type Type string

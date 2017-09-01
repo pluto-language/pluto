@@ -1,4 +1,4 @@
-package evaluation
+package object
 
 // IsErr checks if an object is an instance of Error
 func IsErr(o Object) bool {
