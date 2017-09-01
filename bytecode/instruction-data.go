@@ -6,7 +6,7 @@ type data struct {
 }
 
 // Instructions stores data about the different instruction types
-var Instructions = map[uint16]data{
+var Instructions = map[byte]data{
 	Pop: {Name: "POP"},
 	Dup: {Name: "DUP"},
 	Rot: {Name: "ROT"},

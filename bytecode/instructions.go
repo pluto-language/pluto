@@ -2,52 +2,33 @@ package bytecode
 
 // 0-9: stack operations
 const (
-	Pop uint16 = 0
-	Dup uint16 = 1
-	Rot uint16 = 2
-	//
-	//
-	//
-	// reserved
-	//
-	//
-	//
+	/*  0x00  */ Pop byte = 0
+	/*  0x01  */ Dup byte = 1
+	/*  0x02  */ Rot byte = 2
 )
 
 // 10-19: load/store
 const (
-	LoadConst uint16 = 10
-	LoadName  uint16 = 11
-	StoreName uint16 = 12
-	//
-	//
-	//
-	// reserved
-	//
-	//
-	//
+	/*  0x0a  */ LoadConst byte = 10
+	/*  0x0b  */ LoadName byte = 11
+	/*  0x0c  */ StoreName byte = 12
 )
 
 // 20-39: operators
 const (
-	UnaryInvert uint16 = 20
-	UnaryNegate uint16 = 21
-	UnaryNoOp   uint16 = 22
-	// reserved
-	//
-	BinaryAdd      uint16 = 25
-	BinarySubtract uint16 = 26
-	BinaryMultiply uint16 = 27
-	BinaryDivide   uint16 = 28
-	BinaryExponent uint16 = 29
-	BinaryFloorDiv uint16 = 30
-	BinaryMod      uint16 = 31
-	BinaryOr       uint16 = 32
-	BinaryAnd      uint16 = 33
-	BinaryBitOr    uint16 = 34
-	BinaryBitAnd   uint16 = 35
-	BinaryEquals   uint16 = 36
-	//
-	// reserved
-	//
+	/*  0x14  */ UnaryInvert byte = 20
+	/*  0x15  */ UnaryNegate byte = 21
+	/*  0x16  */ UnaryNoOp byte = 22
+	/*  0x19  */ BinaryAdd byte = 25
+	/*  0x1a  */ BinarySubtract byte = 26
+	/*  0x1b  */ BinaryMultiply byte = 27
+	/*  0x1c  */ BinaryDivide byte = 28
+	/*  0x1d  */ BinaryExponent byte = 29
+	/*  0x1e  */ BinaryFloorDiv byte = 30
+	/*  0x1f  */ BinaryMod byte = 31
+	/*  0x20  */ BinaryOr byte = 32
+	/*  0x21  */ BinaryAnd byte = 33
+	/*  0x22  */ BinaryBitOr byte = 34
+	/*  0x23  */ BinaryBitAnd byte = 35
+	/*  0x24  */ BinaryEquals byte = 36
 )
