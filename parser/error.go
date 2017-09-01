@@ -14,6 +14,7 @@ type Error struct {
 	Start, End token.Position
 }
 
+// Err creates an Error instance with the given arguments
 func (p *Parser) Err(msg string, start, end token.Position) {
 	err := Error{
 		Message: msg,
