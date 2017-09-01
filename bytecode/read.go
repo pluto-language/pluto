@@ -31,6 +31,10 @@ var ErrOutOfBytes = errors.New("bytecode: not enough bytes remaining")
 
 // Read takes some raw bytecode and outputs
 // the "parsed" bytecode as a Code struct.
+//
+// If there is an error, it is ErrOutOfBytes,
+// signifying there aren't enough bytes left
+// after an instruction with arity > 0.
 func Read(raw Raw) (Code, error) {
 	var (
 		code  Code
