@@ -2,6 +2,7 @@ package evaluation
 
 import (
 	"github.com/Zac-Garby/pluto/ast"
+	"github.com/Zac-Garby/pluto/bytecode"
 )
 
 /* Structs */
@@ -20,7 +21,7 @@ type (
 	// Function is a normal Pluto function, referenced by its pattern
 	Function struct {
 		Pattern []ast.Expression
-		Body    ast.Statement
+		Body    bytecode.Code
 		OnCall  func(self *Function) Object
 	}
 

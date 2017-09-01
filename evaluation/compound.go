@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/Zac-Garby/pluto/ast"
+	"github.com/Zac-Garby/pluto/bytecode"
 	"github.com/fatih/color"
 )
 
@@ -32,7 +33,7 @@ type (
 	// Block is an anonymous function
 	Block struct {
 		Params []ast.Expression
-		Body   ast.Statement
+		Body   bytecode.Code
 	}
 
 	// Class is a class, containing methods and a parent
