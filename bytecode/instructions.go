@@ -46,7 +46,7 @@ const (
 	BinaryAnd      = 33
 	BinaryBitOr    = 34
 	BinaryBitAnd   = 35
-	BinaryEqual    = 36
+	BinaryEquals   = 36
 	//
 	// reserved
 	//
