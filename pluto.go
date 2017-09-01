@@ -6,7 +6,7 @@ import (
 	"os/user"
 	"path/filepath"
 
-	_ "github.com/Zac-Garby/pluto/bytecode"
+	"github.com/Zac-Garby/pluto/bytecode"
 
 	"github.com/fatih/color"
 	"github.com/jessevdk/go-flags"
@@ -54,4 +54,15 @@ func main() {
 		fmt.Printf("Pluto v%s\n", version)
 		return
 	}
+
+	// loads the first two constants and adds them
+	in := []byte{10, 0, 0, 10, 0, 1, 25}
+
+	code, err := bytecode.Read(in)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+
+	fmt.Println(code)
 }
