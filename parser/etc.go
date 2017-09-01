@@ -85,10 +85,6 @@ func isBlacklisted(t token.Type) bool {
 }
 
 func isArgNode(n ast.Node) bool {
-	switch n.(type) {
-	case *ast.Parameter, *ast.Char, *ast.Tuple, *ast.String, *ast.Number, *ast.BlockLiteral, *ast.Identifier:
-		return true
-	default:
-		return false
-	}
+	_, ok := n.(ast.Expression)
+	return ok
 }
