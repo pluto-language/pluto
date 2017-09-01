@@ -7,6 +7,7 @@ META
   add a literate Pluto file type (maybe .lpluto)
   make a Windows install script
   'pluto publish' command to publish a package
+  create some proper documentation
 
 LANGUAGE
   only throw one syntax error per statement
