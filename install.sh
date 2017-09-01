@@ -31,6 +31,7 @@ echo "DONE"
 # install standard libraries
 echo "installing standard libraries... "
 plp +maths +collections > /dev/null
+echo "DONE"
 
 echo
 echo "pluto and plp have been installed!"

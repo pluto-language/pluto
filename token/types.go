@@ -50,10 +50,10 @@ const (
 	BackSlash = "backslash"
 
 	// LeftParen is a left paren '('
-	LeftParen = "lparen"
+	LeftParen = "left-paren"
 
 	// RightParen is a right paren ')'
-	RightParen = "rparen"
+	RightParen = "right-paren"
 
 	// LessThan is the less than operator (<)
 	LessThan = "less-than"

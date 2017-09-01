@@ -7,6 +7,7 @@ import (
 	"os"
 	"os/user"
 	"path/filepath"
+	"strings"
 
 	"github.com/Zac-Garby/pluto/evaluation"
 	"github.com/Zac-Garby/pluto/parser"
@@ -73,6 +74,7 @@ func runREPL(ctx *evaluation.Context) {
 		reader := bufio.NewReader(os.Stdin)
 		fmt.Print(">> ")
 		text, _ := reader.ReadString('\n')
+		text = strings.TrimRight(text, "\n")
 
 		execute(text, true, ctx)
 	}

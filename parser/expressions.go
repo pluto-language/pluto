@@ -8,6 +8,8 @@ import (
 	"github.com/Zac-Garby/pluto/token"
 )
 
+// parseExpression parses an expression starting at the current token.
+// The parsing method it uses is a modified pratt parser.
 func (p *Parser) parseExpression(precedence int) ast.Expression {
 	prefix, prefixExists := p.prefixes[p.cur.Type]
 
@@ -17,6 +19,17 @@ func (p *Parser) parseExpression(precedence int) ast.Expression {
 	}
 
 	left := prefix()
+
+	if isArgNode(left) && p.peekIs(p.argTokens...) {
+		if _, isID := left.(*ast.Identifier); isID {
+			left = p.parseFunctionCallStartingWith(left)
+		} else {
+			left = p.parseFunctionCallStartingWith(&ast.Argument{
+				Tok:   left.Token(),
+				Value: left,
+			})
+		}
+	}
 
 	for !p.peekIs(token.Semi) && precedence < p.peekPrecedence() {
 		infix, infixExists := p.infixes[p.peek.Type]
@@ -37,20 +50,6 @@ func (p *Parser) parseExpression(precedence int) ast.Expression {
  **********************/
 
 func (p *Parser) parseID() ast.Expression {
-	if p.peekIs(p.argTokens...) {
-		return p.parseFunctionCallStartingWith(&ast.Identifier{
-			Tok:   p.cur,
-			Value: p.cur.Literal,
-		})
-	}
-
-	return &ast.Identifier{
-		Tok:   p.cur,
-		Value: p.cur.Literal,
-	}
-}
-
-func (p *Parser) parseNonFnID() ast.Expression {
 	return &ast.Identifier{
 		Tok:   p.cur,
 		Value: p.cur.Literal,
@@ -218,7 +217,7 @@ func (p *Parser) parseForLoop() ast.Expression {
 	}
 
 	p.next()
-	expr.Var = p.parseNonFnID()
+	expr.Var = p.parseID()
 
 	if !p.expect(token.Colon) {
 		return nil
@@ -353,7 +352,7 @@ func (p *Parser) parseTryExpression() ast.Expression {
 	}
 
 	p.next()
-	expr.ErrName = p.parseNonFnID()
+	expr.ErrName = p.parseID()
 
 	if !p.expect(token.RightParen) {
 		return nil

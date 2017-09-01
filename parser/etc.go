@@ -1,6 +1,7 @@
 package parser
 
 import "github.com/Zac-Garby/pluto/token"
+import "github.com/Zac-Garby/pluto/ast"
 
 const (
 	lowest = iota
@@ -69,6 +70,8 @@ var argBlacklist = []token.Type{
 	token.Minus,
 	token.Plus,
 	token.LeftSquare,
+	token.Try,
+	token.Bang,
 }
 
 func isBlacklisted(t token.Type) bool {
@@ -79,4 +82,9 @@ func isBlacklisted(t token.Type) bool {
 	}
 
 	return false
+}
+
+func isArgNode(n ast.Node) bool {
+	_, ok := n.(ast.Expression)
+	return ok
 }

@@ -10,15 +10,15 @@ do { print "No arguments!" }
 six = do $triple with (2,)
 
 # they are used in a lot of builtins
-squares = map { |_, x| -> x ** 2 } over (\1 to 11)
+squares = map { |_, x| -> x ** 2 } over (1 to 10)
 print "Squares: {}" with (squares,)
 
 # they make it easy to define lots of functions
 def $n factorial {
-  fold (\1 to (n + 1)) with { |result, n| -> result * n }
+  fold (1 to $n) with { |result, n| -> result * n }
 }
 
-print "5! = {}" with (\5 factorial,)
+print "5! = {}" with (5 factorial,)
 
 # the declare operator (:=)
 #   when using the normal assignment operator (=), the assignment can affect parent scopes.

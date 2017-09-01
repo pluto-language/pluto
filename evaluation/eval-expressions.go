@@ -538,17 +538,25 @@ func evalFunctionCall(node ast.FunctionCall, ctx *Context) Object {
 	}
 
 	if function, ok := fn.(Builtin); ok {
+		ps := patternString(node.Pattern)
+
 		for i, item := range node.Pattern {
 			fItem := function.Pattern[i]
 
 			if arg, ok := item.(*ast.Argument); ok {
-				if fItem[0] == '$' {
-					evaled := eval(arg.Value, ctx)
-					if IsErr(evaled) {
-						return evaled
-					}
+				evaled := eval(arg.Value, ctx)
+				if IsErr(evaled) {
+					return evaled
+				}
 
+				if fItem[0] == '$' {
 					args[fItem[1:]] = evaled
+				} else {
+					return Err(ctx, "no function matching the pattern: %s", "NotFoundError", ps)
+				}
+			} else if _, ok := item.(*ast.Identifier); ok {
+				if fItem[0] == '$' {
+					return Err(ctx, "no function matching the pattern: %s", "NotFoundError", ps)
 				}
 			}
 		}
