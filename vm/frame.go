@@ -2,7 +2,7 @@ package vm
 
 import (
 	"github.com/Zac-Garby/pluto/bytecode"
-	"github.com/Zac-Garby/pluto/evaluation/object"
+	"github.com/Zac-Garby/pluto/object"
 )
 
 // Frame is a virtual machine frame. A frame is
@@ -14,6 +14,6 @@ type Frame struct {
 	code            bytecode.Code
 	lastInstruction int
 
-	local, global    map[string]*object.Object
-	constants, stack []object.Object
+	locals, globals map[string]*object.Object
+	stack           []object.Object
 }
