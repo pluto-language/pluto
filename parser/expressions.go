@@ -8,6 +8,8 @@ import (
 	"github.com/Zac-Garby/pluto/token"
 )
 
+// parseExpression parses an expression starting at the current token.
+// The parsing method it uses is a modified pratt parser.
 func (p *Parser) parseExpression(precedence int) ast.Expression {
 	prefix, prefixExists := p.prefixes[p.cur.Type]
 
