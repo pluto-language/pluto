@@ -1,16 +1,13 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"os/user"
 	"path/filepath"
-	"strings"
 
-	"github.com/Zac-Garby/pluto/evaluation"
-	"github.com/Zac-Garby/pluto/parser"
+	_ "github.com/Zac-Garby/pluto/bytecode"
+
 	"github.com/fatih/color"
 	"github.com/jessevdk/go-flags"
 )
@@ -56,82 +53,5 @@ func main() {
 	if opts.Version {
 		fmt.Printf("Pluto v%s\n", version)
 		return
-	}
-
-	if len(opts.Args.File) == 0 {
-		runREPL(evaluation.NewContext())
-	} else {
-		executeFile(opts.Args.File)
-	}
-}
-
-func runREPL(ctx *evaluation.Context) {
-	if !opts.NoPrelude {
-		importPrelude(ctx)
-	}
-
-	for {
-		reader := bufio.NewReader(os.Stdin)
-		fmt.Print(">> ")
-		text, _ := reader.ReadString('\n')
-		text = strings.TrimRight(text, "\n")
-
-		execute(text, true, ctx)
-	}
-}
-
-func executeFile(name string) {
-	if code, err := ioutil.ReadFile(name); err != nil {
-		panic(err)
-	} else {
-		ctx := evaluation.NewContext()
-		if !opts.NoPrelude {
-			importPrelude(ctx)
-		}
-
-		execute(string(code), false, ctx)
-
-		if opts.Interactive {
-			runREPL(ctx)
-		}
-	}
-}
-
-func importPrelude(ctx *evaluation.Context) {
-	srcPath := filepath.Join(root, "libraries", "prelude.pluto")
-
-	if prelude, err := ioutil.ReadFile(srcPath); err != nil {
-		panic(err)
-	} else {
-		oldTreeFlag := opts.Tree
-
-		opts.Tree = false
-		execute(string(prelude), false, ctx)
-		opts.Tree = oldTreeFlag
-	}
-}
-
-func execute(code string, showOutput bool, ctx *evaluation.Context) {
-	parse := parser.New(code)
-	program := parse.Parse()
-
-	if len(parse.Errors) > 0 {
-		parse.PrintErrors()
-
-		return
-	}
-
-	if opts.Parse || opts.Tree {
-		if opts.Tree {
-			fmt.Println(program.Tree())
-		}
-
-		return
-	}
-
-	result := evaluation.EvaluateProgram(program, ctx)
-
-	if (showOutput && !result.Equals(evaluation.NullObj)) || evaluation.IsErr(result) {
-		fmt.Println(result.String())
 	}
 }

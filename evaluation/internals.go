@@ -21,8 +21,7 @@ type (
 	Function struct {
 		Pattern []ast.Expression
 		Body    ast.Statement
-		Context *Context
-		OnCall  func(self *Function, ctx, enclosed *Context) Object
+		OnCall  func(self *Function) Object
 	}
 
 	// InitMethod is an initializer method on a class

@@ -1,25 +1,33 @@
 package evaluation
 
-import (
-	"strings"
-)
-
-// MakeCollection creates a collection of type t with the elements provided
-func MakeCollection(t Type, elems []Object, ctx *Context) Object {
-	switch t {
-	case ArrayType:
-		return &Array{Value: elems}
-	case TupleType:
-		return &Tuple{Value: elems}
-	case StringType:
-		var strs []string
-
-		for _, elem := range elems {
-			strs = append(strs, elem.String())
-		}
-
-		return &String{Value: strings.Join(strs, "")}
-	default:
-		return Err(ctx, "could not form a collection of type %s", "TypeError", t)
+func unwrapReturnValue(o Object) Object {
+	if ret, ok := o.(*ReturnValue); ok {
+		return ret.Value
 	}
+
+	return o
+}
+
+func isTruthy(o Object) bool {
+	if o.Equals(NullObj) || o.Equals(FalseObj) {
+		return false
+	}
+
+	if num, ok := o.(*Number); ok {
+		return num.Value != 0
+	}
+
+	if col, ok := o.(Collection); ok {
+		return len(col.Elements()) != 0
+	}
+
+	return true
+}
+
+func boolObj(t bool) Object {
+	if t {
+		return TrueObj
+	}
+
+	return FalseObj
 }

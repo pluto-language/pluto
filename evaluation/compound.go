@@ -219,14 +219,7 @@ func (i *Instance) String() string {
 	stringMethod := i.Base.(*Class).GetMethod("string")
 
 	if stringMethod != nil {
-		args := map[string]Object{
-			"self": i,
-		}
-
-		enclosed := stringMethod.Fn.Context.EncloseWith(args)
-		result := eval(stringMethod.Fn.Body, enclosed)
-
-		return result.String()
+		panic("Implement me :)")
 	}
 
 	return fmt.Sprintf("<instance of %s>", i.Base.(*Class).Name)
