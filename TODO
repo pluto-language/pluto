@@ -9,7 +9,6 @@ META
   'pluto publish' command to publish a package
 
 LANGUAGE
-  only require explicit (\) function calls when the pattern len == 1
   only throw one syntax error per statement
   compile Pluto to bytecode to speed up execution?
   allow blocks to be curried
