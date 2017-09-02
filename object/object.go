@@ -34,3 +34,9 @@ type Hasher interface {
 	Object
 	Hash() string
 }
+
+// Numeric is any object which can be
+// represented as a float64 value
+type Numeric interface {
+	Float64() float64
+}

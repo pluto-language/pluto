@@ -3,15 +3,10 @@ package main
 import (
 	"fmt"
 	"os"
-	"os/user"
-	"path/filepath"
 
 	"github.com/Zac-Garby/pluto/bytecode"
 	"github.com/Zac-Garby/pluto/object"
 	"github.com/Zac-Garby/pluto/vm"
-
-	"github.com/fatih/color"
-	"github.com/jessevdk/go-flags"
 )
 
 const version = "0.1.0"
@@ -35,30 +30,7 @@ var (
 )
 
 func main() {
-	if r, exists := os.LookupEnv("PLUTO"); exists {
-		root = r
-	} else {
-		usr, err := user.Current()
-		if err != nil {
-			panic(err)
-		}
-
-		root = filepath.Join(usr.HomeDir, "pluto")
-	}
-
-	if _, err := flags.Parse(&opts); err != nil {
-		return
-	}
-
-	color.NoColor = opts.NoColour
-
-	if opts.Version {
-		fmt.Printf("Pluto v%s\n", version)
-		return
-	}
-
-	// loads the first two constants and adds them
-	in := []byte{10, 0, 0, 10, 0, 1, 25, 10, 0, 0, 25}
+	in := []byte{10, 0, 0, 10, 0, 1, 25, 10, 0, 0, 29}
 
 	code, err := bytecode.Read(in)
 	if err != nil {

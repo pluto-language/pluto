@@ -8,7 +8,9 @@ func unwrapReturnValue(o Object) Object {
 	return o
 }
 
-func isTruthy(o Object) bool {
+// IsTruthy returns true if o is truthy,
+// and false otherwise.
+func IsTruthy(o Object) bool {
 	if o.Equals(NullObj) || o.Equals(FalseObj) {
 		return false
 	}
@@ -24,7 +26,9 @@ func isTruthy(o Object) bool {
 	return true
 }
 
-func boolObj(t bool) Object {
+// BoolObj converts a native bool
+// value to a Pluto boolean.
+func BoolObj(t bool) Object {
 	if t {
 		return TrueObj
 	}

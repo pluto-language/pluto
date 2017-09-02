@@ -173,3 +173,10 @@ func (c *Char) Hash() string {
 func (n *Null) Hash() string {
 	return "null"
 }
+
+/* Numeric implementations */
+
+// Float64 returns the 64-bit floating point value of the number
+func (n *Number) Float64() float64 {
+	return n.Value
+}
