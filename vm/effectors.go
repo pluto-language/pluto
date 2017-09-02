@@ -49,6 +49,7 @@ func nunop(f *Frame, i bytecode.Instruction) {
 	n, ok := a.(object.Numeric)
 	if !ok {
 		f.vm.lastError = errors.New("evaluation: non-numeric value in numeric unary expression")
+		return
 	}
 
 	v := n.Float64()
@@ -71,11 +72,13 @@ func nbinop(f *Frame, i bytecode.Instruction) {
 	n, ok := a.(object.Numeric)
 	if !ok {
 		f.vm.lastError = errors.New("evaluation: non-numeric value in numeric binary expression")
+		return
 	}
 
 	m, ok := b.(object.Numeric)
 	if !ok {
 		f.vm.lastError = errors.New("evaluation: non-numeric value in numeric binary expression")
+		return
 	}
 
 	lval := n.Float64()
