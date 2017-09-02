@@ -30,7 +30,7 @@ var (
 )
 
 func main() {
-	in := []byte{10, 0, 0, 10, 0, 1, 25, 10, 0, 0, 29}
+	in := []byte{10, 0, 0, 10, 0, 1, 36}
 
 	code, err := bytecode.Read(in)
 	if err != nil {
@@ -42,7 +42,7 @@ func main() {
 
 	machine.RunDefault(code, []object.Object{
 		&object.Number{Value: 5},
-		&object.Number{Value: 2},
+		&object.Number{Value: 6},
 	})
 
 	val := machine.ExtractValue()

@@ -5,7 +5,17 @@ import (
 	"github.com/Zac-Garby/pluto/object"
 )
 
-type store map[string]object.Object
+type store struct {
+	names map[uint16]string
+	data  map[string]object.Object
+}
+
+func newStore() store {
+	return store{
+		names: make(map[uint16]string),
+		data:  make(map[string]object.Object),
+	}
+}
 
 // VirtualMachine is the base struct
 // for the Pluto VM. It stores information
@@ -29,7 +39,7 @@ func New() *VirtualMachine {
 
 // Run executes the supplied bytecode
 func (vm *VirtualMachine) Run(code bytecode.Code, globals, locals store, constants []object.Object) {
-	frame := vm.makeFrame(code, make(store), globals, locals, constants)
+	frame := vm.makeFrame(code, newStore(), globals, locals, constants)
 
 	vm.pushFrame(frame)
 	vm.runFrame(frame)
@@ -38,7 +48,7 @@ func (vm *VirtualMachine) Run(code bytecode.Code, globals, locals store, constan
 // RunDefault executes the bytecode with
 // empty globals and locals
 func (vm *VirtualMachine) RunDefault(code bytecode.Code, constants []object.Object) {
-	vm.Run(code, make(store), make(store), constants)
+	vm.Run(code, newStore(), newStore(), constants)
 }
 
 func (vm *VirtualMachine) makeFrame(code bytecode.Code, args, globals, locals store, constants []object.Object) *Frame {
@@ -51,8 +61,9 @@ func (vm *VirtualMachine) makeFrame(code bytecode.Code, args, globals, locals st
 		constants: constants,
 	}
 
-	for k, v := range args {
-		locals[k] = v
+	for k, v := range args.names {
+		locals.names[k] = v
+		locals.data[v] = args.data[v]
 	}
 
 	return frame
