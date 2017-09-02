@@ -11,9 +11,9 @@ var Instructions = map[byte]data{
 	Dup: {Name: "DUP"},
 	Rot: {Name: "ROT"},
 
-	LoadConst: {"LOAD_CONST", true},
-	LoadName:  {"LOAD_NAME", true},
-	StoreName: {"STORE_NAME", true},
+	LoadConst: {Name: "LOAD_CONST", HasArg: true},
+	LoadName:  {Name: "LOAD_NAME", HasArg: true},
+	StoreName: {Name: "STORE_NAME", HasArg: true},
 
 	UnaryInvert: {Name: "UNARY_INVERT"},
 	UnaryNegate: {Name: "UNARY_NEGATE"},

@@ -10,10 +10,32 @@ import (
 // things like the variables in that scope and
 // the stack.
 type Frame struct {
-	previous        *Frame
-	code            bytecode.Code
-	lastInstruction int
+	previous *Frame          // the previous frame
+	code     bytecode.Code   // the parsed bytecode
+	offset   int             // the current instruction index
+	vm       *VirtualMachine // the frame's virtual machine
 
-	locals, globals map[string]*object.Object
-	stack           []object.Object
+	locals    store // the local namespace
+	globals   store // the global namespace
+	stack     stack // the object stack
+	constants []object.Object
+}
+
+func (f *Frame) execute() {
+	for {
+		if f.offset >= len(f.code) {
+			return
+		}
+
+		instruction := f.code[f.offset]
+
+		f.doInstruction(instruction)
+
+		f.offset++
+	}
+}
+
+func (f *Frame) doInstruction(i bytecode.Instruction) {
+	e := effectors[i.Code]
+	e(f, i)
 }

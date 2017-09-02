@@ -16,9 +16,11 @@ type Raw []byte
 
 // Code is the "parsed" bytecode, i.e. a list of
 // instructions, with their arguments.
-type Code []instruction
+type Code []Instruction
 
-type instruction struct {
+// Instruction is a parsed bytecode
+// instruction.
+type Instruction struct {
 	Code byte
 	Arg  rune
 	Name string
@@ -46,7 +48,7 @@ func Read(raw Raw) (Code, error) {
 			cur  = raw[index]
 			data = Instructions[cur]
 
-			instr = instruction{
+			instr = Instruction{
 				Code: cur,
 				Name: data.Name,
 			}

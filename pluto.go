@@ -7,6 +7,8 @@ import (
 	"path/filepath"
 
 	"github.com/Zac-Garby/pluto/bytecode"
+	"github.com/Zac-Garby/pluto/object"
+	"github.com/Zac-Garby/pluto/vm"
 
 	"github.com/fatih/color"
 	"github.com/jessevdk/go-flags"
@@ -56,7 +58,7 @@ func main() {
 	}
 
 	// loads the first two constants and adds them
-	in := []byte{10, 0, 0, 10, 0, 1, 25}
+	in := []byte{10, 0, 0, 10, 0, 1, 25, 10, 0, 0, 25}
 
 	code, err := bytecode.Read(in)
 	if err != nil {
@@ -64,5 +66,14 @@ func main() {
 		os.Exit(1)
 	}
 
-	fmt.Println(code)
+	machine := vm.New()
+
+	machine.RunDefault(code, []object.Object{
+		&object.Number{Value: 5},
+		&object.Number{Value: 2},
+	})
+
+	val := machine.ExtractValue()
+
+	fmt.Println(val)
 }
