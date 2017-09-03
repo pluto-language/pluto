@@ -39,7 +39,7 @@ const (
 	Return byte = 41
 )
 
-// 50-59: pseudo-syscalls (i.e. builtin functions?)
+// 50-79: pseudo-syscalls (i.e. builtin functions?)
 const (
 	Print   byte = 50
 	Println byte = 51
