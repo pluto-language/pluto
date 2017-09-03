@@ -20,9 +20,11 @@ type (
 
 	// Function is a normal Pluto function, referenced by its pattern
 	Function struct {
-		Pattern []ast.Expression
-		Body    bytecode.Code
-		OnCall  func(self *Function) Object
+		Pattern   []ast.Expression
+		Body      bytecode.Code
+		Constants []Object
+		Names     map[rune]string
+		OnCall    func(self *Function) Object
 	}
 
 	// InitMethod is an initializer method on a class

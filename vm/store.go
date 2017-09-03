@@ -6,7 +6,9 @@ import "github.com/Zac-Garby/pluto/object"
 // defined names, and their corresponding data
 type Store struct {
 	Names     map[rune]string
+	Patterns  map[rune]string
 	Data      map[string]object.Object
+	Functions FunctionStore
 	nextIndex rune
 }
 
@@ -15,6 +17,7 @@ func NewStore() Store {
 	return Store{
 		Names:     make(map[rune]string),
 		Data:      make(map[string]object.Object),
+		Functions: FunctionStore{Functions: make([]object.Function, 8)},
 		nextIndex: 0,
 	}
 }

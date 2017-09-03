@@ -71,9 +71,8 @@ func (vm *VirtualMachine) runFrame(frame *Frame) {
 
 // ExtractValue returns the top value from the top frame
 func (vm *VirtualMachine) ExtractValue() object.Object {
-	if len(vm.frames) == 0 {
+	if len(vm.frames) < 1 || len(vm.frames[0].stack.objects) < 1 {
 		return nil
 	}
-
 	return vm.frames[0].stack.top()
 }

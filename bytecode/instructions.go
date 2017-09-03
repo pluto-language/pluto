@@ -31,4 +31,11 @@ const (
 	/*  0x22  */ BinaryBitOr byte = 34
 	/*  0x23  */ BinaryBitAnd byte = 35
 	/*  0x24  */ BinaryEquals byte = 36
+	/*  0x25  */ Print byte = 37
+)
+
+// 40-49: using functions
+const (
+	/*  0x28  */ Call byte = 40
+	/*  0x29  */ Return byte = 41
 )

@@ -31,4 +31,8 @@ var Instructions = map[byte]data{
 	BinaryBitOr:    {Name: "BINARY_BIT_OR"},
 	BinaryBitAnd:   {Name: "BINARY_BIT_AND"},
 	BinaryEquals:   {Name: "BINARY_EQUALS"},
+	Print:          {Name: "PRINT"},
+
+	Call:   {Name: "CALL_FN", HasArg: true},
+	Return: {Name: "RETURN_FN"},
 }

@@ -19,6 +19,7 @@ type FunctionStore struct {
 func (f *FunctionStore) SearchString(search string) *object.Function {
 	pattern := strings.Split(search, " ")
 
+outer:
 	for _, fn := range f.Functions {
 		fnpat := fn.Pattern
 
@@ -29,25 +30,22 @@ func (f *FunctionStore) SearchString(search string) *object.Function {
 			)
 
 			if isArg {
-				if _, ok := fItem.(*ast.Argument); !ok {
+				if _, ok := fItem.(*ast.Parameter); !ok {
 					// Doesn't match
-					goto nomatch
+					continue outer
 				}
 			} else {
 				if id, ok := fItem.(*ast.Identifier); !ok {
 					// Doesn't match
-					goto nomatch
+					continue outer
 				} else if id.Value != item {
 					// Doesn't match
-					goto nomatch
+					continue outer
 				}
 			}
 		}
 
 		return &fn
-
-	nomatch:
-		continue
 	}
 
 	return nil

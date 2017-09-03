@@ -5,33 +5,50 @@ import (
 	"fmt"
 	"math"
 
+	"github.com/Zac-Garby/pluto/ast"
 	"github.com/Zac-Garby/pluto/bytecode"
 	"github.com/Zac-Garby/pluto/object"
 )
 
-type effector func(f *Frame, i bytecode.Instruction)
+// Effector is a function which performs a particular instruction
+type Effector func(f *Frame, i bytecode.Instruction)
 
-var effectors = map[byte]effector{
-	bytecode.Pop: bytePop,
-	bytecode.Dup: byteDup,
+var effectors map[byte]Effector
 
-	bytecode.LoadConst: byteLoadConst,
-	bytecode.LoadName:  byteLoadName,
-	bytecode.StoreName: byteStoreName,
+// Effectors returns a map of bytecodes and their
+// effectors. Wrapped in a function to stop an
+// initialization loop.
+func Effectors() map[byte]Effector {
+	if len(effectors) == 0 {
+		effectors = map[byte]Effector{
+			bytecode.Pop: bytePop,
+			bytecode.Dup: byteDup,
 
-	bytecode.UnaryNegate: nunop,
-	bytecode.UnaryNoOp:   nunop,
+			bytecode.LoadConst: byteLoadConst,
+			bytecode.LoadName:  byteLoadName,
+			bytecode.StoreName: byteStoreName,
 
-	bytecode.BinaryAdd:      nbinop,
-	bytecode.BinarySubtract: nbinop,
-	bytecode.BinaryMultiply: nbinop,
-	bytecode.BinaryDivide:   nbinop,
-	bytecode.BinaryExponent: nbinop,
-	bytecode.BinaryFloorDiv: nbinop,
-	bytecode.BinaryMod:      nbinop,
-	bytecode.BinaryBitOr:    nbinop,
-	bytecode.BinaryBitAnd:   nbinop,
-	bytecode.BinaryEquals:   byteEquals,
+			bytecode.UnaryNegate: nunop,
+			bytecode.UnaryNoOp:   nunop,
+
+			bytecode.BinaryAdd:      nbinop,
+			bytecode.BinarySubtract: nbinop,
+			bytecode.BinaryMultiply: nbinop,
+			bytecode.BinaryDivide:   nbinop,
+			bytecode.BinaryExponent: nbinop,
+			bytecode.BinaryFloorDiv: nbinop,
+			bytecode.BinaryMod:      nbinop,
+			bytecode.BinaryBitOr:    nbinop,
+			bytecode.BinaryBitAnd:   nbinop,
+			bytecode.BinaryEquals:   byteEquals,
+			bytecode.Print:          bytePrint,
+
+			bytecode.Call:   byteCall,
+			bytecode.Return: byteReturn,
+		}
+	}
+
+	return effectors
 }
 
 func bytePop(f *Frame, i bytecode.Instruction) {
@@ -144,4 +161,50 @@ func byteEquals(f *Frame, i bytecode.Instruction) {
 	eq := left.Equals(right)
 
 	f.stack.push(object.BoolObj(eq))
+}
+
+func bytePrint(f *Frame, i bytecode.Instruction) {
+	fmt.Println(f.stack.pop())
+}
+
+func byteCall(f *Frame, i bytecode.Instruction) {
+	pattern := f.locals.Patterns[i.Arg]
+
+	fn := f.locals.Functions.SearchString(pattern)
+	if fn == nil {
+		f.vm.Error = fmt.Errorf("evaluation: function '%s' not found in the current scope", pattern)
+		return
+	}
+
+	locals := f.locals
+
+	for _, item := range fn.Pattern {
+		if param, ok := item.(*ast.Parameter); ok {
+			// Found a parameter
+
+			locals.Define(param.Name, f.stack.pop())
+		}
+	}
+
+	// Create the function's frame
+	fnFrame := &Frame{
+		code:      fn.Body,
+		constants: fn.Constants,
+		locals:    locals,
+		offset:    0,
+		previous:  f,
+		stack:     newStack(),
+		vm:        f.vm,
+	}
+
+	// Push and execute the function's frame
+	f.vm.pushFrame(fnFrame)
+	f.vm.runFrame(fnFrame)
+
+	// Push the returned value
+	f.stack.push(fnFrame.stack.pop())
+}
+
+func byteReturn(f *Frame, i bytecode.Instruction) {
+	f.offset = len(f.code) - 1
 }
