@@ -43,7 +43,6 @@ func (vm *VirtualMachine) makeFrame(code bytecode.Code, args, globals, locals St
 	frame := &Frame{
 		code:      code,
 		locals:    locals,
-		globals:   globals,
 		offset:    0,
 		stack:     newStack(),
 		constants: constants,

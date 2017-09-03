@@ -18,7 +18,6 @@ type Frame struct {
 	vm       *VirtualMachine // the frame's virtual machine
 
 	locals    Store // the local namespace
-	globals   Store // the global namespace
 	stack     stack // the object stack
 	constants []object.Object
 }
@@ -54,8 +53,10 @@ func (f *Frame) doInstruction(i bytecode.Instruction) {
 func (f *Frame) getName(arg rune) (string, bool) {
 	if name, ok := f.locals.Names[arg]; ok {
 		return name, true
-	} else if name, ok := f.globals.Names[arg]; ok {
-		return name, true
+	} else if f.previous != nil {
+		if name, ok := f.previous.locals.Names[arg]; ok {
+			return name, true
+		}
 	}
 
 	return "", false
@@ -64,8 +65,10 @@ func (f *Frame) getName(arg rune) (string, bool) {
 func (f *Frame) searchName(name string) (object.Object, bool) {
 	if val, ok := f.locals.Data[name]; ok {
 		return val, true
-	} else if val, ok := f.globals.Data[name]; ok {
-		return val, true
+	} else if f.previous != nil {
+		if val, ok := f.previous.locals.Data[name]; ok {
+			return val, true
+		}
 	}
 
 	return nil, false
