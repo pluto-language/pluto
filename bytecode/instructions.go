@@ -2,16 +2,16 @@ package bytecode
 
 // 0-9: stack operations
 const (
-	/*  0x00  */ Pop byte = 0
-	/*  0x01  */ Dup byte = 1
-	/*  0x02  */ Rot byte = 2
+	Pop byte = 0
+	Dup byte = 1
+	Rot byte = 2
 )
 
 // 10-19: load/store
 const (
-	/*  0x0a  */ LoadConst byte = 10
-	/*  0x0b  */ LoadName byte = 11
-	/*  0x0c  */ StoreName byte = 12
+	LoadConst byte = 10
+	LoadName  byte = 11
+	StoreName byte = 12
 )
 
 // 20-39: operators
