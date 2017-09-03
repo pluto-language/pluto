@@ -33,6 +33,10 @@ func (f *Frame) execute() {
 
 		f.doInstruction(instruction)
 
+		if f.vm.Error != nil {
+			break
+		}
+
 		f.offset++
 	}
 }
@@ -40,7 +44,7 @@ func (f *Frame) execute() {
 func (f *Frame) doInstruction(i bytecode.Instruction) {
 	e, ok := effectors[i.Code]
 	if !ok {
-		f.vm.lastError = fmt.Errorf("evaluation: bytecode instruction %s not implemented", i.Name)
+		f.vm.Error = fmt.Errorf("evaluation: bytecode instruction %s not implemented", i.Name)
 		return
 	}
 

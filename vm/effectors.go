@@ -17,6 +17,7 @@ var effectors = map[byte]effector{
 
 	bytecode.LoadConst: byteLoadConst,
 	bytecode.LoadName:  byteLoadName,
+	bytecode.StoreName: byteStoreName,
 
 	bytecode.UnaryNegate: nunop,
 	bytecode.UnaryNoOp:   nunop,
@@ -48,17 +49,27 @@ func byteLoadConst(f *Frame, i bytecode.Instruction) {
 func byteLoadName(f *Frame, i bytecode.Instruction) {
 	name, ok := f.getName(i.Arg)
 	if !ok {
-		f.vm.lastError = errors.New("evaluation: internal: name not found")
+		f.vm.Error = errors.New("evaluation: internal: name not found")
 		return
 	}
 
 	val, ok := f.searchName(name)
 	if !ok {
-		f.vm.lastError = fmt.Errorf("evaluation: name %s not found in the current scope", name)
+		f.vm.Error = fmt.Errorf("evaluation: name %s not found in the current scope", name)
 		return
 	}
 
 	f.stack.push(val)
+}
+
+func byteStoreName(f *Frame, i bytecode.Instruction) {
+	name, ok := f.getName(i.Arg)
+	if !ok {
+		f.vm.Error = errors.New("evaluation: internal: name not found")
+		return
+	}
+
+	f.locals.Define(name, f.stack.pop())
 }
 
 func nunop(f *Frame, i bytecode.Instruction) {
@@ -66,7 +77,7 @@ func nunop(f *Frame, i bytecode.Instruction) {
 
 	n, ok := a.(object.Numeric)
 	if !ok {
-		f.vm.lastError = errors.New("evaluation: non-numeric value in numeric unary expression")
+		f.vm.Error = errors.New("evaluation: non-numeric value in numeric unary expression")
 		return
 	}
 
@@ -89,13 +100,13 @@ func nbinop(f *Frame, i bytecode.Instruction) {
 
 	n, ok := a.(object.Numeric)
 	if !ok {
-		f.vm.lastError = errors.New("evaluation: non-numeric value in numeric binary expression")
+		f.vm.Error = errors.New("evaluation: non-numeric value in numeric binary expression")
 		return
 	}
 
 	m, ok := b.(object.Numeric)
 	if !ok {
-		f.vm.lastError = errors.New("evaluation: non-numeric value in numeric binary expression")
+		f.vm.Error = errors.New("evaluation: non-numeric value in numeric binary expression")
 		return
 	}
 

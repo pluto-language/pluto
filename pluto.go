@@ -30,7 +30,9 @@ var (
 )
 
 func main() {
-	in := []byte{10, 0, 0, 11, 0, 0, 25}
+	// bar = 100 + foo
+	// bar
+	in := []byte{10, 0, 0, 11, 0, 0, 25, 12, 0, 1, 11, 0, 1}
 
 	code, err := bytecode.Read(in)
 	if err != nil {
@@ -41,11 +43,25 @@ func main() {
 	machine := vm.New()
 
 	store := vm.NewStore()
-	store.Define("foo", &object.Number{Value: 100})
+	store.Names = map[rune]string{
+		0: "foo",
+		1: "bar",
+	}
 
-	machine.Run(code, vm.NewStore(), store, []object.Object{
+	store.Data = map[string]object.Object{
+		"foo": &object.Number{Value: 14},
+	}
+
+	constants := []object.Object{
 		&object.Number{Value: 3},
-	})
+	}
+
+	machine.Run(code, vm.NewStore(), store, constants)
+
+	if machine.Error != nil {
+		fmt.Println(machine.Error)
+		return
+	}
 
 	val := machine.ExtractValue()
 

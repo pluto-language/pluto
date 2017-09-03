@@ -13,7 +13,7 @@ type VirtualMachine struct {
 	frames      []*Frame
 	frame       *Frame
 	returnValue object.Object
-	lastError   error
+	Error       error
 }
 
 // New returns a new virtual machine
@@ -21,7 +21,7 @@ func New() *VirtualMachine {
 	return &VirtualMachine{
 		frames:      make([]*Frame, 0),
 		returnValue: nil,
-		lastError:   nil,
+		Error:       nil,
 	}
 }
 
@@ -47,6 +47,7 @@ func (vm *VirtualMachine) makeFrame(code bytecode.Code, args, globals, locals St
 		offset:    0,
 		stack:     newStack(),
 		constants: constants,
+		vm:        vm,
 	}
 
 	for k, v := range args.Names {
