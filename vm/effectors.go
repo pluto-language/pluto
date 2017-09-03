@@ -2,6 +2,7 @@ package vm
 
 import (
 	"errors"
+	"fmt"
 	"math"
 
 	"github.com/Zac-Garby/pluto/bytecode"
@@ -15,6 +16,7 @@ var effectors = map[byte]effector{
 	bytecode.Dup: byteDup,
 
 	bytecode.LoadConst: byteLoadConst,
+	bytecode.LoadName:  byteLoadName,
 
 	bytecode.UnaryNegate: nunop,
 	bytecode.UnaryNoOp:   nunop,
@@ -41,6 +43,22 @@ func byteDup(f *Frame, i bytecode.Instruction) {
 
 func byteLoadConst(f *Frame, i bytecode.Instruction) {
 	f.stack.push(f.constants[i.Arg])
+}
+
+func byteLoadName(f *Frame, i bytecode.Instruction) {
+	name, ok := f.getName(i.Arg)
+	if !ok {
+		f.vm.lastError = errors.New("evaluation: internal: name not found")
+		return
+	}
+
+	val, ok := f.searchName(name)
+	if !ok {
+		f.vm.lastError = fmt.Errorf("evaluation: name %s not found in the current scope", name)
+		return
+	}
+
+	f.stack.push(val)
 }
 
 func nunop(f *Frame, i bytecode.Instruction) {

@@ -5,18 +5,6 @@ import (
 	"github.com/Zac-Garby/pluto/object"
 )
 
-type store struct {
-	names map[uint16]string
-	data  map[string]object.Object
-}
-
-func newStore() store {
-	return store{
-		names: make(map[uint16]string),
-		data:  make(map[string]object.Object),
-	}
-}
-
 // VirtualMachine is the base struct
 // for the Pluto VM. It stores information
 // such as the call stack and the last
@@ -38,8 +26,8 @@ func New() *VirtualMachine {
 }
 
 // Run executes the supplied bytecode
-func (vm *VirtualMachine) Run(code bytecode.Code, globals, locals store, constants []object.Object) {
-	frame := vm.makeFrame(code, newStore(), globals, locals, constants)
+func (vm *VirtualMachine) Run(code bytecode.Code, globals, locals Store, constants []object.Object) {
+	frame := vm.makeFrame(code, NewStore(), globals, locals, constants)
 
 	vm.pushFrame(frame)
 	vm.runFrame(frame)
@@ -48,10 +36,10 @@ func (vm *VirtualMachine) Run(code bytecode.Code, globals, locals store, constan
 // RunDefault executes the bytecode with
 // empty globals and locals
 func (vm *VirtualMachine) RunDefault(code bytecode.Code, constants []object.Object) {
-	vm.Run(code, newStore(), newStore(), constants)
+	vm.Run(code, NewStore(), NewStore(), constants)
 }
 
-func (vm *VirtualMachine) makeFrame(code bytecode.Code, args, globals, locals store, constants []object.Object) *Frame {
+func (vm *VirtualMachine) makeFrame(code bytecode.Code, args, globals, locals Store, constants []object.Object) *Frame {
 	frame := &Frame{
 		code:      code,
 		locals:    locals,
@@ -61,9 +49,9 @@ func (vm *VirtualMachine) makeFrame(code bytecode.Code, args, globals, locals st
 		constants: constants,
 	}
 
-	for k, v := range args.names {
-		locals.names[k] = v
-		locals.data[v] = args.data[v]
+	for k, v := range args.Names {
+		locals.Names[k] = v
+		locals.Data[v] = args.Data[v]
 	}
 
 	return frame

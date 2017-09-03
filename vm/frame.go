@@ -17,8 +17,8 @@ type Frame struct {
 	offset   int             // the current instruction index
 	vm       *VirtualMachine // the frame's virtual machine
 
-	locals    store // the local namespace
-	globals   store // the global namespace
+	locals    Store // the local namespace
+	globals   Store // the global namespace
 	stack     stack // the object stack
 	constants []object.Object
 }
@@ -45,4 +45,24 @@ func (f *Frame) doInstruction(i bytecode.Instruction) {
 	}
 
 	e(f, i)
+}
+
+func (f *Frame) getName(arg rune) (string, bool) {
+	if name, ok := f.locals.Names[arg]; ok {
+		return name, true
+	} else if name, ok := f.globals.Names[arg]; ok {
+		return name, true
+	}
+
+	return "", false
+}
+
+func (f *Frame) searchName(name string) (object.Object, bool) {
+	if val, ok := f.locals.Data[name]; ok {
+		return val, true
+	} else if val, ok := f.globals.Data[name]; ok {
+		return val, true
+	}
+
+	return nil, false
 }
