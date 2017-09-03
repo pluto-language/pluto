@@ -5,30 +5,9 @@ import (
 	"os"
 
 	"github.com/Zac-Garby/pluto/ast"
-
 	"github.com/Zac-Garby/pluto/bytecode"
 	"github.com/Zac-Garby/pluto/object"
 	"github.com/Zac-Garby/pluto/vm"
-)
-
-const version = "0.1.0"
-
-type options struct {
-	Parse       bool `short:"p" long:"parse" description:"Just parse the input - don't execute it."`
-	Tree        bool `short:"t" long:"tree" description:"Pretty-print the AST."`
-	Interactive bool `short:"i" long:"interactive" description:"Enter interactive mode after the file has been run"`
-	NoPrelude   bool `short:"n" long:"no-prelude" description:"Don't load the prelude. Probably a bad idea."`
-	NoColour    bool `short:"c" long:"no-colour" description:"Don't use coloured output."`
-	Version     bool `short:"v" long:"version" description:"Print the version then quit"`
-
-	Args struct {
-		File string
-	} `positional-args:"yes"`
-}
-
-var (
-	opts options
-	root string
 )
 
 func main() {
@@ -92,7 +71,7 @@ func makePrintFunction() object.Function {
 	}
 
 	// Prints the argument 'obj', then loads the constant 'null'
-	bytes := []byte{11, 0, 0, 37, 10, 0, 0}
+	bytes := []byte{11, 0, 0, 51, 10, 0, 0}
 
 	code, err := bytecode.Read(bytes)
 	if err != nil {

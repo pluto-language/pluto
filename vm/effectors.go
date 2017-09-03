@@ -41,10 +41,12 @@ func Effectors() map[byte]Effector {
 			bytecode.BinaryBitOr:    nbinop,
 			bytecode.BinaryBitAnd:   nbinop,
 			bytecode.BinaryEquals:   byteEquals,
-			bytecode.Print:          bytePrint,
 
 			bytecode.Call:   byteCall,
 			bytecode.Return: byteReturn,
+
+			bytecode.Print:   bytePrint,
+			bytecode.Println: bytePrintln,
 		}
 	}
 
@@ -163,10 +165,6 @@ func byteEquals(f *Frame, i bytecode.Instruction) {
 	f.stack.push(object.BoolObj(eq))
 }
 
-func bytePrint(f *Frame, i bytecode.Instruction) {
-	fmt.Println(f.stack.pop())
-}
-
 func byteCall(f *Frame, i bytecode.Instruction) {
 	pattern := f.locals.Patterns[i.Arg]
 
@@ -207,4 +205,12 @@ func byteCall(f *Frame, i bytecode.Instruction) {
 
 func byteReturn(f *Frame, i bytecode.Instruction) {
 	f.offset = len(f.code) - 1
+}
+
+func bytePrint(f *Frame, i bytecode.Instruction) {
+	fmt.Print(f.stack.pop())
+}
+
+func bytePrintln(f *Frame, i bytecode.Instruction) {
+	fmt.Println(f.stack.pop())
 }
