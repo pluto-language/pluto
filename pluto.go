@@ -4,7 +4,8 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/Zac-Garby/pluto/ast"
+	"github.com/Zac-Garby/pluto/parser"
+
 	"github.com/Zac-Garby/pluto/bytecode"
 	"github.com/Zac-Garby/pluto/compiler"
 	"github.com/Zac-Garby/pluto/vm"
@@ -13,11 +14,15 @@ import (
 func main() {
 	compiler := compiler.New()
 
-	compiler.CompileExpression(&ast.InfixExpression{
-		Left:     &ast.Number{Value: 6},
-		Right:    &ast.Number{Value: 5},
-		Operator: "==",
-	})
+	p := parser.New("10 % 3")
+	program := p.Parse()
+
+	if len(p.Errors) > 0 {
+		p.PrintErrors()
+		os.Exit(1)
+	}
+
+	compiler.CompileProgram(program)
 
 	code, err := bytecode.Read(compiler.Bytes)
 	if err != nil {
