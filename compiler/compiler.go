@@ -15,6 +15,15 @@ type Compiler struct {
 	Constants []object.Object
 }
 
+// New instantiates a new Compiler, and allocates
+// memory for the members.
+func New() Compiler {
+	return Compiler{
+		Bytes:     make([]byte, 0),
+		Constants: make([]object.Object, 16),
+	}
+}
+
 // CompileExpression compiles an AST expression.
 func (c *Compiler) CompileExpression(n ast.Expression) error {
 	switch node := n.(type) {
@@ -31,6 +40,10 @@ func (c *Compiler) compileNumber(node *ast.Number) error {
 	obj := &object.Number{Value: node.Value}
 	c.Constants = append(c.Constants, obj)
 	index := len(c.Constants) - 1
+
+	if index >= 1<<16 {
+		return fmt.Errorf("compiler: constant index %d greater than 1 << 16 (maximum uint16)", index)
+	}
 
 	low, high := runeToBytes(rune(index))
 
