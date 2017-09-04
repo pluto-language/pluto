@@ -47,5 +47,7 @@ a
 
 	val := machine.ExtractValue()
 
-	fmt.Println(">>", val)
+	if val != nil {
+		fmt.Println(">>", val)
+	}
 }
