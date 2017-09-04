@@ -13,7 +13,7 @@ import (
 func main() {
 	compiler := compiler.New()
 
-	p := parser.New("10 % 3")
+	p := parser.New("a = 5; a")
 	program := p.Parse()
 
 	if len(p.Errors) > 0 {
@@ -29,8 +29,11 @@ func main() {
 		os.Exit(1)
 	}
 
+	store := vm.NewStore()
+	store.Names = compiler.Names
+
 	machine := vm.New()
-	machine.Run(code, vm.NewStore(), compiler.Constants)
+	machine.Run(code, store, compiler.Constants)
 
 	if machine.Error != nil {
 		fmt.Println(machine.Error)

@@ -11,8 +11,12 @@ import (
 
 // Compiler compiles an AST into bytecode
 type Compiler struct {
-	Bytes     []byte
+	// Generated code:
+	Bytes []byte
+
+	// Data:
 	Constants []object.Object
+	Names     []string
 }
 
 // New instantiates a new Compiler, and allocates
@@ -52,6 +56,10 @@ func (c *Compiler) CompileExpression(n ast.Expression) error {
 		return c.compileInfix(node)
 	case *ast.Number:
 		return c.compileNumber(node)
+	case *ast.Identifier:
+		return c.compileIdentifier(node)
+	case *ast.AssignExpression:
+		return c.compileAssign(node)
 	default:
 		return fmt.Errorf("compiler: compilation not yet implemented for %s", reflect.TypeOf(n))
 	}
@@ -68,7 +76,48 @@ func (c *Compiler) compileNumber(node *ast.Number) error {
 
 	low, high := runeToBytes(rune(index))
 
-	c.Bytes = append(c.Bytes, 10, high, low)
+	c.Bytes = append(c.Bytes, bytecode.LoadConst, high, low)
+
+	return nil
+}
+
+func (c *Compiler) compileIdentifier(node *ast.Identifier) error {
+	var index int
+
+	for i, name := range c.Names {
+		if name == node.Value {
+			index = i
+			goto found
+		}
+	}
+
+	// These two lines are executed if the name isn't found
+	c.Names = append(c.Names, node.Value)
+	index = len(c.Names) - 1
+
+found:
+	low, high := runeToBytes(rune(index))
+
+	c.Bytes = append(c.Bytes, bytecode.LoadName, high, low)
+
+	return nil
+}
+
+func (c *Compiler) compileAssign(node *ast.AssignExpression) error {
+	if err := c.CompileExpression(node.Value); err != nil {
+		return err
+	}
+
+	c.Names = append(c.Names, node.Name.(*ast.Identifier).Value)
+	index := len(c.Names) - 1
+
+	if index >= 1<<16 {
+		return fmt.Errorf("compiler: name index %d greater than 1 << 16 (maximum uint16)", index)
+	}
+
+	low, high := runeToBytes(rune(index))
+
+	c.Bytes = append(c.Bytes, bytecode.StoreName, high, low)
 
 	return nil
 }

@@ -5,8 +5,8 @@ import "github.com/Zac-Garby/pluto/object"
 // Store is an evaluation scope: it stores
 // defined names, and their corresponding data
 type Store struct {
-	Names     map[rune]string
-	Patterns  map[rune]string
+	Names     []string
+	Patterns  []string
 	Data      map[string]object.Object
 	Functions FunctionStore
 	nextIndex rune
@@ -15,7 +15,8 @@ type Store struct {
 // NewStore creates an empty store
 func NewStore() Store {
 	return Store{
-		Names:     make(map[rune]string),
+		Names:     make([]string, 0),
+		Patterns:  make([]string, 0),
 		Data:      make(map[string]object.Object),
 		Functions: FunctionStore{Functions: make([]object.Function, 8)},
 		nextIndex: 0,

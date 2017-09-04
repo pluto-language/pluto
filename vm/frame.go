@@ -51,12 +51,14 @@ func (f *Frame) doInstruction(i bytecode.Instruction) {
 }
 
 func (f *Frame) getName(arg rune) (string, bool) {
-	if name, ok := f.locals.Names[arg]; ok {
+	index := int(arg)
+
+	if index < len(f.locals.Names) {
+		name := f.locals.Names[index]
 		return name, true
-	} else if f.previous != nil {
-		if name, ok := f.previous.locals.Names[arg]; ok {
-			return name, true
-		}
+	} else if f.previous != nil && index < len(f.previous.locals.Names) {
+		name := f.previous.locals.Names[index]
+		return name, true
 	}
 
 	return "", false
