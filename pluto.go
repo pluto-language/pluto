@@ -15,7 +15,7 @@ func main() {
 
 	p := parser.New(`
 
-a = 5
+a = -5
 a
 
 `)
