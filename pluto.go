@@ -4,10 +4,9 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/Zac-Garby/pluto/parser"
-
 	"github.com/Zac-Garby/pluto/bytecode"
 	"github.com/Zac-Garby/pluto/compiler"
+	"github.com/Zac-Garby/pluto/parser"
 	"github.com/Zac-Garby/pluto/vm"
 )
 
