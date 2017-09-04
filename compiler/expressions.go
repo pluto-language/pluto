@@ -22,6 +22,8 @@ func (c *Compiler) CompileExpression(n ast.Expression) error {
 		return c.compileIdentifier(node)
 	case *ast.AssignExpression:
 		return c.compileAssign(node)
+	case *ast.IfExpression:
+		return c.compileIf(node)
 	default:
 		return fmt.Errorf("compiler: compilation not yet implemented for %s", reflect.TypeOf(n))
 	}
@@ -127,6 +129,42 @@ func (c *Compiler) compilePrefix(node *ast.PrefixExpression) error {
 	}[node.Operator]
 
 	c.Bytes = append(c.Bytes, op)
+
+	return nil
+}
+
+func (c *Compiler) compileIf(node *ast.IfExpression) error {
+	if err := c.CompileExpression(node.Condition); err != nil {
+		return err
+	}
+
+	// JumpIfFalse (82) with 2 empty argument bytes
+	c.Bytes = append(c.Bytes, bytecode.JumpIfFalse, 0, 0)
+	condJump := len(c.Bytes) - 3
+
+	if err := c.CompileStatement(node.Consequence); err != nil {
+		return err
+	}
+
+	// Jump past the alternative
+	c.Bytes = append(c.Bytes, bytecode.Jump, 0, 0)
+	skipJump := len(c.Bytes) - 3
+
+	// Set the jump target after the conditional
+	condIndex := rune(len(c.Bytes))
+	low, high := runeToBytes(condIndex)
+	c.Bytes[condJump+1] = high
+	c.Bytes[condJump+2] = low
+
+	if err := c.CompileStatement(node.Alternative); err != nil {
+		return err
+	}
+
+	// Set the jump target after the conditional
+	skipIndex := rune(len(c.Bytes))
+	low, high = runeToBytes(skipIndex)
+	c.Bytes[skipJump+1] = high
+	c.Bytes[skipJump+2] = low
 
 	return nil
 }
