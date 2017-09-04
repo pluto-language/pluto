@@ -25,7 +25,7 @@ func New() Compiler {
 }
 
 // CompileProgram compiles a complete parsed program.
-func (c *Compiler) CompileProgram(p *ast.Program) error {
+func (c *Compiler) CompileProgram(p ast.Program) error {
 	for _, stmt := range p.Statements {
 		if err := c.CompileStatement(stmt); err != nil {
 			return err
