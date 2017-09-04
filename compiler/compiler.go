@@ -24,6 +24,27 @@ func New() Compiler {
 	}
 }
 
+// CompileProgram compiles a complete parsed program.
+func (c *Compiler) CompileProgram(p *ast.Program) error {
+	for _, stmt := range p.Statements {
+		if err := c.CompileStatement(stmt); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+// CompileStatement compiles an AST statement.
+func (c *Compiler) CompileStatement(n ast.Statement) error {
+	switch node := n.(type) {
+	case *ast.ExpressionStatement:
+		return c.CompileExpression(node.Expr)
+	default:
+		return fmt.Errorf("compiler: compilation not yet implemented for %s", reflect.TypeOf(n))
+	}
+}
+
 // CompileExpression compiles an AST expression.
 func (c *Compiler) CompileExpression(n ast.Expression) error {
 	switch node := n.(type) {
