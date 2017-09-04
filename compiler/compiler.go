@@ -20,7 +20,7 @@ type Compiler struct {
 func New() Compiler {
 	return Compiler{
 		Bytes:     make([]byte, 0),
-		Constants: make([]object.Object, 16),
+		Constants: make([]object.Object, 0),
 	}
 }
 
