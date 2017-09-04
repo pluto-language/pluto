@@ -15,7 +15,7 @@ func main() {
 
 	p := parser.New(`
 
-if (0) { 3 } elif (0) { 100 } else { 300 }
+'a'
 
 `)
 	program := p.Parse()

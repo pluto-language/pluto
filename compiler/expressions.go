@@ -18,6 +18,14 @@ func (c *Compiler) CompileExpression(n ast.Expression) error {
 		return c.compilePrefix(node)
 	case *ast.Number:
 		return c.compileNumber(node)
+	case *ast.String:
+		return c.compileString(node)
+	case *ast.Boolean:
+		return c.compileBoolean(node)
+	case *ast.Char:
+		return c.compileChar(node)
+	case *ast.Null:
+		return c.compileNull(node)
 	case *ast.Identifier:
 		return c.compileIdentifier(node)
 	case *ast.AssignExpression:
@@ -31,6 +39,70 @@ func (c *Compiler) CompileExpression(n ast.Expression) error {
 
 func (c *Compiler) compileNumber(node *ast.Number) error {
 	obj := &object.Number{Value: node.Value}
+	c.Constants = append(c.Constants, obj)
+	index := len(c.Constants) - 1
+
+	if index >= 1<<16 {
+		return fmt.Errorf("compiler: constant index %d greater than 1 << 16 (maximum uint16)", index)
+	}
+
+	low, high := runeToBytes(rune(index))
+
+	c.Bytes = append(c.Bytes, bytecode.LoadConst, high, low)
+
+	return nil
+}
+
+func (c *Compiler) compileString(node *ast.String) error {
+	obj := &object.String{Value: node.Value}
+	c.Constants = append(c.Constants, obj)
+	index := len(c.Constants) - 1
+
+	if index >= 1<<16 {
+		return fmt.Errorf("compiler: constant index %d greater than 1 << 16 (maximum uint16)", index)
+	}
+
+	low, high := runeToBytes(rune(index))
+
+	c.Bytes = append(c.Bytes, bytecode.LoadConst, high, low)
+
+	return nil
+}
+
+func (c *Compiler) compileBoolean(node *ast.Boolean) error {
+	obj := &object.Boolean{Value: node.Value}
+	c.Constants = append(c.Constants, obj)
+	index := len(c.Constants) - 1
+
+	if index >= 1<<16 {
+		return fmt.Errorf("compiler: constant index %d greater than 1 << 16 (maximum uint16)", index)
+	}
+
+	low, high := runeToBytes(rune(index))
+
+	c.Bytes = append(c.Bytes, bytecode.LoadConst, high, low)
+
+	return nil
+}
+
+func (c *Compiler) compileChar(node *ast.Char) error {
+	obj := &object.Char{Value: rune(node.Value)}
+	c.Constants = append(c.Constants, obj)
+	index := len(c.Constants) - 1
+
+	if index >= 1<<16 {
+		return fmt.Errorf("compiler: constant index %d greater than 1 << 16 (maximum uint16)", index)
+	}
+
+	low, high := runeToBytes(rune(index))
+
+	c.Bytes = append(c.Bytes, bytecode.LoadConst, high, low)
+
+	return nil
+}
+
+func (c *Compiler) compileNull(node *ast.Null) error {
+	obj := object.NullObj
 	c.Constants = append(c.Constants, obj)
 	index := len(c.Constants) - 1
 
