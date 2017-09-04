@@ -214,3 +214,23 @@ func bytePrint(f *Frame, i bytecode.Instruction) {
 func bytePrintln(f *Frame, i bytecode.Instruction) {
 	fmt.Println(f.stack.pop())
 }
+
+func byteJump(f *Frame, i bytecode.Instruction) {
+	f.offset = int(i.Arg)
+}
+
+func byteJumpIfTrue(f *Frame, i bytecode.Instruction) {
+	obj := f.stack.pop()
+
+	if object.IsTruthy(obj) {
+		f.offset = int(i.Arg)
+	}
+}
+
+func byteJumpIfFalse(f *Frame, i bytecode.Instruction) {
+	obj := f.stack.pop()
+
+	if !object.IsTruthy(obj) {
+		f.offset = int(i.Arg)
+	}
+}

@@ -35,4 +35,8 @@ var Instructions = map[byte]data{
 
 	Call:   {Name: "CALL_FN", HasArg: true},
 	Return: {Name: "RETURN_FN"},
+
+	Jump:        {Name: "JUMP", HasArg: true},
+	JumpIfTrue:  {Name: "JUMP_IF_TRUE", HasArg: true},
+	JumpIfFalse: {Name: "JUMP_IF_FALSE", HasArg: true},
 }

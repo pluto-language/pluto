@@ -44,3 +44,10 @@ const (
 	Print   byte = 50
 	Println byte = 51
 )
+
+// 80-89: control flow
+const (
+	Jump        byte = 80
+	JumpIfTrue  byte = 81
+	JumpIfFalse byte = 82
+)
