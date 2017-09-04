@@ -30,7 +30,7 @@ func main() {
 	}
 
 	machine := vm.New()
-	machine.Run(code, vm.NewStore(), vm.NewStore(), compiler.Constants)
+	machine.Run(code, vm.NewStore(), compiler.Constants)
 
 	if machine.Error != nil {
 		fmt.Println(machine.Error)
