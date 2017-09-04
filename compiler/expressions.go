@@ -218,9 +218,13 @@ func (c *Compiler) compileIf(node *ast.IfExpression) error {
 		return err
 	}
 
-	// Jump past the alternative
-	c.Bytes = append(c.Bytes, bytecode.Jump, 0, 0)
-	skipJump := len(c.Bytes) - 3
+	var skipJump int
+
+	if node.Alternative != nil {
+		// Jump past the alternative
+		c.Bytes = append(c.Bytes, bytecode.Jump, 0, 0)
+		skipJump = len(c.Bytes) - 3
+	}
 
 	// Set the jump target after the conditional
 	condIndex := rune(len(c.Bytes))
@@ -228,15 +232,17 @@ func (c *Compiler) compileIf(node *ast.IfExpression) error {
 	c.Bytes[condJump+1] = high
 	c.Bytes[condJump+2] = low
 
-	if err := c.CompileStatement(node.Alternative); err != nil {
-		return err
-	}
+	if node.Alternative != nil {
+		if err := c.CompileStatement(node.Alternative); err != nil {
+			return err
+		}
 
-	// Set the jump target after the conditional
-	skipIndex := rune(len(c.Bytes))
-	low, high = runeToBytes(skipIndex)
-	c.Bytes[skipJump+1] = high
-	c.Bytes[skipJump+2] = low
+		// Set the jump target after the conditional
+		skipIndex := rune(len(c.Bytes))
+		low, high = runeToBytes(skipIndex)
+		c.Bytes[skipJump+1] = high
+		c.Bytes[skipJump+2] = low
+	}
 
 	return nil
 }
