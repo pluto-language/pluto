@@ -13,7 +13,12 @@ import (
 func main() {
 	compiler := compiler.New()
 
-	p := parser.New("a = 5; a")
+	p := parser.New(`
+
+a = 5
+a
+
+`)
 	program := p.Parse()
 
 	if len(p.Errors) > 0 {
