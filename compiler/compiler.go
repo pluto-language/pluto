@@ -63,14 +63,20 @@ func (c *Compiler) compileInfix(node *ast.InfixExpression) error {
 		return err
 	}
 
-	var op byte
-
-	switch node.Operator {
-	case "+":
-		op = bytecode.BinaryAdd
-	case "-":
-		op = bytecode.BinarySubtract
-	}
+	op := map[string]byte{
+		"+":  bytecode.BinaryAdd,
+		"-":  bytecode.BinarySubtract,
+		"*":  bytecode.BinaryMultiply,
+		"/":  bytecode.BinaryDivide,
+		"**": bytecode.BinaryExponent,
+		"//": bytecode.BinaryFloorDiv,
+		"%":  bytecode.BinaryFloorDiv,
+		"||": bytecode.BinaryOr,
+		"&&": bytecode.BinaryAnd,
+		"|":  bytecode.BinaryBitOr,
+		"&":  bytecode.BinaryBitAnd,
+		"==": bytecode.BinaryEquals,
+	}[node.Operator]
 
 	c.Bytes = append(c.Bytes, op)
 

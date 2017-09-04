@@ -14,9 +14,9 @@ func main() {
 	compiler := compiler.New()
 
 	compiler.CompileExpression(&ast.InfixExpression{
-		Left:     &ast.Number{Value: 4},
-		Right:    &ast.Number{Value: 8},
-		Operator: "+",
+		Left:     &ast.Number{Value: 6},
+		Right:    &ast.Number{Value: 5},
+		Operator: "==",
 	})
 
 	code, err := bytecode.Read(compiler.Bytes)
