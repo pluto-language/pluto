@@ -25,7 +25,11 @@ func main() {
 		os.Exit(1)
 	}
 
-	compiler.CompileProgram(program)
+	err := compiler.CompileProgram(program)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
 
 	code, err := bytecode.Read(compiler.Bytes)
 	if err != nil {
