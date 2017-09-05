@@ -15,7 +15,7 @@ func main() {
 
 	p := parser.New(`
 
-[1, 2, 3, 4, 5 * 2]
+(40 // 3, 30 // 3, 20 // 3, 10 // 3)
 
 `)
 	program := p.Parse()

@@ -53,6 +53,7 @@ func Effectors() map[byte]Effector {
 			bytecode.JumpIfFalse: byteJumpIfFalse,
 
 			bytecode.MakeArray: byteMakeArray,
+			bytecode.MakeTuple: byteMakeTuple,
 		}
 	}
 
@@ -249,6 +250,18 @@ func byteMakeArray(f *Frame, i bytecode.Instruction) {
 	}
 
 	f.stack.push(&object.Array{
+		Value: elems,
+	})
+}
+
+func byteMakeTuple(f *Frame, i bytecode.Instruction) {
+	elems := make([]object.Object, i.Arg)
+
+	for n := int(i.Arg) - 1; n >= 0; n-- {
+		elems[n] = f.stack.pop()
+	}
+
+	f.stack.push(&object.Tuple{
 		Value: elems,
 	})
 }

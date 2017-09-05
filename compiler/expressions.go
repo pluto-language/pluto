@@ -30,6 +30,8 @@ func (c *Compiler) CompileExpression(n ast.Expression) error {
 		return c.compileIdentifier(node)
 	case *ast.Array:
 		return c.compileArray(node)
+	case *ast.Tuple:
+		return c.compileTuple(node)
 	case *ast.AssignExpression:
 		return c.compileAssign(node)
 	case *ast.IfExpression:
@@ -259,6 +261,20 @@ func (c *Compiler) compileArray(node *ast.Array) error {
 	low, high := runeToBytes(rune(len(node.Elements)))
 
 	c.Bytes = append(c.Bytes, bytecode.MakeArray, high, low)
+
+	return nil
+}
+
+func (c *Compiler) compileTuple(node *ast.Tuple) error {
+	for _, elem := range node.Value {
+		if err := c.CompileExpression(elem); err != nil {
+			return err
+		}
+	}
+
+	low, high := runeToBytes(rune(len(node.Value)))
+
+	c.Bytes = append(c.Bytes, bytecode.MakeTuple, high, low)
 
 	return nil
 }
