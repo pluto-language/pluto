@@ -39,4 +39,8 @@ var Instructions = map[byte]data{
 	Jump:        {Name: "JUMP", HasArg: true},
 	JumpIfTrue:  {Name: "JUMP_IF_TRUE", HasArg: true},
 	JumpIfFalse: {Name: "JUMP_IF_FALSE", HasArg: true},
+
+	MakeArray: {Name: "MAKE_ARRAY", HasArg: true},
+	MakeTuple: {Name: "MAKE_TUPLE", HasArg: true},
+	MakeMap:   {Name: "MAKE_MAP", HasArg: true},
 }

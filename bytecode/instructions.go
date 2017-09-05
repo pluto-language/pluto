@@ -51,3 +51,10 @@ const (
 	JumpIfTrue  byte = 81
 	JumpIfFalse byte = 82
 )
+
+// 90-99: data constructors
+const (
+	MakeArray byte = 90
+	MakeTuple byte = 91
+	MakeMap   byte = 92
+)

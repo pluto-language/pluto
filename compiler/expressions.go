@@ -28,6 +28,8 @@ func (c *Compiler) CompileExpression(n ast.Expression) error {
 		return c.compileNull(node)
 	case *ast.Identifier:
 		return c.compileIdentifier(node)
+	case *ast.Array:
+		return c.compileArray(node)
 	case *ast.AssignExpression:
 		return c.compileAssign(node)
 	case *ast.IfExpression:
@@ -243,6 +245,20 @@ func (c *Compiler) compileIf(node *ast.IfExpression) error {
 		c.Bytes[skipJump+1] = high
 		c.Bytes[skipJump+2] = low
 	}
+
+	return nil
+}
+
+func (c *Compiler) compileArray(node *ast.Array) error {
+	for _, elem := range node.Elements {
+		if err := c.CompileExpression(elem); err != nil {
+			return err
+		}
+	}
+
+	low, high := runeToBytes(rune(len(node.Elements)))
+
+	c.Bytes = append(c.Bytes, bytecode.MakeArray, high, low)
 
 	return nil
 }

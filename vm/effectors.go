@@ -51,6 +51,8 @@ func Effectors() map[byte]Effector {
 			bytecode.Jump:        byteJump,
 			bytecode.JumpIfTrue:  byteJumpIfTrue,
 			bytecode.JumpIfFalse: byteJumpIfFalse,
+
+			bytecode.MakeArray: byteMakeArray,
 		}
 	}
 
@@ -237,4 +239,16 @@ func byteJumpIfFalse(f *Frame, i bytecode.Instruction) {
 	if !object.IsTruthy(obj) {
 		f.offset = (int(i.Arg) / 3) - 1
 	}
+}
+
+func byteMakeArray(f *Frame, i bytecode.Instruction) {
+	elems := make([]object.Object, i.Arg)
+
+	for n := int(i.Arg) - 1; n >= 0; n-- {
+		elems[n] = f.stack.pop()
+	}
+
+	f.stack.push(&object.Array{
+		Value: elems,
+	})
 }
