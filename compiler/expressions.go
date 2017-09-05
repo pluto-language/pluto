@@ -177,7 +177,7 @@ func (c *Compiler) compileInfix(node *ast.InfixExpression) error {
 		return err
 	}
 
-	op := map[string]byte{
+	op, ok := map[string]byte{
 		"+":  bytecode.BinaryAdd,
 		"-":  bytecode.BinarySubtract,
 		"*":  bytecode.BinaryMultiply,
@@ -190,7 +190,12 @@ func (c *Compiler) compileInfix(node *ast.InfixExpression) error {
 		"|":  bytecode.BinaryBitOr,
 		"&":  bytecode.BinaryBitAnd,
 		"==": bytecode.BinaryEquals,
+		"!=": bytecode.BinaryNotEqual,
 	}[node.Operator]
+
+	if !ok {
+		return fmt.Errorf("compiler: operator %s not yet implemented", node.Operator)
+	}
 
 	c.Bytes = append(c.Bytes, op)
 

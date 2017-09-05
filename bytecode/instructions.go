@@ -31,30 +31,31 @@ const (
 	BinaryBitOr    byte = 34
 	BinaryBitAnd   byte = 35
 	BinaryEquals   byte = 36
+	BinaryNotEqual byte = 37
 )
 
-// 40-49: using functions
+// 50-59: using functions
 const (
-	Call   byte = 40
-	Return byte = 41
+	Call   byte = 50
+	Return byte = 51
 )
 
-// 50-79: pseudo-syscalls (i.e. builtin functions?)
+// 60-89: pseudo-syscalls (i.e. builtin functions?)
 const (
-	Print   byte = 50
-	Println byte = 51
+	Print   byte = 60
+	Println byte = 61
 )
 
-// 80-89: control flow
+// 90-99: control flow
 const (
-	Jump        byte = 80
-	JumpIfTrue  byte = 81
-	JumpIfFalse byte = 82
+	Jump        byte = 90
+	JumpIfTrue  byte = 91
+	JumpIfFalse byte = 92
 )
 
-// 90-99: data constructors
+// 100-109: data constructors
 const (
-	MakeArray byte = 90
-	MakeTuple byte = 91
-	MakeMap   byte = 92
+	MakeArray byte = 100
+	MakeTuple byte = 101
+	MakeMap   byte = 102
 )
