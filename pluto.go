@@ -15,7 +15,7 @@ func main() {
 
 	p := parser.New(`
 
-(40 // 3, 30 // 3, 20 // 3, 10 // 3)
+["a": 1, "b": 2, "c": 3]
 
 `)
 	program := p.Parse()
@@ -36,6 +36,8 @@ func main() {
 		fmt.Println(err)
 		os.Exit(1)
 	}
+
+	fmt.Println(code)
 
 	store := vm.NewStore()
 	store.Names = compiler.Names

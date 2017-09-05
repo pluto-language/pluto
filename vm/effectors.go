@@ -54,6 +54,7 @@ func Effectors() map[byte]Effector {
 
 			bytecode.MakeArray: byteMakeArray,
 			bytecode.MakeTuple: byteMakeTuple,
+			bytecode.MakeMap:   byteMakeMap,
 		}
 	}
 
@@ -264,4 +265,31 @@ func byteMakeTuple(f *Frame, i bytecode.Instruction) {
 	f.stack.push(&object.Tuple{
 		Value: elems,
 	})
+}
+
+func byteMakeMap(f *Frame, i bytecode.Instruction) {
+	keys := make(map[string]object.Object, i.Arg)
+	values := make(map[string]object.Object, i.Arg)
+
+	for n := 0; n < int(i.Arg); n++ {
+		val, key := f.stack.pop(), f.stack.pop()
+
+		hasher, ok := key.(object.Hasher)
+		if !ok {
+			f.vm.Error = fmt.Errorf("evaluation: non-hashable type as map key: %s", key.Type())
+			return
+		}
+
+		hash := hasher.Hash()
+
+		keys[hash] = key
+		values[hash] = val
+	}
+
+	obj := &object.Map{
+		Keys:   keys,
+		Values: values,
+	}
+
+	f.stack.push(obj)
 }
