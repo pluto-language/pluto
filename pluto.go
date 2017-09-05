@@ -15,7 +15,9 @@ func main() {
 
 	p := parser.New(`
 
-["a": 1, "b": 2, "c": 3]
+a = 0
+while (a == 0) { a = a + 1 }
+a   # if a is 0 after the loop, it works
 
 `)
 	program := p.Parse()
