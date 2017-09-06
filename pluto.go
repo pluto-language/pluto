@@ -43,7 +43,7 @@ a
 		os.Exit(1)
 	}
 
-	fmt.Println(code)
+	// fmt.Println(code)
 
 	store := vm.NewStore()
 	store.Names = compiler.Names
