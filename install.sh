@@ -21,7 +21,7 @@ else
 fi
 
 # copy the libraries over
-cp -R $GOPATH/src/github.com/Zac-Garby/pluto/libraries $ROOT
+cp -R $GOPATH/src/github.com/pluto-language/pluto/libraries $ROOT
 
 # install plp
 echo -n "installing plp... "
