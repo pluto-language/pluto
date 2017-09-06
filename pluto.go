@@ -16,8 +16,12 @@ func main() {
 	p := parser.New(`
 
 a = 0
-while (a != 5) { a = a + 1 }
-a   # if a is 0 after the loop, it works
+
+while (a < 10) {
+	a = a + 1
+}
+
+a
 
 `)
 	program := p.Parse()

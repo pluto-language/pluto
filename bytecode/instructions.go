@@ -32,6 +32,10 @@ const (
 	BinaryBitAnd   byte = 35
 	BinaryEquals   byte = 36
 	BinaryNotEqual byte = 37
+	BinaryLessThan byte = 38
+	BinaryMoreThan byte = 39
+	BinaryLessEq   byte = 40
+	BinaryMoreEq   byte = 41
 )
 
 // 50-59: using functions

@@ -41,6 +41,11 @@ func Effectors() map[byte]Effector {
 			bytecode.BinaryBitOr:    nbinop,
 			bytecode.BinaryBitAnd:   nbinop,
 			bytecode.BinaryEquals:   byteEquals,
+			bytecode.BinaryNotEqual: byteNotEqual,
+			bytecode.BinaryLessThan: bincmp,
+			bytecode.BinaryMoreThan: bincmp,
+			bytecode.BinaryLessEq:   bincmp,
+			bytecode.BinaryMoreEq:   bincmp,
 
 			bytecode.Call:   byteCall,
 			bytecode.Return: byteReturn,
@@ -166,11 +171,54 @@ func nbinop(f *Frame, i bytecode.Instruction) {
 	f.stack.push(&object.Number{Value: val})
 }
 
+func bincmp(f *Frame, i bytecode.Instruction) {
+	f.byteToInstructionIndex(int(i.Arg))
+
+	b, a := f.stack.pop(), f.stack.pop()
+
+	n, ok := a.(object.Numeric)
+	if !ok {
+		f.vm.Error = errors.New("evaluation: non-numeric value in numeric binary expression")
+		return
+	}
+
+	m, ok := b.(object.Numeric)
+	if !ok {
+		f.vm.Error = errors.New("evaluation: non-numeric value in numeric binary expression")
+		return
+	}
+
+	lval := n.Float64()
+	rval := m.Float64()
+
+	var result bool
+
+	switch i.Code {
+	case bytecode.BinaryLessThan:
+		result = lval < rval
+	case bytecode.BinaryMoreThan:
+		result = lval > rval
+	case bytecode.BinaryLessEq:
+		result = lval <= rval
+	case bytecode.BinaryMoreEq:
+		result = lval >= rval
+	}
+
+	f.stack.push(&object.Boolean{Value: result})
+}
+
 func byteEquals(f *Frame, i bytecode.Instruction) {
 	right, left := f.stack.pop(), f.stack.pop()
 	eq := left.Equals(right)
 
 	f.stack.push(object.BoolObj(eq))
+}
+
+func byteNotEqual(f *Frame, i bytecode.Instruction) {
+	right, left := f.stack.pop(), f.stack.pop()
+	eq := left.Equals(right)
+
+	f.stack.push(object.BoolObj(!eq))
 }
 
 func byteCall(f *Frame, i bytecode.Instruction) {
@@ -224,14 +272,14 @@ func bytePrintln(f *Frame, i bytecode.Instruction) {
 }
 
 func byteJump(f *Frame, i bytecode.Instruction) {
-	f.offset = int(i.Arg)
+	f.offset = f.byteToInstructionIndex(int(i.Arg))
 }
 
 func byteJumpIfTrue(f *Frame, i bytecode.Instruction) {
 	obj := f.stack.pop()
 
 	if object.IsTruthy(obj) {
-		f.offset = (int(i.Arg) / 3) - 1
+		f.offset = f.byteToInstructionIndex(int(i.Arg))
 	}
 }
 
@@ -239,7 +287,7 @@ func byteJumpIfFalse(f *Frame, i bytecode.Instruction) {
 	obj := f.stack.pop()
 
 	if !object.IsTruthy(obj) {
-		f.offset = (int(i.Arg) / 3) - 1
+		f.offset = f.byteToInstructionIndex(int(i.Arg))
 	}
 }
 

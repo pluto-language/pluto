@@ -191,6 +191,10 @@ func (c *Compiler) compileInfix(node *ast.InfixExpression) error {
 		"&":  bytecode.BinaryBitAnd,
 		"==": bytecode.BinaryEquals,
 		"!=": bytecode.BinaryNotEqual,
+		"<":  bytecode.BinaryLessThan,
+		">":  bytecode.BinaryMoreThan,
+		"<=": bytecode.BinaryLessEq,
+		">=": bytecode.BinaryMoreEq,
 	}[node.Operator]
 
 	if !ok {
@@ -307,12 +311,12 @@ func (c *Compiler) compileMap(node *ast.Map) error {
 }
 
 func (c *Compiler) compileWhile(node *ast.WhileLoop) error {
+	// Jump here to go to the next iteration
+	start := len(c.Bytes) - 1
+
 	if err := c.CompileExpression(node.Condition); err != nil {
 		return err
 	}
-
-	// Jump here to go to the next iteration
-	start := len(c.Bytes) - 3
 
 	// An empty jump to the end of the loop
 	c.Bytes = append(c.Bytes, bytecode.JumpIfFalse, 0, 0)

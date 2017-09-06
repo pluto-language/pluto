@@ -32,6 +32,10 @@ var Instructions = map[byte]data{
 	BinaryBitAnd:   {Name: "BINARY_BIT_AND"},
 	BinaryEquals:   {Name: "BINARY_EQUALS"},
 	BinaryNotEqual: {Name: "BINARY_NOT_EQUAL"},
+	BinaryLessThan: {Name: "BINARY_LESS_THAN"},
+	BinaryMoreThan: {Name: "BINARY_MORE_THAN"},
+	BinaryLessEq:   {Name: "BINARY_LESS_EQ"},
+	BinaryMoreEq:   {Name: "BINARY_MORE_EQ"},
 
 	Call:   {Name: "CALL_FN", HasArg: true},
 	Return: {Name: "RETURN_FN"},

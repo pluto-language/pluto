@@ -9,7 +9,6 @@ type Store struct {
 	Patterns  []string
 	Data      map[string]object.Object
 	Functions FunctionStore
-	nextIndex rune
 }
 
 // NewStore creates an empty store
@@ -19,18 +18,15 @@ func NewStore() Store {
 		Patterns:  make([]string, 0),
 		Data:      make(map[string]object.Object),
 		Functions: FunctionStore{Functions: make([]object.Function, 8)},
-		nextIndex: 0,
 	}
 }
 
 // Define name in the store, and returns its name index
 func (s *Store) Define(name string, val object.Object) rune {
-	idx := s.nextIndex
-	s.Names[idx] = name
+	s.Names = append(s.Names, name)
 	s.Data[name] = val
-	s.nextIndex++
 
-	return idx
+	return rune(len(s.Names) - 1)
 }
 
 // SearchName searches the store for data named 'name'

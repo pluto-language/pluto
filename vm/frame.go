@@ -50,6 +50,26 @@ func (f *Frame) doInstruction(i bytecode.Instruction) {
 	e(f, i)
 }
 
+func (f *Frame) byteToInstructionIndex(b int) int {
+	var index, counter int
+
+	for _, instr := range f.code {
+		if bytecode.Instructions[instr.Code].HasArg {
+			counter += 3
+		} else {
+			counter++
+		}
+
+		if counter >= b {
+			return index
+		}
+
+		index++
+	}
+
+	return index
+}
+
 func (f *Frame) getName(arg rune) (string, bool) {
 	index := int(arg)
 
