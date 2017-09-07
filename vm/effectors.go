@@ -28,18 +28,18 @@ func Effectors() map[byte]Effector {
 			bytecode.LoadName:  byteLoadName,
 			bytecode.StoreName: byteStoreName,
 
-			bytecode.UnaryNegate: nunop,
-			bytecode.UnaryNoOp:   nunop,
+			bytecode.UnaryNegate: bytePrefix,
+			bytecode.UnaryNoOp:   bytePrefix,
 
-			bytecode.BinaryAdd:      nbinop,
-			bytecode.BinarySubtract: nbinop,
-			bytecode.BinaryMultiply: nbinop,
-			bytecode.BinaryDivide:   nbinop,
-			bytecode.BinaryExponent: nbinop,
-			bytecode.BinaryFloorDiv: nbinop,
-			bytecode.BinaryMod:      nbinop,
-			bytecode.BinaryBitOr:    nbinop,
-			bytecode.BinaryBitAnd:   nbinop,
+			bytecode.BinaryAdd:      byteInfix,
+			bytecode.BinarySubtract: byteInfix,
+			bytecode.BinaryMultiply: byteInfix,
+			bytecode.BinaryDivide:   byteInfix,
+			bytecode.BinaryExponent: byteInfix,
+			bytecode.BinaryFloorDiv: byteInfix,
+			bytecode.BinaryMod:      byteInfix,
+			bytecode.BinaryBitOr:    byteInfix,
+			bytecode.BinaryBitAnd:   byteInfix,
 			bytecode.BinaryEquals:   byteEquals,
 			bytecode.BinaryNotEqual: byteNotEqual,
 			bytecode.BinaryLessThan: bincmp,
@@ -104,71 +104,161 @@ func byteStoreName(f *Frame, i bytecode.Instruction) {
 	f.locals.Define(name, f.stack.pop())
 }
 
-func nunop(f *Frame, i bytecode.Instruction) {
-	a := f.stack.pop()
+func bytePrefix(f *Frame, i bytecode.Instruction) {
+	right := f.stack.pop()
 
-	n, ok := a.(object.Numeric)
-	if !ok {
-		f.vm.Error = errors.New("evaluation: non-numeric value in numeric unary expression")
-		return
+	if n, ok := right.(object.Numeric); ok {
+		val := n.Float64()
+		f.stack.push(numPrefix(i.Code, val))
+	} else {
+		f.vm.Error = errors.New("evaluation: prefix r-value of invalid type")
 	}
-
-	v := n.Float64()
-
-	var val float64
-
-	switch i.Code {
-	case bytecode.UnaryNegate:
-		val = -v
-	case bytecode.UnaryNoOp:
-		val = v
-	}
-
-	f.stack.push(&object.Number{Value: val})
 }
 
-func nbinop(f *Frame, i bytecode.Instruction) {
-	b, a := f.stack.pop(), f.stack.pop()
-
-	n, ok := a.(object.Numeric)
-	if !ok {
-		f.vm.Error = errors.New("evaluation: non-numeric value in numeric binary expression")
-		return
+func numPrefix(opcode byte, val float64) object.Object {
+	switch opcode {
+	case bytecode.UnaryNegate:
+		val = -val
+	case bytecode.UnaryNoOp:
+		// val = val
 	}
 
-	m, ok := b.(object.Numeric)
-	if !ok {
-		f.vm.Error = errors.New("evaluation: non-numeric value in numeric binary expression")
+	return &object.Number{Value: val}
+}
+
+func byteInfix(f *Frame, i bytecode.Instruction) {
+	right, left := f.stack.pop(), f.stack.pop()
+
+	if n, ok := left.(object.Numeric); ok {
+		if m, ok := right.(object.Numeric); ok {
+			f.stack.push(numInfix(f, i.Code, n.Float64(), m.Float64()))
+		} else if m, ok := right.(object.Collection); ok {
+			f.stack.push(numColInfix(f, i.Code, n.Float64(), m))
+		} else {
+			f.vm.Error = errors.New("evaluation: infix r-value of invalid type when l-value is <number>")
+			return
+		}
+	} else if n, ok := left.(object.Collection); ok {
+		if m, ok := right.(object.Numeric); ok {
+			f.stack.push(numColInfix(f, i.Code, m.Float64(), n))
+		} else if m, ok := right.(object.Collection); ok {
+			f.stack.push(colInfix(f, i.Code, n, m))
+		} else {
+			f.vm.Error = errors.New("evaluation: infix r-value of invalid type when l-value is a collection")
+		}
+	} else {
+		f.vm.Error = errors.New("evaluation: infix l-value of invalid type")
 		return
 	}
+}
 
-	lval := n.Float64()
-	rval := m.Float64()
-
+func numInfix(f *Frame, opcode byte, left, right float64) object.Object {
 	var val float64
 
-	switch i.Code {
+	switch opcode {
 	case bytecode.BinaryAdd:
-		val = lval + rval
+		val = left + right
 	case bytecode.BinarySubtract:
-		val = lval - rval
+		val = left - right
 	case bytecode.BinaryMultiply:
-		val = lval * rval
+		val = left * right
 	case bytecode.BinaryDivide:
-		val = lval / rval
+		val = left / right
 	case bytecode.BinaryExponent:
-		val = math.Pow(lval, rval)
+		val = math.Pow(left, right)
 	case bytecode.BinaryFloorDiv:
-		val = math.Floor(lval / rval)
+		val = math.Floor(left / right)
 	case bytecode.BinaryMod:
-		val = math.Mod(lval, rval)
+		val = math.Mod(left, right)
 	case bytecode.BinaryBitOr:
-		val = float64(int64(lval) | int64(rval))
+		val = float64(int64(left) | int64(right))
 	case bytecode.BinaryBitAnd:
-		val = float64(int64(lval) & int64(rval))
+		val = float64(int64(left) & int64(right))
+	default:
+		op := bytecode.Instructions[opcode].Name[7:]
+		f.vm.Error = fmt.Errorf("evaluation: operator %s not supported for two numbers", op)
 	}
 
-	f.stack.push(&object.Number{Value: val})
+	return &object.Number{Value: val}
+}
+
+func numColInfix(f *Frame, opcode byte, left float64, right object.Collection) object.Object {
+	var (
+		result   []object.Object
+		elements = right.Elements()
+	)
+
+	if opcode == bytecode.BinaryMultiply {
+		for i := 0; i < int(left); i++ {
+			result = append(result, elements...)
+		}
+	} else {
+		op := bytecode.Instructions[opcode].Name[7:]
+		f.vm.Error = fmt.Errorf("evaluation: operator %s not supported for a collection and a number", op)
+	}
+
+	col, _ := object.MakeCollection(right.Type(), result)
+	return col
+}
+
+func colInfix(f *Frame, opcode byte, left, right object.Collection) object.Object {
+	var (
+		lefts  = left.Elements()
+		rights = right.Elements()
+		elems  []object.Object
+	)
+
+	switch opcode {
+	case bytecode.BinaryAdd:
+		elems = append(lefts, rights...)
+	case bytecode.BinarySubtract:
+		for _, el := range lefts {
+			for _, rel := range rights {
+				if el.Equals(rel) {
+					goto next
+				}
+			}
+
+			elems = append(elems, el)
+		next:
+		}
+	case bytecode.BinaryBitOr:
+		for _, el := range append(lefts, rights...) {
+			unique := true
+
+			for _, rel := range elems {
+				if el.Equals(rel) {
+					unique = false
+					break
+				}
+			}
+
+			if unique {
+				elems = append(elems, el)
+			}
+		}
+	case bytecode.BinaryBitAnd:
+		for _, el := range lefts {
+			both := false
+
+			for _, rel := range rights {
+				if el.Equals(rel) {
+					both = true
+					break
+				}
+			}
+
+			if both {
+				elems = append(elems, el)
+			}
+		}
+	default:
+		op := bytecode.Instructions[opcode].Name[7:]
+		f.vm.Error = fmt.Errorf("evaluation: operator %s not supported for two collections", op)
+	}
+
+	col, _ := object.MakeCollection(left.Type(), elems)
+	return col
 }
 
 func bincmp(f *Frame, i bytecode.Instruction) {

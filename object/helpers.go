@@ -35,3 +35,24 @@ func BoolObj(t bool) Object {
 
 	return FalseObj
 }
+
+// MakeCollection creates a collection of
+// type t containing the given elements.
+func MakeCollection(t Type, elements []Object) (Object, bool) {
+	switch t {
+	case ArrayType:
+		return &Array{Value: elements}, true
+	case TupleType:
+		return &Tuple{Value: elements}, true
+	case StringType:
+		var str string
+
+		for _, elem := range elements {
+			str += elem.String()
+		}
+
+		return &String{Value: str}, true
+	default:
+		return nil, false
+	}
+}
