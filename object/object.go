@@ -38,5 +38,6 @@ type Hasher interface {
 // Numeric is any object which can be
 // represented as a float64 value
 type Numeric interface {
+	Object
 	Float64() float64
 }
