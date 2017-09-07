@@ -28,6 +28,7 @@ func Effectors() map[byte]Effector {
 			bytecode.LoadName:  byteLoadName,
 			bytecode.StoreName: byteStoreName,
 
+			bytecode.UnaryInvert: bytePrefix,
 			bytecode.UnaryNegate: bytePrefix,
 			bytecode.UnaryNoOp:   bytePrefix,
 
@@ -106,6 +107,11 @@ func byteStoreName(f *Frame, i bytecode.Instruction) {
 
 func bytePrefix(f *Frame, i bytecode.Instruction) {
 	right := f.stack.pop()
+
+	if i.Code == bytecode.UnaryInvert {
+		f.stack.push(object.BoolObj(!object.IsTruthy(right)))
+		return
+	}
 
 	if n, ok := right.(object.Numeric); ok {
 		val := n.Float64()

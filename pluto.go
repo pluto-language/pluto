@@ -15,7 +15,7 @@ func main() {
 
 	p := parser.New(`
 
-(1, 2, 3, 4, 5) & (3, 4, 5, 6, 7)
+![]
 
 `)
 	program := p.Parse()
