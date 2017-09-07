@@ -17,7 +17,10 @@ func main() {
 
 def $a plus $b {
 	return a + b
+	return 2
 }
+
+5 plus 10
 
 `)
 	program := p.Parse()
@@ -39,10 +42,12 @@ def $a plus $b {
 		os.Exit(1)
 	}
 
-	// fmt.Println(code)
+	fmt.Println(code)
 
 	store := vm.NewStore()
 	store.Names = compiler.Names
+	store.Functions.Functions = compiler.Functions
+	store.Patterns = compiler.Patterns
 
 	machine := vm.New()
 	machine.Run(code, store, compiler.Constants)

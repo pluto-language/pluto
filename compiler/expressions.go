@@ -1,8 +1,10 @@
 package compiler
 
 import (
+	"bytes"
 	"fmt"
 	"reflect"
+	"strings"
 
 	"github.com/Zac-Garby/pluto/ast"
 	"github.com/Zac-Garby/pluto/bytecode"
@@ -40,6 +42,10 @@ func (c *Compiler) CompileExpression(n ast.Expression) error {
 		return c.compileIf(node)
 	case *ast.WhileLoop:
 		return c.compileWhile(node)
+	case *ast.FunctionCall:
+		return c.compileFnCall(node)
+	case *ast.Argument:
+		return c.CompileExpression(node.Value)
 	default:
 		return fmt.Errorf("compiler: compilation not yet implemented for %s", reflect.TypeOf(n))
 	}
@@ -336,6 +342,34 @@ func (c *Compiler) compileWhile(node *ast.WhileLoop) error {
 	low, high = runeToBytes(skipIndex)
 	c.Bytes[skipJump+1] = high
 	c.Bytes[skipJump+2] = low
+
+	return nil
+}
+
+func (c *Compiler) compileFnCall(node *ast.FunctionCall) error {
+	var pstring bytes.Buffer
+
+	for _, item := range node.Pattern {
+		if id, ok := item.(*ast.Identifier); ok {
+			pstring.WriteString(id.Value + " ")
+		} else {
+			pstring.WriteString("$ ")
+		}
+	}
+
+	str := strings.TrimSpace(pstring.String())
+	c.Patterns = append(c.Patterns, str)
+
+	for _, item := range node.Pattern {
+		if arg, ok := item.(*ast.Argument); ok {
+			if err := c.CompileExpression(arg); err != nil {
+				return err
+			}
+		}
+	}
+
+	low, high := runeToBytes(rune(len(c.Patterns) - 1))
+	c.Bytes = append(c.Bytes, bytecode.Call, high, low)
 
 	return nil
 }

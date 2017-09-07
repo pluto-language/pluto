@@ -11,9 +11,9 @@ type Compiler struct {
 	Bytes []byte
 
 	// Data:
-	Constants []object.Object
-	Functions []object.Object
-	Names     []string
+	Constants       []object.Object
+	Functions       []object.Function
+	Names, Patterns []string
 }
 
 // New instantiates a new Compiler, and allocates
