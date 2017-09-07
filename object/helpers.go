@@ -1,13 +1,5 @@
 package object
 
-func unwrapReturnValue(o Object) Object {
-	if ret, ok := o.(*ReturnValue); ok {
-		return ret.Value
-	}
-
-	return o
-}
-
 // IsTruthy returns true if o is truthy,
 // and false otherwise.
 func IsTruthy(o Object) bool {

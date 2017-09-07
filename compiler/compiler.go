@@ -12,6 +12,7 @@ type Compiler struct {
 
 	// Data:
 	Constants []object.Object
+	Functions []object.Object
 	Names     []string
 }
 
