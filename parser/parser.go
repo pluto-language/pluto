@@ -51,8 +51,6 @@ func New(text string) *Parser {
 		token.If:        p.parseIfExpression,
 		token.BackSlash: p.parseFunctionCall,
 		token.LeftBrace: p.parseBlockLiteral,
-		token.While:     p.parseWhileLoop,
-		token.For:       p.parseForLoop,
 		token.Match:     p.parseMatchExpression,
 		token.Try:       p.parseTryExpression,
 	}

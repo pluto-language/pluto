@@ -146,20 +146,6 @@ type (
 		Arms []Arm
 	}
 
-	// WhileLoop executes Body while Condition holds true
-	WhileLoop struct {
-		Tok       token.Token
-		Condition Expression
-		Body      Statement
-	}
-
-	// ForLoop executes Body for each element in a collection
-	ForLoop struct {
-		Tok             token.Token
-		Var, Collection Expression
-		Body            Statement
-	}
-
 	// TryExpression trys to execute Body, and matches Arms if it throws an error
 	TryExpression struct {
 		Tok     token.Token
@@ -307,18 +293,6 @@ func (n MatchExpression) Expr() {}
 
 // Token returns the node's token
 func (n MatchExpression) Token() token.Token { return n.Tok }
-
-// Expr tells the compiler this node is an expression
-func (n WhileLoop) Expr() {}
-
-// Token returns the node's token
-func (n WhileLoop) Token() token.Token { return n.Tok }
-
-// Expr tells the compiler this node is an expression
-func (n ForLoop) Expr() {}
-
-// Token returns the node's token
-func (n ForLoop) Token() token.Token { return n.Tok }
 
 // Expr tells the compiler this node is an expression
 func (n TryExpression) Expr() {}

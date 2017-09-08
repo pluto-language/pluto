@@ -24,6 +24,10 @@ func (p *Parser) parseStatement() ast.Statement {
 		stmt = p.parseImportStatement()
 	} else if p.curIs(token.Use) {
 		stmt = p.parseUseStatement()
+	} else if p.curIs(token.While) {
+		stmt = p.parseWhileLoop()
+	} else if p.curIs(token.For) {
+		stmt = p.parseForLoop()
 	} else {
 		stmt = p.parseExpressionStatement()
 	}
@@ -209,6 +213,63 @@ func (p *Parser) parseUseStatement() ast.Statement {
 	}
 
 	stmt.Package = p.cur.Literal
+
+	return stmt
+}
+
+func (p *Parser) parseWhileLoop() ast.Statement {
+	stmt := &ast.WhileLoop{
+		Tok: p.cur,
+	}
+
+	if !p.expect(token.LeftParen) {
+		return nil
+	}
+
+	p.next()
+	stmt.Condition = p.parseExpression(lowest)
+
+	if !p.expect(token.RightParen) {
+		return nil
+	}
+
+	if !p.expect(token.LeftBrace) {
+		return nil
+	}
+
+	stmt.Body = p.parseBlockStatement()
+
+	return stmt
+}
+
+func (p *Parser) parseForLoop() ast.Statement {
+	stmt := &ast.ForLoop{
+		Tok: p.cur,
+	}
+
+	if !p.expect(token.LeftParen) {
+		return nil
+	}
+
+	p.next()
+	stmt.Var = p.parseID()
+
+	if !p.expect(token.Colon) {
+		return nil
+	}
+
+	p.next()
+	stmt.Collection = p.parseExpression(lowest)
+
+	if !p.expect(token.RightParen) {
+		return nil
+	}
+
+	if !p.expect(token.LeftBrace) {
+		return nil
+	}
+
+	stmt.Body = p.parseBlockStatement()
 
 	return stmt
 }

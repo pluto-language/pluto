@@ -182,63 +182,6 @@ func (p *Parser) parseBlockLiteral() ast.Expression {
 	return expr
 }
 
-func (p *Parser) parseWhileLoop() ast.Expression {
-	expr := &ast.WhileLoop{
-		Tok: p.cur,
-	}
-
-	if !p.expect(token.LeftParen) {
-		return nil
-	}
-
-	p.next()
-	expr.Condition = p.parseExpression(lowest)
-
-	if !p.expect(token.RightParen) {
-		return nil
-	}
-
-	if !p.expect(token.LeftBrace) {
-		return nil
-	}
-
-	expr.Body = p.parseBlockStatement()
-
-	return expr
-}
-
-func (p *Parser) parseForLoop() ast.Expression {
-	expr := &ast.ForLoop{
-		Tok: p.cur,
-	}
-
-	if !p.expect(token.LeftParen) {
-		return nil
-	}
-
-	p.next()
-	expr.Var = p.parseID()
-
-	if !p.expect(token.Colon) {
-		return nil
-	}
-
-	p.next()
-	expr.Collection = p.parseExpression(lowest)
-
-	if !p.expect(token.RightParen) {
-		return nil
-	}
-
-	if !p.expect(token.LeftBrace) {
-		return nil
-	}
-
-	expr.Body = p.parseBlockStatement()
-
-	return expr
-}
-
 func (p *Parser) parseFunctionCall() ast.Expression {
 	return p.parseFunctionCallStartingWith(nil)
 }

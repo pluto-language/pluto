@@ -40,8 +40,6 @@ func (c *Compiler) CompileExpression(n ast.Expression) error {
 		return c.compileAssign(node)
 	case *ast.IfExpression:
 		return c.compileIf(node)
-	case *ast.WhileLoop:
-		return c.compileWhile(node)
 	case *ast.FunctionCall:
 		return c.compileFnCall(node)
 	case *ast.Argument:
@@ -353,36 +351,6 @@ func (c *Compiler) compileMap(node *ast.Map) error {
 	low, high := runeToBytes(rune(len(node.Pairs)))
 
 	c.Bytes = append(c.Bytes, bytecode.MakeMap, high, low)
-
-	return nil
-}
-
-func (c *Compiler) compileWhile(node *ast.WhileLoop) error {
-	// Jump here to go to the next iteration
-	start := len(c.Bytes) - 1
-
-	if err := c.CompileExpression(node.Condition); err != nil {
-		return err
-	}
-
-	// An empty jump to the end of the loop
-	c.Bytes = append(c.Bytes, bytecode.JumpIfFalse, 0, 0)
-	skipJump := len(c.Bytes) - 3
-
-	// Compile the loop's body
-	if err := c.CompileStatement(node.Body); err != nil {
-		return err
-	}
-
-	// After the body, jump back to the beginning of the loop
-	low, high := runeToBytes(rune(start))
-	c.Bytes = append(c.Bytes, bytecode.Jump, high, low)
-
-	// If the condition isn't met, jump to the end of the loop
-	skipIndex := rune(len(c.Bytes))
-	low, high = runeToBytes(skipIndex)
-	c.Bytes[skipJump+1] = high
-	c.Bytes[skipJump+2] = low
 
 	return nil
 }

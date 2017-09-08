@@ -63,6 +63,20 @@ type (
 		Tok     token.Token
 		Package string
 	}
+
+	// WhileLoop executes Body while Condition holds true
+	WhileLoop struct {
+		Tok       token.Token
+		Condition Expression
+		Body      Statement
+	}
+
+	// ForLoop executes Body for each element in a collection
+	ForLoop struct {
+		Tok             token.Token
+		Var, Collection Expression
+		Body            Statement
+	}
 )
 
 // Stmt tells the compiler this node is a statement
@@ -124,3 +138,15 @@ func (n UseStatement) Stmt() {}
 
 //Token returns this node's token
 func (n UseStatement) Token() token.Token { return n.Tok }
+
+// Stmt tells the compiler this node is a statement
+func (n WhileLoop) Stmt() {}
+
+//Token returns this node's token
+func (n WhileLoop) Token() token.Token { return n.Tok }
+
+// Stmt tells the compiler this node is a statement
+func (n ForLoop) Stmt() {}
+
+//Token returns this node's token
+func (n ForLoop) Token() token.Token { return n.Tok }
