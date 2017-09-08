@@ -1,7 +1,6 @@
 package compiler
 
 import (
-	"bytes"
 	"fmt"
 	"reflect"
 	"strings"
@@ -347,17 +346,17 @@ func (c *Compiler) compileWhile(node *ast.WhileLoop) error {
 }
 
 func (c *Compiler) compileFnCall(node *ast.FunctionCall) error {
-	var pstring bytes.Buffer
+	var ptn []string
 
 	for _, item := range node.Pattern {
 		if id, ok := item.(*ast.Identifier); ok {
-			pstring.WriteString(id.Value + " ")
+			ptn = append(ptn, id.Value)
 		} else {
-			pstring.WriteString("$ ")
+			ptn = append(ptn, "$")
 		}
 	}
 
-	str := strings.TrimSpace(pstring.String())
+	str := strings.Join(ptn, " ")
 	c.Patterns = append(c.Patterns, str)
 
 	for _, item := range node.Pattern {
