@@ -24,10 +24,11 @@ func Effectors() map[byte]Effector {
 			bytecode.Pop: bytePop,
 			bytecode.Dup: byteDup,
 
-			bytecode.LoadConst: byteLoadConst,
-			bytecode.LoadName:  byteLoadName,
-			bytecode.StoreName: byteStoreName,
-			bytecode.LoadField: byteLoadField,
+			bytecode.LoadConst:  byteLoadConst,
+			bytecode.LoadName:   byteLoadName,
+			bytecode.StoreName:  byteStoreName,
+			bytecode.LoadField:  byteLoadField,
+			bytecode.StoreField: byteStoreField,
 
 			bytecode.UnaryInvert: bytePrefix,
 			bytecode.UnaryNegate: bytePrefix,
@@ -127,6 +128,25 @@ func byteLoadField(f *Frame, i bytecode.Instruction) {
 	}
 
 	f.stack.push(val)
+}
+
+func byteStoreField(f *Frame, i bytecode.Instruction) {
+	field, obj, val := f.stack.pop(), f.stack.pop(), f.stack.pop()
+
+	if col, ok := obj.(object.Collection); ok {
+		if index, ok := field.(object.Numeric); ok {
+			idx := int(index.Float64())
+
+			col.SetIndex(idx, val)
+		} else {
+			f.vm.Error = fmt.Errorf("evaluation: non-numeric type %s used to index a collection", field.Type())
+			return
+		}
+	} else if cont, ok := obj.(object.Container); ok {
+		cont.Set(field, val)
+	} else {
+		f.vm.Error = fmt.Errorf("evaluation: cannot index type %s", obj.Type())
+	}
 }
 
 func bytePrefix(f *Frame, i bytecode.Instruction) {
