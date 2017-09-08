@@ -1,6 +1,7 @@
 package compiler
 
 import (
+	"errors"
 	"fmt"
 	"reflect"
 	"strings"
@@ -47,6 +48,8 @@ func (c *Compiler) CompileExpression(n ast.Expression) error {
 		return c.CompileExpression(node.Value)
 	case *ast.IndexExpression:
 		return c.compileIndex(node)
+	case *ast.DotExpression:
+		return c.compileDot(node)
 	default:
 		return fmt.Errorf("compiler: compilation not yet implemented for %s", reflect.TypeOf(n))
 	}
@@ -180,6 +183,31 @@ func (c *Compiler) compileAssign(node *ast.AssignExpression) error {
 		}
 
 		c.Bytes = append(c.Bytes, bytecode.StoreField)
+	} else if dotexpr, ok := node.Name.(*ast.DotExpression); ok {
+		if err := c.CompileExpression(dotexpr.Left); err != nil {
+			return err
+		}
+
+		if id, ok := dotexpr.Right.(*ast.Identifier); ok {
+			obj := &object.String{Value: id.Value}
+
+			c.Constants = append(c.Constants, obj)
+			index := len(c.Constants) - 1
+
+			if index >= 1<<16 {
+				return fmt.Errorf("compiler: constant index %d greater than 1 << 16 (maximum uint16)", index)
+			}
+
+			low, high := runeToBytes(rune(index))
+
+			c.Bytes = append(c.Bytes, bytecode.LoadConst, high, low)
+		} else {
+			return errors.New("compiler: expected an identifier to the right of a dot")
+		}
+
+		c.Bytes = append(c.Bytes, bytecode.StoreField)
+	} else {
+		return errors.New("compiler: can only assign to identfiers and field accessors")
 	}
 
 	return nil
@@ -394,6 +422,33 @@ func (c *Compiler) compileIndex(node *ast.IndexExpression) error {
 
 	if err := c.CompileExpression(node.Index); err != nil {
 		return err
+	}
+
+	c.Bytes = append(c.Bytes, bytecode.LoadField)
+
+	return nil
+}
+
+func (c *Compiler) compileDot(node *ast.DotExpression) error {
+	if err := c.CompileExpression(node.Left); err != nil {
+		return err
+	}
+
+	if id, ok := node.Right.(*ast.Identifier); ok {
+		obj := &object.String{Value: id.Value}
+
+		c.Constants = append(c.Constants, obj)
+		index := len(c.Constants) - 1
+
+		if index >= 1<<16 {
+			return fmt.Errorf("compiler: constant index %d greater than 1 << 16 (maximum uint16)", index)
+		}
+
+		low, high := runeToBytes(rune(index))
+
+		c.Bytes = append(c.Bytes, bytecode.LoadConst, high, low)
+	} else {
+		return errors.New("compiler: expected an identifier to the right of a dot")
 	}
 
 	c.Bytes = append(c.Bytes, bytecode.LoadField)

@@ -15,8 +15,8 @@ func main() {
 
 	p := parser.New(`
 
-a = [1, 2, 3]
-a[2] = 10
+a = ["x": 4, "y": 2, "z": 7]
+a.x = 10
 
 `)
 	program := p.Parse()
