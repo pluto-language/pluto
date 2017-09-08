@@ -17,7 +17,6 @@ func main() {
 
 def $a plus $b {
 	return a + b
-	return 2
 }
 
 5 plus 10
