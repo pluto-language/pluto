@@ -104,7 +104,7 @@ func byteStoreName(f *Frame, i bytecode.Instruction) {
 		return
 	}
 
-	f.locals.Define(name, f.stack.pop())
+	f.locals.Define(name, f.stack.top())
 }
 
 func byteLoadField(f *Frame, i bytecode.Instruction) {
@@ -131,7 +131,7 @@ func byteLoadField(f *Frame, i bytecode.Instruction) {
 }
 
 func byteStoreField(f *Frame, i bytecode.Instruction) {
-	field, obj, val := f.stack.pop(), f.stack.pop(), f.stack.pop()
+	field, obj, val := f.stack.pop(), f.stack.pop(), f.stack.top()
 
 	if col, ok := obj.(object.Collection); ok {
 		if index, ok := field.(object.Numeric); ok {
