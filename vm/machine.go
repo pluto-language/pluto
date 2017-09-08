@@ -26,7 +26,7 @@ func New() *VirtualMachine {
 }
 
 // Run executes the supplied bytecode
-func (vm *VirtualMachine) Run(code bytecode.Code, locals Store, constants []object.Object) {
+func (vm *VirtualMachine) Run(code bytecode.Code, locals *Store, constants []object.Object) {
 	frame := vm.makeFrame(code, NewStore(), locals, constants)
 
 	vm.pushFrame(frame)
@@ -39,7 +39,7 @@ func (vm *VirtualMachine) RunDefault(code bytecode.Code, constants []object.Obje
 	vm.Run(code, NewStore(), constants)
 }
 
-func (vm *VirtualMachine) makeFrame(code bytecode.Code, args, locals Store, constants []object.Object) *Frame {
+func (vm *VirtualMachine) makeFrame(code bytecode.Code, args, locals *Store, constants []object.Object) *Frame {
 	frame := &Frame{
 		code:      code,
 		locals:    locals,

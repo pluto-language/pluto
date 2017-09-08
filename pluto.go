@@ -1,61 +1,69 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/Zac-Garby/pluto/bytecode"
 	"github.com/Zac-Garby/pluto/compiler"
+	"github.com/Zac-Garby/pluto/object"
 	"github.com/Zac-Garby/pluto/parser"
 	"github.com/Zac-Garby/pluto/vm"
 )
 
 func main() {
-	compiler := compiler.New()
-
-	p := parser.New(`
-
-a = ["x": 4, "y": 2, "z": 7]
-a.x = 10
-
-`)
-	program := p.Parse()
-
-	if len(p.Errors) > 0 {
-		p.PrintErrors()
-		os.Exit(1)
-	}
-
-	err := compiler.CompileProgram(program)
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
-
-	code, err := bytecode.Read(compiler.Bytes)
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
-
-	fmt.Println(code)
-
 	store := vm.NewStore()
-	store.Names = compiler.Names
-	store.Functions.Functions = compiler.Functions
-	store.Patterns = compiler.Patterns
+
+	for {
+		reader := bufio.NewReader(os.Stdin)
+		fmt.Print(">> ")
+		text, _ := reader.ReadString('\n')
+		text = strings.TrimRight(text, "\n")
+
+		if obj, err := execute(text, store); err != nil {
+			fmt.Println("   ", err)
+		} else if obj != nil {
+			fmt.Println("   ", obj)
+		}
+	}
+}
+
+func execute(text string, store *vm.Store) (object.Object, error) {
+	var (
+		cmp   = compiler.New()
+		parse = parser.New(text)
+		prog  = parse.Parse()
+	)
+
+	if len(parse.Errors) > 0 {
+		parse.PrintErrors()
+		os.Exit(1)
+	}
+
+	err := cmp.CompileProgram(prog)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+
+	code, err := bytecode.Read(cmp.Bytes)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+
+	store.Names = cmp.Names
+	store.Functions.Functions = cmp.Functions
+	store.Patterns = cmp.Patterns
 
 	machine := vm.New()
-	machine.Run(code, store, compiler.Constants)
+	machine.Run(code, store, cmp.Constants)
 
 	if machine.Error != nil {
-		fmt.Println(machine.Error)
-		return
+		return nil, machine.Error
 	}
 
-	val := machine.ExtractValue()
-
-	if val != nil {
-		fmt.Println(">>", val)
-	}
+	return machine.ExtractValue(), nil
 }

@@ -12,8 +12,8 @@ type Store struct {
 }
 
 // NewStore creates an empty store
-func NewStore() Store {
-	return Store{
+func NewStore() *Store {
+	return &Store{
 		Names:     make([]string, 0),
 		Patterns:  make([]string, 0),
 		Data:      make(map[string]object.Object),
