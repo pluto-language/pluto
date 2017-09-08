@@ -9,10 +9,11 @@ const (
 
 // 10-19: load/store
 const (
-	LoadConst byte = 10
-	LoadName  byte = 11
-	StoreName byte = 12
-	LoadField byte = 13
+	LoadConst  byte = 10
+	LoadName   byte = 11
+	StoreName  byte = 12
+	LoadField  byte = 13
+	StoreField byte = 14
 )
 
 // 20-39: operators

@@ -159,16 +159,28 @@ func (c *Compiler) compileAssign(node *ast.AssignExpression) error {
 		return err
 	}
 
-	c.Names = append(c.Names, node.Name.(*ast.Identifier).Value)
-	index := len(c.Names) - 1
+	if id, ok := node.Name.(*ast.Identifier); ok {
+		c.Names = append(c.Names, id.Value)
+		index := len(c.Names) - 1
 
-	if index >= 1<<16 {
-		return fmt.Errorf("compiler: name index %d greater than 1 << 16 (maximum uint16)", index)
+		if index >= 1<<16 {
+			return fmt.Errorf("compiler: name index %d greater than 1 << 16 (maximum uint16)", index)
+		}
+
+		low, high := runeToBytes(rune(index))
+
+		c.Bytes = append(c.Bytes, bytecode.StoreName, high, low)
+	} else if indexpr, ok := node.Name.(*ast.IndexExpression); ok {
+		if err := c.CompileExpression(indexpr.Collection); err != nil {
+			return err
+		}
+
+		if err := c.CompileExpression(indexpr.Index); err != nil {
+			return err
+		}
+
+		c.Bytes = append(c.Bytes, bytecode.StoreField)
 	}
-
-	low, high := runeToBytes(rune(index))
-
-	c.Bytes = append(c.Bytes, bytecode.StoreName, high, low)
 
 	return nil
 }
