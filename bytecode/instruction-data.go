@@ -14,6 +14,7 @@ var Instructions = map[byte]data{
 	LoadConst: {Name: "LOAD_CONST", HasArg: true},
 	LoadName:  {Name: "LOAD_NAME", HasArg: true},
 	StoreName: {Name: "STORE_NAME", HasArg: true},
+	LoadField: {Name: "LOAD_FIELD"},
 
 	UnaryInvert: {Name: "UNARY_INVERT"},
 	UnaryNegate: {Name: "UNARY_NEGATE"},

@@ -15,11 +15,8 @@ func main() {
 
 	p := parser.New(`
 
-def $a plus $b {
-	return a + b
-}
-
-5 plus 10
+a = [1, 2, 3, 4, 5]
+a[2]
 
 `)
 	program := p.Parse()

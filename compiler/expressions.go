@@ -45,6 +45,8 @@ func (c *Compiler) CompileExpression(n ast.Expression) error {
 		return c.compileFnCall(node)
 	case *ast.Argument:
 		return c.CompileExpression(node.Value)
+	case *ast.IndexExpression:
+		return c.compileIndex(node)
 	default:
 		return fmt.Errorf("compiler: compilation not yet implemented for %s", reflect.TypeOf(n))
 	}
@@ -369,6 +371,20 @@ func (c *Compiler) compileFnCall(node *ast.FunctionCall) error {
 
 	low, high := runeToBytes(rune(len(c.Patterns) - 1))
 	c.Bytes = append(c.Bytes, bytecode.Call, high, low)
+
+	return nil
+}
+
+func (c *Compiler) compileIndex(node *ast.IndexExpression) error {
+	if err := c.CompileExpression(node.Collection); err != nil {
+		return err
+	}
+
+	if err := c.CompileExpression(node.Index); err != nil {
+		return err
+	}
+
+	c.Bytes = append(c.Bytes, bytecode.LoadField)
 
 	return nil
 }
