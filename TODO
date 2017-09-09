@@ -30,5 +30,4 @@ LANGUAGE
   + c-like for loops
 
 BYTECODE
-  fix REPL
   implement all language features
