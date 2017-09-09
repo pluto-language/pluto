@@ -41,19 +41,19 @@ func execute(text string, store *vm.Store) (object.Object, error) {
 
 	if len(parse.Errors) > 0 {
 		parse.PrintErrors()
-		os.Exit(1)
+		return nil, nil
 	}
 
 	err := cmp.CompileProgram(prog)
 	if err != nil {
 		fmt.Println(err)
-		os.Exit(1)
+		return nil, nil
 	}
 
 	code, err := bytecode.Read(cmp.Bytes)
 	if err != nil {
 		fmt.Println(err)
-		os.Exit(1)
+		return nil, nil
 	}
 
 	store.Names = cmp.Names
