@@ -30,6 +30,5 @@ LANGUAGE
   + c-like for loops
 
 BYTECODE
-  recursive functions
   fix REPL
   implement all language features
