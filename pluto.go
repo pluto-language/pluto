@@ -11,6 +11,8 @@ import (
 	"github.com/Zac-Garby/pluto/object"
 	"github.com/Zac-Garby/pluto/parser"
 	"github.com/Zac-Garby/pluto/vm"
+
+	"github.com/fatih/color"
 )
 
 func main() {
@@ -23,9 +25,9 @@ func main() {
 		text = strings.TrimRight(text, "\n")
 
 		if obj, err := execute(text, store); err != nil {
-			fmt.Println("   ", err)
+			color.Red("  %s", err)
 		} else if obj != nil {
-			fmt.Println("   ", obj)
+			color.Cyan("  %s", obj)
 		}
 	}
 }
