@@ -54,6 +54,7 @@ func (c *Compiler) compileFunctionDefinition(node *ast.FunctionDefinition) error
 		Body:      instructions,
 		Constants: fcomp.Constants,
 		Names:     fcomp.Names,
+		Patterns:  fcomp.Patterns,
 	}
 
 	c.Functions = append(c.Functions, fn)

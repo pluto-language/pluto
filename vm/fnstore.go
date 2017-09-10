@@ -23,6 +23,11 @@ outer:
 	for _, fn := range f.Functions {
 		fnpat := fn.Pattern
 
+		if len(fnpat) != len(pattern) {
+			// Doesn't match
+			continue outer
+		}
+
 		for i, item := range pattern {
 			var (
 				fItem = fnpat[i]

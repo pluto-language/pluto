@@ -13,6 +13,7 @@ type (
 		Body      bytecode.Code
 		Constants []Object
 		Names     []string
+		Patterns  []string
 		OnCall    func(self *Function) Object
 	}
 

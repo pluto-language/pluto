@@ -61,12 +61,15 @@ func (vm *VirtualMachine) pushFrame(frame *Frame) {
 	vm.frames = append(vm.frames, frame)
 }
 
-func (vm *VirtualMachine) popFrame(frame *Frame) {
+func (vm *VirtualMachine) popFrame() *Frame {
+	f := vm.frames[len(vm.frames)-1]
 	vm.frames = vm.frames[:len(vm.frames)-1]
+	return f
 }
 
 func (vm *VirtualMachine) runFrame(frame *Frame) {
-	frame.execute()
+	vm.pushFrame(frame)
+	vm.popFrame().execute()
 }
 
 // ExtractValue returns the top value from the top frame
