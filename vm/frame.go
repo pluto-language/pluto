@@ -17,9 +17,10 @@ type Frame struct {
 	offset   int             // the current instruction index
 	vm       *VirtualMachine // the frame's virtual machine
 
-	locals    *Store // the local namespace
-	stack     stack  // the object stack
-	constants []object.Object
+	locals        *Store          // the local namespace
+	stack         stack           // the object stack
+	breaks, nexts []int           // the loop stack
+	constants     []object.Object // the pre-initialised constants
 }
 
 func (f *Frame) execute() {

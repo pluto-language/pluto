@@ -59,6 +59,10 @@ func Effectors() map[byte]Effector {
 			bytecode.Jump:        byteJump,
 			bytecode.JumpIfTrue:  byteJumpIfTrue,
 			bytecode.JumpIfFalse: byteJumpIfFalse,
+			bytecode.Break:       byteBreak,
+			bytecode.Next:        byteNext,
+			bytecode.LoopStart:   byteLoopStart,
+			bytecode.LoopEnd:     byteLoopEnd,
 
 			bytecode.MakeArray: byteMakeArray,
 			bytecode.MakeTuple: byteMakeTuple,
@@ -435,6 +439,33 @@ func byteJumpIfFalse(f *Frame, i bytecode.Instruction) {
 	if !object.IsTruthy(obj) {
 		f.offset = f.byteToInstructionIndex(int(i.Arg))
 	}
+}
+
+func byteBreak(f *Frame, i bytecode.Instruction) {
+	top := f.breaks[len(f.breaks)-1]
+	f.offset = top
+}
+
+func byteNext(f *Frame, i bytecode.Instruction) {
+	top := f.nexts[len(f.nexts)-1]
+	f.offset = top
+}
+
+func byteLoopStart(f *Frame, i bytecode.Instruction) {
+	f.nexts = append(f.nexts, f.offset+1)
+
+	var o int
+
+	for o := f.offset; f.code[o].Code != bytecode.LoopEnd; o++ {
+		// Nothing here
+	}
+
+	f.breaks = append(f.breaks, o)
+}
+
+func byteLoopEnd(f *Frame, i bytecode.Instruction) {
+	f.breaks = f.breaks[:len(f.breaks)-1]
+	f.nexts = f.nexts[:len(f.nexts)-1]
 }
 
 func byteMakeArray(f *Frame, i bytecode.Instruction) {

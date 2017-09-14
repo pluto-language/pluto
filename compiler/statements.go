@@ -22,6 +22,10 @@ func (c *Compiler) CompileStatement(n ast.Statement) error {
 		return c.compileReturnStatement(node)
 	case *ast.WhileLoop:
 		return c.compileWhile(node)
+	case *ast.NextStatement:
+		return c.compileNext(node)
+	case *ast.BreakStatement:
+		return c.compileBreak(node)
 	default:
 		return fmt.Errorf("compiler: compilation not yet implemented for %s", reflect.TypeOf(n))
 	}
@@ -75,6 +79,8 @@ func (c *Compiler) compileReturnStatement(node *ast.ReturnStatement) error {
 }
 
 func (c *Compiler) compileWhile(node *ast.WhileLoop) error {
+	c.Bytes = append(c.Bytes, bytecode.LoopStart)
+
 	// Jump here to go to the next iteration
 	start := len(c.Bytes) - 1
 
@@ -100,6 +106,20 @@ func (c *Compiler) compileWhile(node *ast.WhileLoop) error {
 	low, high = runeToBytes(skipIndex)
 	c.Bytes[skipJump+1] = high
 	c.Bytes[skipJump+2] = low
+
+	c.Bytes = append(c.Bytes, bytecode.LoopEnd)
+
+	return nil
+}
+
+func (c *Compiler) compileNext(node *ast.NextStatement) error {
+	c.Bytes = append(c.Bytes, bytecode.Next)
+
+	return nil
+}
+
+func (c *Compiler) compileBreak(node *ast.BreakStatement) error {
+	c.Bytes = append(c.Bytes, bytecode.Break)
 
 	return nil
 }

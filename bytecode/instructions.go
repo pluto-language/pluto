@@ -57,6 +57,10 @@ const (
 	Jump        byte = 90
 	JumpIfTrue  byte = 91
 	JumpIfFalse byte = 92
+	Break       byte = 93
+	Next        byte = 94
+	LoopStart   byte = 95
+	LoopEnd     byte = 96
 )
 
 // 100-109: data constructors
