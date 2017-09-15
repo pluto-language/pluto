@@ -160,6 +160,24 @@ type (
 		Instance Expression
 		Pattern  []Expression
 	}
+
+	// EmittedItem is an item inside an emission expression
+	EmittedItem struct {
+		IsInstruction bool
+
+		// This will be defined if !IsInstruction
+		Exp Expression
+
+		// These things will be defined if IsInstruction
+		Instruction string
+		Argument    rune
+	}
+
+	// EmissionExpression emits some raw bytecode
+	EmissionExpression struct {
+		Tok   token.Token
+		Items []EmittedItem
+	}
 )
 
 // Expr tells the compiler this node is an expression
@@ -305,3 +323,9 @@ func (n MethodCall) Expr() {}
 
 // Token returns the node's token
 func (n MethodCall) Token() token.Token { return n.Tok }
+
+// Expr tells the compiler this node is an expression
+func (n EmissionExpression) Expr() {}
+
+// Token returns the node's token
+func (n EmissionExpression) Token() token.Token { return n.Tok }

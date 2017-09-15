@@ -42,6 +42,7 @@ func New(text string) *Parser {
 		token.LeftSquare: p.parseArrayOrMap,
 		token.String:     p.parseString,
 		token.Char:       p.parseChar,
+		token.LessThan:   p.parseEmission,
 
 		token.Minus: p.parsePrefix,
 		token.Plus:  p.parsePrefix,

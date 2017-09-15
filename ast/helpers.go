@@ -116,6 +116,34 @@ func Tree(node Node, indent int, name string) string {
 			}
 
 			str += "\n" + in(indent+1) + "]"
+		case []EmittedItem:
+			str += "\n" + prefix(indent+1, label) + "items ["
+
+			if len(n) == 0 {
+				str += "]"
+				break
+			}
+
+			for _, item := range n {
+				if item.IsInstruction {
+					str += fmt.Sprintf(
+						"\n%sinstruction (\n%s%s\n%s%d\n%s)",
+						in(indent+2),
+						prefix(indent+3, "instruction"),
+						item.Instruction,
+						prefix(indent+3, "argument"),
+						item.Argument,
+						in(indent+2),
+					)
+				} else {
+					str += fmt.Sprintf(
+						"\n%s",
+						Tree(item.Exp, indent+2, "expression"),
+					)
+				}
+			}
+
+			str += "\n" + in(indent+1) + "]"
 		default:
 			str += "\n" + fmt.Sprintf("%s%s", prefix(indent+1, label), fmt.Sprintf("%v", n))
 		}

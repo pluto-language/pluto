@@ -59,7 +59,7 @@ func (c *Compiler) compileNumber(node *ast.Number) error {
 	index := len(c.Constants) - 1
 
 	if index >= 1<<16 {
-		return fmt.Errorf("compiler: constant index %d greater than 1 << 16 (maximum uint16)", index)
+		return fmt.Errorf("compiler: constant index %d greater than 0xFFFF (maximum uint16)", index)
 	}
 
 	low, high := runeToBytes(rune(index))
@@ -75,7 +75,7 @@ func (c *Compiler) compileString(node *ast.String) error {
 	index := len(c.Constants) - 1
 
 	if index >= 1<<16 {
-		return fmt.Errorf("compiler: constant index %d greater than 1 << 16 (maximum uint16)", index)
+		return fmt.Errorf("compiler: constant index %d greater than 0xFFFF (maximum uint16)", index)
 	}
 
 	low, high := runeToBytes(rune(index))
@@ -91,7 +91,7 @@ func (c *Compiler) compileBoolean(node *ast.Boolean) error {
 	index := len(c.Constants) - 1
 
 	if index >= 1<<16 {
-		return fmt.Errorf("compiler: constant index %d greater than 1 << 16 (maximum uint16)", index)
+		return fmt.Errorf("compiler: constant index %d greater than 0xFFFF (maximum uint16)", index)
 	}
 
 	low, high := runeToBytes(rune(index))
@@ -107,7 +107,7 @@ func (c *Compiler) compileChar(node *ast.Char) error {
 	index := len(c.Constants) - 1
 
 	if index >= 1<<16 {
-		return fmt.Errorf("compiler: constant index %d greater than 1 << 16 (maximum uint16)", index)
+		return fmt.Errorf("compiler: constant index %d greater than 0xFFFF (maximum uint16)", index)
 	}
 
 	low, high := runeToBytes(rune(index))
@@ -123,7 +123,7 @@ func (c *Compiler) compileNull(node *ast.Null) error {
 	index := len(c.Constants) - 1
 
 	if index >= 1<<16 {
-		return fmt.Errorf("compiler: constant index %d greater than 1 << 16 (maximum uint16)", index)
+		return fmt.Errorf("compiler: constant index %d greater than 0xFFFF (maximum uint16)", index)
 	}
 
 	low, high := runeToBytes(rune(index))
@@ -165,7 +165,7 @@ func (c *Compiler) compileAssign(node *ast.AssignExpression) error {
 		index := len(c.Names) - 1
 
 		if index >= 1<<16 {
-			return fmt.Errorf("compiler: name index %d greater than 1 << 16 (maximum uint16)", index)
+			return fmt.Errorf("compiler: name index %d greater than 0xFFFF (maximum uint16)", index)
 		}
 
 		low, high := runeToBytes(rune(index))
@@ -193,7 +193,7 @@ func (c *Compiler) compileAssign(node *ast.AssignExpression) error {
 			index := len(c.Constants) - 1
 
 			if index >= 1<<16 {
-				return fmt.Errorf("compiler: constant index %d greater than 1 << 16 (maximum uint16)", index)
+				return fmt.Errorf("compiler: constant index %d greater than 0xFFFF (maximum uint16)", index)
 			}
 
 			low, high := runeToBytes(rune(index))
@@ -409,7 +409,7 @@ func (c *Compiler) compileDot(node *ast.DotExpression) error {
 		index := len(c.Constants) - 1
 
 		if index >= 1<<16 {
-			return fmt.Errorf("compiler: constant index %d greater than 1 << 16 (maximum uint16)", index)
+			return fmt.Errorf("compiler: constant index %d greater than 0xFFFF (maximum uint16)", index)
 		}
 
 		low, high := runeToBytes(rune(index))

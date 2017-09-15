@@ -310,6 +310,15 @@ func (p *Parser) parseTryExpression() ast.Expression {
 	return expr
 }
 
+func (p *Parser) parseEmission() ast.Expression {
+	p.next()
+
+	return &ast.EmissionExpression{
+		Tok:   p.cur,
+		Items: p.parseEmissionList(),
+	}
+}
+
 /*********************
  * Infix expressions *
  *********************/
