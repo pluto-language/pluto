@@ -48,6 +48,8 @@ func (c *Compiler) CompileExpression(n ast.Expression) error {
 		return c.compileIndex(node)
 	case *ast.DotExpression:
 		return c.compileDot(node)
+	case *ast.EmissionExpression:
+		return c.compileEmission(node)
 	default:
 		return fmt.Errorf("compiler: compilation not yet implemented for %s", reflect.TypeOf(n))
 	}
@@ -420,6 +422,38 @@ func (c *Compiler) compileDot(node *ast.DotExpression) error {
 	}
 
 	c.Bytes = append(c.Bytes, bytecode.LoadField)
+
+	return nil
+}
+
+func (c *Compiler) compileEmission(node *ast.EmissionExpression) error {
+	for _, item := range node.Items {
+		if item.IsInstruction {
+			var (
+				ib     byte
+				hasArg bool
+			)
+
+			for b, data := range bytecode.Instructions {
+				if data.Name == item.Instruction {
+					ib = b
+					hasArg = data.HasArg
+					break
+				}
+			}
+
+			c.Bytes = append(c.Bytes, ib)
+
+			if hasArg {
+				low, high := runeToBytes(item.Argument)
+				c.Bytes = append(c.Bytes, high, low)
+			}
+		} else {
+			if err := c.CompileExpression(item.Exp); err != nil {
+				return err
+			}
+		}
+	}
 
 	return nil
 }
