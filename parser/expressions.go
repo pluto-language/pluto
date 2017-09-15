@@ -148,9 +148,47 @@ func (p *Parser) parseGroupedExpression() ast.Expression {
 func (p *Parser) parseArrayOrMap() ast.Expression {
 	p.next()
 
-	if p.peekIs(token.Colon) || p.curIs(token.Colon) {
+	if p.curIs(token.RightSquare) {
+		return &ast.Array{
+			Tok:      p.cur,
+			Elements: []ast.Expression{},
+		}
+	}
+
+	if p.curIs(token.Colon) {
 		pairs := p.parseExpressionPairs(token.RightSquare)
 
+		return &ast.Map{
+			Tok:   p.cur,
+			Pairs: pairs,
+		}
+	}
+
+	key := p.parseExpression(index)
+
+	if p.peekIs(token.Colon) {
+		p.next()
+		p.next()
+
+		var (
+			val   = p.parseExpression(lowest)
+			pairs = map[ast.Expression]ast.Expression{
+				key: val,
+			}
+		)
+
+		p.next()
+
+		if p.curIs(token.RightSquare) {
+			goto done
+		}
+
+		p.next()
+
+		pairs = p.parseExpressionPairs(token.RightSquare)
+		pairs[key] = val
+
+	done:
 		return &ast.Map{
 			Tok:   p.cur,
 			Pairs: pairs,

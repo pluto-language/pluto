@@ -14,7 +14,6 @@ LANGUAGE
   compile Pluto to bytecode to speed up execution?
   allow blocks to be curried
   convert some language constructs to builtins
-  fix map parsing
 
   + type conversions
   + list and map comprehensions
