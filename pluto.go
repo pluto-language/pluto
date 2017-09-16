@@ -1,24 +1,31 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
-	"os"
-	"strings"
 
 	"github.com/Zac-Garby/pluto/bytecode"
 	"github.com/Zac-Garby/pluto/compiler"
+	"github.com/Zac-Garby/pluto/graph"
 	"github.com/Zac-Garby/pluto/object"
 	"github.com/Zac-Garby/pluto/parser"
 	"github.com/Zac-Garby/pluto/vm"
-
-	"github.com/fatih/color"
 )
 
 func main() {
 	store := vm.NewStore()
+	execute(`
+a = 0
 
-	for {
+while (a < 10) {
+	a = a + 1
+
+	if (a > 5) {
+		break
+	}
+}
+`, store)
+
+	/* for {
 		reader := bufio.NewReader(os.Stdin)
 		fmt.Print(">> ")
 		text, _ := reader.ReadString('\n')
@@ -29,7 +36,7 @@ func main() {
 		} else if obj != nil {
 			color.Cyan("  %s", obj)
 		}
-	}
+	} */
 }
 
 func execute(text string, store *vm.Store) (object.Object, error) {
@@ -53,6 +60,14 @@ func execute(text string, store *vm.Store) (object.Object, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	graph := graph.New(code, cmp.Constants)
+	dot, err := graph.Render()
+	if err != nil {
+		return nil, err
+	}
+
+	fmt.Println(dot)
 
 	store.Names = cmp.Names
 	store.Functions.Functions = append(cmp.Functions, store.Functions.Functions...)
