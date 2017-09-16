@@ -22,6 +22,7 @@ var lineEndings = []token.Type{
 	token.RightParen,
 	token.RightSquare,
 	token.RightBrace,
+	token.GreaterThan,
 }
 
 // Lexer takes a string and returns a stream of tokens
