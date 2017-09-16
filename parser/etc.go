@@ -72,6 +72,7 @@ var argBlacklist = []token.Type{
 	token.LeftSquare,
 	token.Try,
 	token.Bang,
+	token.LessThan,
 }
 
 func isBlacklisted(t token.Type) bool {
