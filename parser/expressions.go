@@ -285,69 +285,6 @@ func (p *Parser) parseIfExpression() ast.Expression {
 	return expr
 }
 
-func (p *Parser) parseMatchExpression() ast.Expression {
-	expr := &ast.MatchExpression{
-		Tok: p.cur,
-	}
-
-	if !p.expect(token.LeftParen) {
-		return nil
-	}
-
-	p.next()
-	expr.Exp = p.parseExpression(lowest)
-
-	if !p.expect(token.RightParen) {
-		return nil
-	}
-
-	if !p.expect(token.LeftBrace) {
-		return nil
-	}
-
-	expr.Arms = p.parseMatchArms()
-	if expr.Arms == nil {
-		return nil
-	}
-
-	return expr
-}
-
-func (p *Parser) parseTryExpression() ast.Expression {
-	expr := &ast.TryExpression{
-		Tok: p.cur,
-	}
-
-	if !p.expect(token.LeftBrace) {
-		return nil
-	}
-
-	expr.Body = p.parseBlockStatement()
-
-	if !p.expect(token.Catch) {
-		return nil
-	}
-
-	if !p.expect(token.LeftParen) {
-		return nil
-	}
-
-	p.next()
-	expr.ErrName = p.parseID()
-
-	if !p.expect(token.RightParen) {
-		return nil
-	}
-
-	if !p.expect(token.LeftBrace) {
-		return nil
-	}
-
-	expr.Arms = p.parseMatchArms()
-
-	return expr
-}
-
 func (p *Parser) parseEmission() ast.Expression {
 	p.next()
 
@@ -445,14 +382,6 @@ func (p *Parser) parseIndexExpression(left ast.Expression) ast.Expression {
 	}
 
 	return expr
-}
-
-func (p *Parser) parseMethodCall(left ast.Expression) ast.Expression {
-	return &ast.MethodCall{
-		Tok:      p.cur,
-		Instance: left,
-		Pattern:  p.parsePattern(),
-	}
 }
 
 func (p *Parser) parseQualifiedFunctionCall(left ast.Expression) ast.Expression {

@@ -215,51 +215,6 @@ func (p *Parser) parseParams(end token.Type) []ast.Expression {
 	return params
 }
 
-func (p *Parser) parseMatchArm() ast.Arm {
-	var (
-		left  = []ast.Expression{}
-		right ast.Statement
-	)
-
-	if p.curIs(token.Star) {
-		left = nil
-		p.next()
-	} else {
-		left = p.parseExpressionList(token.FatArrow)
-	}
-
-	p.next()
-
-	if p.curIs(token.LeftBrace) {
-		right = p.parseBlockStatement()
-		p.next()
-	} else {
-		right = p.parseStatement()
-	}
-
-	return ast.Arm{
-		Exprs: left,
-		Body:  right,
-	}
-}
-
-func (p *Parser) parseMatchArms() []ast.Arm {
-	var arms []ast.Arm
-
-	for !p.curIs(token.RightBrace) {
-		p.next()
-		arm := p.parseMatchArm()
-
-		arms = append(arms, arm)
-
-		if p.peekIs(token.RightBrace) {
-			p.next()
-		}
-	}
-
-	return arms
-}
-
 func (p *Parser) parsePatternCall(end token.Type) []ast.Expression {
 	var (
 		pattern      []ast.Expression

@@ -133,34 +133,6 @@ type (
 		Consequence, Alternative Statement
 	}
 
-	// Arm is a match-arm
-	Arm struct {
-		Exprs []Expression
-		Body  Statement
-	}
-
-	// MatchExpression matches an expression against a list of arms
-	MatchExpression struct {
-		Tok  token.Token
-		Exp  Expression
-		Arms []Arm
-	}
-
-	// TryExpression trys to execute Body, and matches Arms if it throws an error
-	TryExpression struct {
-		Tok     token.Token
-		Body    Statement
-		ErrName Expression
-		Arms    []Arm
-	}
-
-	// MethodCall calls a method on an instance
-	MethodCall struct {
-		Tok      token.Token
-		Instance Expression
-		Pattern  []Expression
-	}
-
 	// EmittedItem is an item inside an emission expression
 	EmittedItem struct {
 		IsInstruction bool
@@ -305,24 +277,6 @@ func (n IfExpression) Expr() {}
 
 // Token returns the node's token
 func (n IfExpression) Token() token.Token { return n.Tok }
-
-// Expr tells the compiler this node is an expression
-func (n MatchExpression) Expr() {}
-
-// Token returns the node's token
-func (n MatchExpression) Token() token.Token { return n.Tok }
-
-// Expr tells the compiler this node is an expression
-func (n TryExpression) Expr() {}
-
-// Token returns the node's token
-func (n TryExpression) Token() token.Token { return n.Tok }
-
-// Expr tells the compiler this node is an expression
-func (n MethodCall) Expr() {}
-
-// Token returns the node's token
-func (n MethodCall) Token() token.Token { return n.Tok }
 
 // Expr tells the compiler this node is an expression
 func (n EmissionExpression) Expr() {}

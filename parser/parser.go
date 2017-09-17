@@ -52,8 +52,6 @@ func New(text string) *Parser {
 		token.If:        p.parseIfExpression,
 		token.BackSlash: p.parseFunctionCall,
 		token.LeftBrace: p.parseBlockLiteral,
-		token.Match:     p.parseMatchExpression,
-		token.Try:       p.parseTryExpression,
 	}
 
 	p.infixes = map[token.Type]infixParser{
@@ -90,7 +88,6 @@ func New(text string) *Parser {
 		token.Assign:             p.parseAssignExpression,
 		token.Declare:            p.parseDeclareExpression,
 		token.Dot:                p.parseDotExpression,
-		token.Colon:              p.parseMethodCall,
 		token.DoubleColon:        p.parseQualifiedFunctionCall,
 		token.LeftSquare:         p.parseIndexExpression,
 	}

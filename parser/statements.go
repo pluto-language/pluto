@@ -18,8 +18,6 @@ func (p *Parser) parseStatement() ast.Statement {
 		stmt = p.parseNextStatement()
 	} else if p.curIs(token.Break) {
 		stmt = p.parseBreakStatement()
-	} else if p.curIs(token.Class) {
-		stmt = p.parseClassDeclaration()
 	} else if p.curIs(token.Import) {
 		stmt = p.parseImportStatement()
 	} else if p.curIs(token.Use) {
@@ -116,75 +114,6 @@ func (p *Parser) parseDefStatement() ast.Statement {
 	}
 
 	stmt.Body = p.parseBlockStatement()
-
-	return stmt
-}
-
-func (p *Parser) parseInitStatement() ast.Statement {
-	stmt := &ast.InitDefinition{
-		Tok: p.cur,
-	}
-
-	p.next()
-	stmt.Pattern = p.parsePatternCall(token.LeftBrace)
-
-	if len(stmt.Pattern) == 0 {
-		p.defaultErr("expected at least one item in a pattern")
-		return nil
-	}
-
-	stmt.Body = p.parseBlockStatement()
-
-	return stmt
-}
-
-func (p *Parser) parseClassDeclaration() ast.Statement {
-	stmt := &ast.ClassStatement{
-		Tok: p.cur,
-	}
-
-	if !p.expect(token.ID) {
-		return nil
-	}
-
-	stmt.Name = p.parseID()
-
-	if p.peekIs(token.Extends) {
-		p.next()
-		p.next()
-
-		stmt.Parent = p.parseID()
-	}
-
-	if !p.expect(token.LeftBrace) {
-		return nil
-	}
-
-	p.next()
-
-	if p.curIs(token.RightBrace) {
-		return stmt
-	}
-
-	for p.curIs(token.Init, token.Def) {
-		if p.curIs(token.Init) {
-			stmt.Methods = append(stmt.Methods, p.parseInitStatement())
-		} else {
-			stmt.Methods = append(stmt.Methods, p.parseDefStatement())
-		}
-
-		if !p.expect(token.Semi) {
-			return nil
-		}
-
-		if p.peekIs(token.Init, token.Def) {
-			p.next()
-		}
-	}
-
-	if !p.expect(token.RightBrace) {
-		return nil
-	}
 
 	return stmt
 }

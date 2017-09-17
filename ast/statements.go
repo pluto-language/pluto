@@ -22,13 +22,6 @@ type (
 		Body    Statement
 	}
 
-	// InitDefinition defines an initialisation method
-	InitDefinition struct {
-		Tok     token.Token
-		Pattern []Expression
-		Body    Statement
-	}
-
 	// ReturnStatement returns an expression from a BlockStatement
 	ReturnStatement struct {
 		Tok   token.Token
@@ -43,13 +36,6 @@ type (
 	// BreakStatement breaks a loop
 	BreakStatement struct {
 		Tok token.Token
-	}
-
-	// ClassStatement defines a class
-	ClassStatement struct {
-		Tok          token.Token
-		Name, Parent Expression
-		Methods      []Statement
 	}
 
 	// ImportStatement imports a package
@@ -98,12 +84,6 @@ func (n FunctionDefinition) Stmt() {}
 func (n FunctionDefinition) Token() token.Token { return n.Tok }
 
 // Stmt tells the compiler this node is a statement
-func (n InitDefinition) Stmt() {}
-
-//Token returns this node's token
-func (n InitDefinition) Token() token.Token { return n.Tok }
-
-// Stmt tells the compiler this node is a statement
 func (n ReturnStatement) Stmt() {}
 
 //Token returns this node's token
@@ -120,12 +100,6 @@ func (n BreakStatement) Stmt() {}
 
 //Token returns this node's token
 func (n BreakStatement) Token() token.Token { return n.Tok }
-
-// Stmt tells the compiler this node is a statement
-func (n ClassStatement) Stmt() {}
-
-//Token returns this node's token
-func (n ClassStatement) Token() token.Token { return n.Tok }
 
 // Stmt tells the compiler this node is a statement
 func (n ImportStatement) Stmt() {}
