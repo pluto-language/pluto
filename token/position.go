@@ -2,6 +2,7 @@ package token
 
 import "fmt"
 
+// Position is a token's position in the source
 type Position struct {
 	Line, Column int
 }

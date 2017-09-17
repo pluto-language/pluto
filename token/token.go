@@ -2,6 +2,7 @@ package token
 
 import "fmt"
 
+// Token is a lexical token used in parsing
 type Token struct {
 	Type       Type
 	Literal    string
@@ -18,6 +19,8 @@ func (t *Token) String() string {
 	)
 }
 
+// Keywords maps keyword literals to their
+// corresponding token types
 var Keywords = map[string]Type{
 	"def":    Def,
 	"return": Return,
@@ -37,6 +40,8 @@ var Keywords = map[string]Type{
 	"use":    Use,
 }
 
+// IsKeyword checks if a token of type t is a
+// keyword
 func IsKeyword(t Type) bool {
 	for _, k := range Keywords {
 		if t == k {
