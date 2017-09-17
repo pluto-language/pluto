@@ -456,7 +456,7 @@ func byteLoopStart(f *Frame, i bytecode.Instruction) {
 
 	var o int
 
-	for o = f.offset; f.code[o].Code != bytecode.LoopEnd; o++ {
+	for o := f.offset; f.code[o].Code != bytecode.LoopEnd; o++ {
 		// Nothing here
 	}
 
