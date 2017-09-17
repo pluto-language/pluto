@@ -379,8 +379,6 @@ func byteCall(f *Frame, i bytecode.Instruction) {
 	locals.Names = fn.Names
 	locals.Patterns = fn.Patterns
 
-	// def f $n { if (n < 2) { n } else { f (n - 2) + f (n - 1) } }; f 5
-
 	for _, item := range fn.Pattern {
 		if param, ok := item.(*ast.Parameter); ok {
 			// Found a parameter
@@ -403,10 +401,12 @@ func byteCall(f *Frame, i bytecode.Instruction) {
 	// Push and execute the function's frame
 	f.vm.runFrame(fnFrame)
 
-	ret := fnFrame.stack.pop()
+	if len(fnFrame.stack.objects) > 0 {
+		ret := fnFrame.stack.pop()
 
-	// Push the returned value
-	f.stack.push(ret)
+		// Push the returned value
+		f.stack.push(ret)
+	}
 }
 
 func byteReturn(f *Frame, i bytecode.Instruction) {
