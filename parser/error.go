@@ -94,10 +94,16 @@ func (p *Parser) printError(index int) {
 
 func (p *Parser) printErrorVerbose(index int) {
 	err := p.Errors[index]
-	lines := strings.Split(p.text, "\n")
 
-	red := color.New(color.FgRed).Add(color.Bold)
-	grey := color.New(color.FgHiWhite)
+	fmt.Printf("in ")
+
+	var (
+		lines = strings.Split(p.text, "\n")
+		grey  = color.New(color.FgHiWhite)
+		red   = color.New(color.FgRed).Add(color.Bold)
+	)
+
+	red.Printf("%s:%s\n\n", p.Errors[0].Start.File, err.Start.String())
 
 	grey.Printf("    %d| ", err.Start.Line)
 	fmt.Printf("%s\n", lines[err.Start.Line-1])
@@ -108,12 +114,15 @@ func (p *Parser) printErrorVerbose(index int) {
 		strings.Repeat("^", err.End.Column-err.Start.Column+1),
 	)
 
-	red.Printf("%s → %s", err.Start.String(), err.End.String())
-	fmt.Printf("\t%s\n\n", err.Message)
+	red.Printf("%s → %s\t%s\n\n", err.Start.String(), err.End.String(), err.Message)
 }
 
 // PrintErrors prints all parser errors in a nice format
 func (p *Parser) PrintErrors() {
+	if len(p.Errors) == 0 {
+		return
+	}
+
 	for i := range p.Errors {
 		if i == 0 {
 			p.printErrorVerbose(i)

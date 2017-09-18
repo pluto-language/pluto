@@ -24,7 +24,7 @@ func main() {
 		text, _ := reader.ReadString('\n')
 		text = strings.TrimRight(text, "\n")
 
-		if obj, err := execute(text, store); err != nil {
+		if obj, err := execute(text, "<repl>", store); err != nil {
 			color.Red("  %s", err)
 		} else if obj != nil {
 			color.Cyan("  %s", obj)
@@ -32,10 +32,10 @@ func main() {
 	}
 }
 
-func execute(text string, store *vm.Store) (object.Object, error) {
+func execute(text, file string, store *vm.Store) (object.Object, error) {
 	var (
 		cmp   = compiler.New()
-		parse = parser.New(text)
+		parse = parser.New(text, file)
 		prog  = parse.Parse()
 	)
 

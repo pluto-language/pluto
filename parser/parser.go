@@ -26,9 +26,9 @@ type Parser struct {
 
 // New returns a new parser for the
 // given string
-func New(text string) *Parser {
+func New(text, file string) *Parser {
 	p := &Parser{
-		lex:    lexer.Lexer(text),
+		lex:    lexer.Lexer(text, file),
 		text:   text,
 		Errors: []Error{},
 	}

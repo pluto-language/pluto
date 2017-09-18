@@ -543,7 +543,7 @@ func byteUse(f *Frame, i bytecode.Instruction) {
 		var (
 			str   = string(src)
 			cmp   = compiler.New()
-			parse = parser.New(str)
+			parse = parser.New(str, source)
 			prog  = parse.Parse()
 		)
 
