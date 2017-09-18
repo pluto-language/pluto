@@ -1,6 +1,7 @@
 package vm
 
 import "github.com/Zac-Garby/pluto/object"
+import "fmt"
 
 // Store is an evaluation scope: it stores
 // defined names, and their corresponding data
@@ -8,6 +9,7 @@ type Store struct {
 	Names    []string
 	Patterns []string
 	Data     map[string]object.Object
+
 	*FunctionStore
 }
 
@@ -41,8 +43,34 @@ func (s *Store) SearchID(id rune) (string, object.Object) {
 }
 
 // Extend extends one store with the data from the other.
+// If a variable named _module is found, it's renamed
+// to _module_x where x = _module["title"]. If _module["title"]
+// is not defined, _module is copied over normally.
 func (s *Store) Extend(other *Store) {
 	for k, v := range other.Data {
+		if k == "_module" {
+			var (
+				m      *object.Map
+				title  object.Object
+				newVar string
+			)
+
+			m, ok := v.(*object.Map)
+			if !ok {
+				goto invalid
+			}
+
+			title = m.Get(&object.String{Value: "title"})
+			if title == nil {
+				goto invalid
+			}
+
+			newVar = fmt.Sprintf("_module_%s", title.String())
+			s.Data[newVar] = v
+
+		invalid:
+		}
+
 		s.Data[k] = v
 	}
 
