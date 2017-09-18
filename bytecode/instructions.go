@@ -69,3 +69,8 @@ const (
 	MakeTuple byte = 101
 	MakeMap   byte = 102
 )
+
+// 110-119: packages
+const (
+	Use byte = 110
+)

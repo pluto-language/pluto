@@ -56,4 +56,6 @@ var Instructions = map[byte]data{
 	MakeArray: {Name: "MAKE_ARRAY", HasArg: true},
 	MakeTuple: {Name: "MAKE_TUPLE", HasArg: true},
 	MakeMap:   {Name: "MAKE_MAP", HasArg: true},
+
+	Use: {Name: "USE", HasArg: true},
 }

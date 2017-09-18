@@ -5,19 +5,19 @@ import "github.com/Zac-Garby/pluto/object"
 // Store is an evaluation scope: it stores
 // defined names, and their corresponding data
 type Store struct {
-	Names     []string
-	Patterns  []string
-	Data      map[string]object.Object
-	Functions FunctionStore
+	Names    []string
+	Patterns []string
+	Data     map[string]object.Object
+	*FunctionStore
 }
 
 // NewStore creates an empty store
 func NewStore() *Store {
 	return &Store{
-		Names:     make([]string, 0),
-		Patterns:  make([]string, 0),
-		Data:      make(map[string]object.Object),
-		Functions: FunctionStore{Functions: make([]object.Function, 8)},
+		Names:         make([]string, 0),
+		Patterns:      make([]string, 0),
+		Data:          make(map[string]object.Object),
+		FunctionStore: &FunctionStore{Functions: make([]object.Function, 0)},
 	}
 }
 
@@ -38,4 +38,13 @@ func (s *Store) SearchName(name string) object.Object {
 func (s *Store) SearchID(id rune) (string, object.Object) {
 	name := s.Names[id]
 	return name, s.Data[name]
+}
+
+// Extend extends one store with the data from the other.
+func (s *Store) Extend(other *Store) {
+	for k, v := range other.Data {
+		s.Data[k] = v
+	}
+
+	s.Functions = append(other.Functions, s.Functions...)
 }

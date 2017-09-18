@@ -3,11 +3,15 @@ package vm
 import (
 	"errors"
 	"fmt"
+	"io/ioutil"
 	"math"
 
 	"github.com/Zac-Garby/pluto/ast"
 	"github.com/Zac-Garby/pluto/bytecode"
+	"github.com/Zac-Garby/pluto/compiler"
+	"github.com/Zac-Garby/pluto/dir"
 	"github.com/Zac-Garby/pluto/object"
+	"github.com/Zac-Garby/pluto/parser"
 )
 
 // Effector is a function which performs a particular instruction
@@ -67,6 +71,8 @@ func Effectors() map[byte]Effector {
 			bytecode.MakeArray: byteMakeArray,
 			bytecode.MakeTuple: byteMakeTuple,
 			bytecode.MakeMap:   byteMakeMap,
+
+			bytecode.Use: byteUse,
 		}
 	}
 
@@ -368,7 +374,7 @@ func byteNotEqual(f *Frame, i bytecode.Instruction) {
 func byteCall(f *Frame, i bytecode.Instruction) {
 	pattern := f.locals.Patterns[i.Arg]
 
-	fn := f.locals.Functions.SearchString(pattern)
+	fn := f.locals.FunctionStore.SearchString(pattern)
 	if fn == nil {
 		f.vm.Error = fmt.Errorf("evaluation: function '%s' not found in the current scope", pattern)
 		return
@@ -517,4 +523,56 @@ func byteMakeMap(f *Frame, i bytecode.Instruction) {
 	}
 
 	f.stack.push(obj)
+}
+
+func byteUse(f *Frame, i bytecode.Instruction) {
+	path := f.constants[i.Arg].String()
+
+	sources, err := dir.LocateRootSources(path)
+	if err != nil {
+		f.vm.Error = err
+		return
+	}
+
+	for _, source := range sources {
+		src, err := ioutil.ReadFile(source)
+		if err != nil {
+			f.vm.Error = err
+		}
+
+		var (
+			str   = string(src)
+			cmp   = compiler.New()
+			parse = parser.New(str)
+			prog  = parse.Parse()
+		)
+
+		if len(parse.Errors) > 0 {
+			parse.PrintErrors()
+			f.vm.Error = errors.New("use: parse error")
+			return
+		}
+
+		err = cmp.CompileProgram(prog)
+		if err != nil {
+			f.vm.Error = err
+			return
+		}
+
+		code, err := bytecode.Read(cmp.Bytes)
+		if err != nil {
+			f.vm.Error = err
+			return
+		}
+
+		store := *f.locals
+		store.Names = cmp.Names
+		store.Functions = cmp.Functions
+		store.Patterns = cmp.Patterns
+
+		machine := New()
+		machine.Run(code, &store, cmp.Constants)
+
+		f.locals.Extend(&store)
+	}
 }

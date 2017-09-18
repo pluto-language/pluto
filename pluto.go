@@ -55,7 +55,7 @@ func execute(text string, store *vm.Store) (object.Object, error) {
 	}
 
 	store.Names = cmp.Names
-	store.Functions.Functions = append(cmp.Functions, store.Functions.Functions...)
+	store.Functions = append(cmp.Functions, store.Functions...)
 	store.Patterns = cmp.Patterns
 
 	machine := vm.New()

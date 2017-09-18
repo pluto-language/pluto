@@ -26,6 +26,8 @@ func (c *Compiler) CompileStatement(n ast.Statement) error {
 		return c.compileNext(node)
 	case *ast.BreakStatement:
 		return c.compileBreak(node)
+	case *ast.UseStatement:
+		return c.compileUse(node)
 	default:
 		return fmt.Errorf("compiler: compilation not yet implemented for %s", reflect.TypeOf(n))
 	}
@@ -120,6 +122,22 @@ func (c *Compiler) compileNext(node *ast.NextStatement) error {
 
 func (c *Compiler) compileBreak(node *ast.BreakStatement) error {
 	c.Bytes = append(c.Bytes, bytecode.Break)
+
+	return nil
+}
+
+func (c *Compiler) compileUse(node *ast.UseStatement) error {
+	obj := &object.String{Value: node.Package}
+	c.Constants = append(c.Constants, obj)
+	index := len(c.Constants) - 1
+
+	if index >= 1<<16 {
+		return fmt.Errorf("compiler: constant index %d greater than 0xFFFF (maximum uint16)", index)
+	}
+
+	low, high := runeToBytes(rune(index))
+
+	c.Bytes = append(c.Bytes, bytecode.Use, high, low)
 
 	return nil
 }
