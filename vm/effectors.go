@@ -528,7 +528,7 @@ func byteMakeMap(f *Frame, i bytecode.Instruction) {
 func byteUse(f *Frame, i bytecode.Instruction) {
 	path := f.constants[i.Arg].String()
 
-	sources, err := dir.LocateRootSources(path)
+	sources, err := dir.LocateAnySources(path)
 	if err != nil {
 		f.vm.Error = err
 		return

@@ -1,10 +1,14 @@
 package dir
 
 import (
-	"fmt"
+	"errors"
 	"os"
 	"path/filepath"
 	"strings"
+)
+
+var (
+	errNoSources = errors.New("use: no sources found")
 )
 
 // LocateSources finds the source files specified.
@@ -47,7 +51,7 @@ func LocateSources(dir, pkg string) ([]string, error) {
 	}
 
 	if len(newFiles) == 0 {
-		return nil, fmt.Errorf("use: no sources found at %s", pkg)
+		return nil, errNoSources
 	}
 
 	return newFiles, nil
@@ -66,16 +70,18 @@ func LocateRootSources(pkg string) ([]string, error) {
 	return LocateSources(pkgs, pkg)
 }
 
-// LocateAnySources first tries to locate sources in dir,
+// LocateAnySources first tries to locate sources as absolute,
 // but if none are found, looks in $PLUTO/packages.
-func LocateAnySources(dir, pkg string) ([]string, error) {
-	inDir, err := LocateSources(dir, pkg)
-	if err != nil {
+// For example, pkg=std/io will find the standard IO package,
+// and /Users/.../packages/io/src/* will find the source files of it.
+func LocateAnySources(pkg string) ([]string, error) {
+	root, err := LocateSources("/", pkg)
+	if err != nil && err != errNoSources {
 		return nil, err
 	}
 
-	if len(inDir) > 0 {
-		return inDir, nil
+	if len(root) > 0 {
+		return root, nil
 	}
 
 	return LocateRootSources(pkg)

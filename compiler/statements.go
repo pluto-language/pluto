@@ -2,7 +2,9 @@ package compiler
 
 import (
 	"fmt"
+	"path/filepath"
 	"reflect"
+	"strings"
 
 	"github.com/Zac-Garby/pluto/ast"
 	"github.com/Zac-Garby/pluto/bytecode"
@@ -127,7 +129,14 @@ func (c *Compiler) compileBreak(node *ast.BreakStatement) error {
 }
 
 func (c *Compiler) compileUse(node *ast.UseStatement) error {
-	obj := &object.String{Value: node.Package}
+	pkg := node.Package
+
+	if strings.HasPrefix(node.Package, "./") {
+		dir, _ := filepath.Split(node.Tok.Start.File)
+		pkg = filepath.Join(dir, pkg)
+	}
+
+	obj := &object.String{Value: pkg}
 	c.Constants = append(c.Constants, obj)
 	index := len(c.Constants) - 1
 
