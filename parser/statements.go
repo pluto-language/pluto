@@ -183,7 +183,7 @@ func (p *Parser) parseForLoop() ast.Statement {
 	p.next()
 	stmt.Var = p.parseID()
 
-	if !p.expect(token.Colon) {
+	if !p.expect(token.In) {
 		return nil
 	}
 

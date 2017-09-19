@@ -196,33 +196,18 @@ const (
 	// For is the 'for' keyword
 	For = "for"
 
-	// Next is the 'next' keyword
+	// Next is the 'next' keyword, which skips to the next iteration in a loop
 	Next = "next"
 
-	// Break is the 'break' keyword
+	// Break is the 'break' keyword, which breaks out of a loop
 	Break = "break"
 
-	// Class is the 'class' keyword
-	Class = "class"
-
-	// Extends is the 'extends' keyword
-	Extends = "extends"
-
-	// Init is the 'init' keyword
-	Init = "init"
-
-	// Match is the 'match' keyword
-	Match = "match"
-
-	// Try is the 'try' keyword
-	Try = "try"
-
-	// Catch is the 'catch' keyword
-	Catch = "catch"
-
-	// Import is the 'import' keyword
+	// Import is the 'import' keyword, which does a qualified source include
 	Import = "import"
 
-	// Use is the 'use' keyword
+	// Use is the 'use' keyword, which does an unqualified source include
 	Use = "use"
+
+	// In is the 'in' keyword, which separates sections in a for loop
+	In = "in"
 )

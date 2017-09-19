@@ -66,11 +66,9 @@ var argBlacklist = []token.Type{
 	token.BackSlash,
 	token.While,
 	token.For,
-	token.Match,
 	token.Minus,
 	token.Plus,
 	token.LeftSquare,
-	token.Try,
 	token.Bang,
 	token.LessThan,
 }
