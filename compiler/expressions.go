@@ -58,81 +58,76 @@ func (c *Compiler) CompileExpression(n ast.Expression) error {
 }
 
 func (c *Compiler) compileNumber(node *ast.Number) error {
-	obj := &object.Number{Value: node.Value}
-	c.Constants = append(c.Constants, obj)
-	index := len(c.Constants) - 1
+	var (
+		obj        = &object.Number{Value: node.Value}
+		index, err = c.addConst(obj)
+	)
 
-	if index >= 1<<16 {
-		return fmt.Errorf("compiler: constant index %d greater than 0xFFFF (maximum uint16)", index)
+	if err != nil {
+		return err
 	}
 
-	low, high := runeToBytes(rune(index))
-
-	c.Bytes = append(c.Bytes, bytecode.LoadConst, high, low)
+	c.loadConst(index)
 
 	return nil
 }
 
 func (c *Compiler) compileString(node *ast.String) error {
-	obj := &object.String{Value: node.Value}
-	c.Constants = append(c.Constants, obj)
-	index := len(c.Constants) - 1
+	var (
+		obj        = &object.String{Value: node.Value}
+		index, err = c.addConst(obj)
+	)
 
-	if index >= 1<<16 {
-		return fmt.Errorf("compiler: constant index %d greater than 0xFFFF (maximum uint16)", index)
+	if err != nil {
+		return err
 	}
 
-	low, high := runeToBytes(rune(index))
-
-	c.Bytes = append(c.Bytes, bytecode.LoadConst, high, low)
+	c.loadConst(index)
 
 	return nil
 }
 
 func (c *Compiler) compileBoolean(node *ast.Boolean) error {
-	obj := &object.Boolean{Value: node.Value}
-	c.Constants = append(c.Constants, obj)
-	index := len(c.Constants) - 1
+	var (
+		obj        = &object.Boolean{Value: node.Value}
+		index, err = c.addConst(obj)
+	)
 
-	if index >= 1<<16 {
-		return fmt.Errorf("compiler: constant index %d greater than 0xFFFF (maximum uint16)", index)
+	if err != nil {
+		return err
 	}
 
-	low, high := runeToBytes(rune(index))
-
-	c.Bytes = append(c.Bytes, bytecode.LoadConst, high, low)
+	c.loadConst(index)
 
 	return nil
 }
 
 func (c *Compiler) compileChar(node *ast.Char) error {
-	obj := &object.Char{Value: rune(node.Value)}
-	c.Constants = append(c.Constants, obj)
-	index := len(c.Constants) - 1
+	var (
+		obj        = &object.Char{Value: rune(node.Value)}
+		index, err = c.addConst(obj)
+	)
 
-	if index >= 1<<16 {
-		return fmt.Errorf("compiler: constant index %d greater than 0xFFFF (maximum uint16)", index)
+	if err != nil {
+		return err
 	}
 
-	low, high := runeToBytes(rune(index))
-
-	c.Bytes = append(c.Bytes, bytecode.LoadConst, high, low)
+	c.loadConst(index)
 
 	return nil
 }
 
 func (c *Compiler) compileNull(node *ast.Null) error {
-	obj := object.NullObj
-	c.Constants = append(c.Constants, obj)
-	index := len(c.Constants) - 1
+	var (
+		obj        = object.NullObj
+		index, err = c.addConst(obj)
+	)
 
-	if index >= 1<<16 {
-		return fmt.Errorf("compiler: constant index %d greater than 0xFFFF (maximum uint16)", index)
+	if err != nil {
+		return err
 	}
 
-	low, high := runeToBytes(rune(index))
-
-	c.Bytes = append(c.Bytes, bytecode.LoadConst, high, low)
+	c.loadConst(index)
 
 	return nil
 }
@@ -160,9 +155,7 @@ func (c *Compiler) compileName(name string) error {
 	index = len(c.Names) - 1
 
 found:
-	low, high := runeToBytes(rune(index))
-
-	c.Bytes = append(c.Bytes, bytecode.LoadName, high, low)
+	c.loadName(rune(index))
 
 	return nil
 }
@@ -415,18 +408,12 @@ func (c *Compiler) compileDot(node *ast.DotExpression) error {
 	}
 
 	if id, ok := node.Right.(*ast.Identifier); ok {
-		obj := &object.String{Value: id.Value}
-
-		c.Constants = append(c.Constants, obj)
-		index := len(c.Constants) - 1
-
-		if index >= 1<<16 {
-			return fmt.Errorf("compiler: constant index %d greater than 0xFFFF (maximum uint16)", index)
+		index, err := c.addConst(&object.String{Value: id.Value})
+		if err != nil {
+			return err
 		}
 
-		low, high := runeToBytes(rune(index))
-
-		c.Bytes = append(c.Bytes, bytecode.LoadConst, high, low)
+		c.loadConst(index)
 	} else {
 		return errors.New("compiler: expected an identifier to the right of a dot")
 	}
