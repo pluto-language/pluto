@@ -30,6 +30,8 @@ func (c *Compiler) CompileExpression(n ast.Expression) error {
 		return c.compileNull(node)
 	case *ast.Identifier:
 		return c.compileIdentifier(node)
+	case *ast.Parameter:
+		return c.compileParameter(node)
 	case *ast.Array:
 		return c.compileArray(node)
 	case *ast.Tuple:
@@ -136,17 +138,25 @@ func (c *Compiler) compileNull(node *ast.Null) error {
 }
 
 func (c *Compiler) compileIdentifier(node *ast.Identifier) error {
+	return c.compileName(node.Value)
+}
+
+func (c *Compiler) compileParameter(node *ast.Parameter) error {
+	return c.compileName(node.Name)
+}
+
+func (c *Compiler) compileName(name string) error {
 	var index int
 
 	for i, name := range c.Names {
-		if name == node.Value {
+		if name == name {
 			index = i
 			goto found
 		}
 	}
 
 	// These two lines are executed if the name isn't found
-	c.Names = append(c.Names, node.Value)
+	c.Names = append(c.Names, name)
 	index = len(c.Names) - 1
 
 found:

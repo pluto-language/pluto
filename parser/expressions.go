@@ -99,6 +99,13 @@ func (p *Parser) parseChar() ast.Expression {
 	}
 }
 
+func (p *Parser) parseParam() ast.Expression {
+	return &ast.Parameter{
+		Tok:  p.cur,
+		Name: p.cur.Literal, // Removes the leading $
+	}
+}
+
 func (p *Parser) parsePrefix() ast.Expression {
 	expr := &ast.PrefixExpression{
 		Tok:      p.cur,

@@ -43,6 +43,7 @@ func New(text, file string) *Parser {
 		token.String:     p.parseString,
 		token.Char:       p.parseChar,
 		token.LessThan:   p.parseEmission,
+		token.Param:      p.parseParam,
 
 		token.Minus: p.parsePrefix,
 		token.Plus:  p.parsePrefix,
@@ -92,9 +93,7 @@ func New(text, file string) *Parser {
 		token.LeftSquare:         p.parseIndexExpression,
 	}
 
-	p.argTokens = []token.Type{
-		token.Param,
-	}
+	p.argTokens = []token.Type{}
 
 	for k := range p.prefixes {
 		if !isBlacklisted(k) {
