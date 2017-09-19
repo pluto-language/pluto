@@ -1,7 +1,6 @@
 package vm
 
 import (
-	"errors"
 	"fmt"
 	"io/ioutil"
 	"math"
@@ -19,64 +18,57 @@ type Effector func(f *Frame, i bytecode.Instruction)
 
 var effectors map[byte]Effector
 
-// Effectors returns a map of bytecodes and their
-// effectors. Wrapped in a function to stop an
-// initialization loop.
-func Effectors() map[byte]Effector {
-	if len(effectors) == 0 {
-		effectors = map[byte]Effector{
-			bytecode.Pop: bytePop,
-			bytecode.Dup: byteDup,
+func init() {
+	effectors = map[byte]Effector{
+		bytecode.Pop: bytePop,
+		bytecode.Dup: byteDup,
 
-			bytecode.LoadConst:  byteLoadConst,
-			bytecode.LoadName:   byteLoadName,
-			bytecode.StoreName:  byteStoreName,
-			bytecode.LoadField:  byteLoadField,
-			bytecode.StoreField: byteStoreField,
+		bytecode.LoadConst:  byteLoadConst,
+		bytecode.LoadName:   byteLoadName,
+		bytecode.StoreName:  byteStoreName,
+		bytecode.LoadField:  byteLoadField,
+		bytecode.StoreField: byteStoreField,
 
-			bytecode.UnaryInvert: bytePrefix,
-			bytecode.UnaryNegate: bytePrefix,
-			bytecode.UnaryNoOp:   bytePrefix,
+		bytecode.UnaryInvert: bytePrefix,
+		bytecode.UnaryNegate: bytePrefix,
+		bytecode.UnaryNoOp:   bytePrefix,
 
-			bytecode.BinaryAdd:      byteInfix,
-			bytecode.BinarySubtract: byteInfix,
-			bytecode.BinaryMultiply: byteInfix,
-			bytecode.BinaryDivide:   byteInfix,
-			bytecode.BinaryExponent: byteInfix,
-			bytecode.BinaryFloorDiv: byteInfix,
-			bytecode.BinaryMod:      byteInfix,
-			bytecode.BinaryBitOr:    byteInfix,
-			bytecode.BinaryBitAnd:   byteInfix,
-			bytecode.BinaryEquals:   byteEquals,
-			bytecode.BinaryNotEqual: byteNotEqual,
-			bytecode.BinaryLessThan: bincmp,
-			bytecode.BinaryMoreThan: bincmp,
-			bytecode.BinaryLessEq:   bincmp,
-			bytecode.BinaryMoreEq:   bincmp,
+		bytecode.BinaryAdd:      byteInfix,
+		bytecode.BinarySubtract: byteInfix,
+		bytecode.BinaryMultiply: byteInfix,
+		bytecode.BinaryDivide:   byteInfix,
+		bytecode.BinaryExponent: byteInfix,
+		bytecode.BinaryFloorDiv: byteInfix,
+		bytecode.BinaryMod:      byteInfix,
+		bytecode.BinaryBitOr:    byteInfix,
+		bytecode.BinaryBitAnd:   byteInfix,
+		bytecode.BinaryEquals:   byteEquals,
+		bytecode.BinaryNotEqual: byteNotEqual,
+		bytecode.BinaryLessThan: bincmp,
+		bytecode.BinaryMoreThan: bincmp,
+		bytecode.BinaryLessEq:   bincmp,
+		bytecode.BinaryMoreEq:   bincmp,
 
-			bytecode.Call:   byteCall,
-			bytecode.Return: byteReturn,
+		bytecode.Call:   byteCall,
+		bytecode.Return: byteReturn,
 
-			bytecode.Print:   bytePrint,
-			bytecode.Println: bytePrintln,
+		bytecode.Print:   bytePrint,
+		bytecode.Println: bytePrintln,
 
-			bytecode.Jump:        byteJump,
-			bytecode.JumpIfTrue:  byteJumpIfTrue,
-			bytecode.JumpIfFalse: byteJumpIfFalse,
-			bytecode.Break:       byteBreak,
-			bytecode.Next:        byteNext,
-			bytecode.LoopStart:   byteLoopStart,
-			bytecode.LoopEnd:     byteLoopEnd,
+		bytecode.Jump:        byteJump,
+		bytecode.JumpIfTrue:  byteJumpIfTrue,
+		bytecode.JumpIfFalse: byteJumpIfFalse,
+		bytecode.Break:       byteBreak,
+		bytecode.Next:        byteNext,
+		bytecode.LoopStart:   byteLoopStart,
+		bytecode.LoopEnd:     byteLoopEnd,
 
-			bytecode.MakeArray: byteMakeArray,
-			bytecode.MakeTuple: byteMakeTuple,
-			bytecode.MakeMap:   byteMakeMap,
+		bytecode.MakeArray: byteMakeArray,
+		bytecode.MakeTuple: byteMakeTuple,
+		bytecode.MakeMap:   byteMakeMap,
 
-			bytecode.Use: byteUse,
-		}
+		bytecode.Use: byteUse,
 	}
-
-	return effectors
 }
 
 func bytePop(f *Frame, i bytecode.Instruction) {
@@ -94,13 +86,13 @@ func byteLoadConst(f *Frame, i bytecode.Instruction) {
 func byteLoadName(f *Frame, i bytecode.Instruction) {
 	name, ok := f.getName(i.Arg)
 	if !ok {
-		f.vm.Error = errors.New("vm: internal: name not found")
+		f.vm.Error = Err("name not defined", ErrInternal)
 		return
 	}
 
 	val, ok := f.searchName(name)
 	if !ok {
-		f.vm.Error = fmt.Errorf("vm: name %s not found in the current scope", name)
+		f.vm.Error = Err("name %s not found in the current scope", ErrNotFound, name)
 		return
 	}
 
@@ -110,7 +102,7 @@ func byteLoadName(f *Frame, i bytecode.Instruction) {
 func byteStoreName(f *Frame, i bytecode.Instruction) {
 	name, ok := f.getName(i.Arg)
 	if !ok {
-		f.vm.Error = errors.New("vm: internal: name not found")
+		f.vm.Error = Err("name not defined", ErrInternal)
 		return
 	}
 
@@ -128,13 +120,13 @@ func byteLoadField(f *Frame, i bytecode.Instruction) {
 
 			val = col.GetIndex(idx)
 		} else {
-			f.vm.Error = fmt.Errorf("vm: non-numeric type %s used to index a collection", field.Type())
+			f.vm.Error = Err("non-numeric type %s used to index a collection", ErrWrongType, field.Type())
 			return
 		}
 	} else if cont, ok := obj.(object.Container); ok {
 		val = cont.Get(field)
 	} else {
-		f.vm.Error = fmt.Errorf("vm: cannot index type %s", obj.Type())
+		f.vm.Error = Err("cannot index type %s", ErrNotFound, obj.Type())
 	}
 
 	f.stack.push(val)
@@ -149,13 +141,13 @@ func byteStoreField(f *Frame, i bytecode.Instruction) {
 
 			col.SetIndex(idx, val)
 		} else {
-			f.vm.Error = fmt.Errorf("vm: non-numeric type %s used to index a collection", field.Type())
+			f.vm.Error = Err("non-numeric type %s used to index a collection", ErrWrongType, field.Type())
 			return
 		}
 	} else if cont, ok := obj.(object.Container); ok {
 		cont.Set(field, val)
 	} else {
-		f.vm.Error = fmt.Errorf("vm: cannot index type %s", obj.Type())
+		f.vm.Error = Err("cannot index type %s", ErrWrongType, obj.Type())
 	}
 }
 
@@ -171,7 +163,7 @@ func bytePrefix(f *Frame, i bytecode.Instruction) {
 		val := n.Float64()
 		f.stack.push(numPrefix(i.Code, val))
 	} else {
-		f.vm.Error = errors.New("vm: prefix r-value of invalid type")
+		f.vm.Error = Err("prefix r-value of invalid type", ErrWrongType)
 	}
 }
 
@@ -195,7 +187,7 @@ func byteInfix(f *Frame, i bytecode.Instruction) {
 		} else if m, ok := right.(object.Collection); ok {
 			f.stack.push(numColInfix(f, i.Code, n.Float64(), m))
 		} else {
-			f.vm.Error = errors.New("vm: infix r-value of invalid type when l-value is <number>")
+			f.vm.Error = Err("infix r-value of invalid type when l-value is <number>", ErrWrongType)
 			return
 		}
 	} else if n, ok := left.(object.Collection); ok {
@@ -204,10 +196,10 @@ func byteInfix(f *Frame, i bytecode.Instruction) {
 		} else if m, ok := right.(object.Collection); ok {
 			f.stack.push(colInfix(f, i.Code, n, m))
 		} else {
-			f.vm.Error = errors.New("vm: infix r-value of invalid type when l-value is a collection")
+			f.vm.Error = Err("infix r-value of invalid type when l-value is a collection", ErrWrongType)
 		}
 	} else {
-		f.vm.Error = errors.New("vm: infix l-value of invalid type")
+		f.vm.Error = Err("infix l-value of invalid type", ErrWrongType)
 		return
 	}
 }
@@ -236,7 +228,7 @@ func numInfix(f *Frame, opcode byte, left, right float64) object.Object {
 		val = float64(int64(left) & int64(right))
 	default:
 		op := bytecode.Instructions[opcode].Name[7:]
-		f.vm.Error = fmt.Errorf("vm: operator %s not supported for two numbers", op)
+		f.vm.Error = Err("operator %s not supported for two numbers", ErrNoOp, op)
 	}
 
 	return &object.Number{Value: val}
@@ -254,7 +246,7 @@ func numColInfix(f *Frame, opcode byte, left float64, right object.Collection) o
 		}
 	} else {
 		op := bytecode.Instructions[opcode].Name[7:]
-		f.vm.Error = fmt.Errorf("vm: operator %s not supported for a collection and a number", op)
+		f.vm.Error = Err("operator %s not supported for a collection and a number", ErrNoOp, op)
 	}
 
 	col, _ := object.MakeCollection(right.Type(), result)
@@ -314,7 +306,7 @@ func colInfix(f *Frame, opcode byte, left, right object.Collection) object.Objec
 		}
 	default:
 		op := bytecode.Instructions[opcode].Name[7:]
-		f.vm.Error = fmt.Errorf("vm: operator %s not supported for two collections", op)
+		f.vm.Error = Err("operator %s not supported for two collections", ErrNoOp, op)
 	}
 
 	col, _ := object.MakeCollection(left.Type(), elems)
@@ -328,13 +320,13 @@ func bincmp(f *Frame, i bytecode.Instruction) {
 
 	n, ok := a.(object.Numeric)
 	if !ok {
-		f.vm.Error = errors.New("vm: non-numeric value in numeric binary expression")
+		f.vm.Error = Err("non-numeric value in numeric binary expression", ErrWrongType)
 		return
 	}
 
 	m, ok := b.(object.Numeric)
 	if !ok {
-		f.vm.Error = errors.New("vm: non-numeric value in numeric binary expression")
+		f.vm.Error = Err("non-numeric value in numeric binary expression", ErrWrongType)
 		return
 	}
 
@@ -376,7 +368,7 @@ func byteCall(f *Frame, i bytecode.Instruction) {
 
 	fn := f.locals.FunctionStore.SearchString(pattern)
 	if fn == nil {
-		f.vm.Error = fmt.Errorf("vm: function '%s' not found in the current scope", pattern)
+		f.vm.Error = Err("function '%s' not found in the current scope", ErrNotFound, pattern)
 		return
 	}
 
@@ -449,7 +441,7 @@ func byteJumpIfFalse(f *Frame, i bytecode.Instruction) {
 
 func byteBreak(f *Frame, i bytecode.Instruction) {
 	if len(f.breaks) < 1 {
-		f.vm.Error = errors.New("vm: break statement found outside loop")
+		f.vm.Error = Err("break statement found outside loop", ErrSyntax)
 		return
 	}
 
@@ -459,7 +451,7 @@ func byteBreak(f *Frame, i bytecode.Instruction) {
 
 func byteNext(f *Frame, i bytecode.Instruction) {
 	if len(f.nexts) < 1 {
-		f.vm.Error = errors.New("vm: next statement found outside loop")
+		f.vm.Error = Err("next statement found outside loop", ErrSyntax)
 		return
 	}
 
@@ -517,7 +509,7 @@ func byteMakeMap(f *Frame, i bytecode.Instruction) {
 
 		hasher, ok := key.(object.Hasher)
 		if !ok {
-			f.vm.Error = fmt.Errorf("vm: non-hashable type as map key: %s", key.Type())
+			f.vm.Error = Err("non-hashable type as map key: %s", ErrWrongType, key.Type())
 			return
 		}
 
@@ -540,14 +532,14 @@ func byteUse(f *Frame, i bytecode.Instruction) {
 
 	sources, err := dir.LocateAnySources(path)
 	if err != nil {
-		f.vm.Error = err
+		f.vm.Error = Err(err.Error(), ErrUnknown)
 		return
 	}
 
 	for _, source := range sources {
 		src, err := ioutil.ReadFile(source)
 		if err != nil {
-			f.vm.Error = err
+			f.vm.Error = Err(err.Error(), ErrUnknown)
 		}
 
 		var (
@@ -559,19 +551,19 @@ func byteUse(f *Frame, i bytecode.Instruction) {
 
 		if len(parse.Errors) > 0 {
 			parse.PrintErrors()
-			f.vm.Error = errors.New("use: parse error")
+			f.vm.Error = Err("parse error", ErrSyntax)
 			return
 		}
 
 		err = cmp.CompileProgram(prog)
 		if err != nil {
-			f.vm.Error = err
+			f.vm.Error = Err(err.Error(), ErrUnknown)
 			return
 		}
 
 		code, err := bytecode.Read(cmp.Bytes)
 		if err != nil {
-			f.vm.Error = err
+			f.vm.Error = Err(err.Error(), ErrUnknown)
 			return
 		}
 

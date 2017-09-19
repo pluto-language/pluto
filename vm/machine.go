@@ -13,7 +13,7 @@ type VirtualMachine struct {
 	frames      []*Frame
 	frame       *Frame
 	returnValue object.Object
-	Error       error
+	Error       *Error
 }
 
 // New returns a new virtual machine

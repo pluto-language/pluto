@@ -1,8 +1,6 @@
 package vm
 
 import (
-	"fmt"
-
 	"github.com/Zac-Garby/pluto/bytecode"
 	"github.com/Zac-Garby/pluto/object"
 )
@@ -42,9 +40,9 @@ func (f *Frame) execute() {
 }
 
 func (f *Frame) doInstruction(i bytecode.Instruction) {
-	e, ok := Effectors()[i.Code]
+	e, ok := effectors[i.Code]
 	if !ok {
-		f.vm.Error = fmt.Errorf("vm: bytecode instruction %s not implemented", i.Name)
+		f.vm.Error = Err("bytecode instruction %s not implemented", ErrNoInstruction, i.Name)
 		return
 	}
 
