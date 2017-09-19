@@ -94,13 +94,13 @@ func byteLoadConst(f *Frame, i bytecode.Instruction) {
 func byteLoadName(f *Frame, i bytecode.Instruction) {
 	name, ok := f.getName(i.Arg)
 	if !ok {
-		f.vm.Error = errors.New("evaluation: internal: name not found")
+		f.vm.Error = errors.New("vm: internal: name not found")
 		return
 	}
 
 	val, ok := f.searchName(name)
 	if !ok {
-		f.vm.Error = fmt.Errorf("evaluation: name %s not found in the current scope", name)
+		f.vm.Error = fmt.Errorf("vm: name %s not found in the current scope", name)
 		return
 	}
 
@@ -110,7 +110,7 @@ func byteLoadName(f *Frame, i bytecode.Instruction) {
 func byteStoreName(f *Frame, i bytecode.Instruction) {
 	name, ok := f.getName(i.Arg)
 	if !ok {
-		f.vm.Error = errors.New("evaluation: internal: name not found")
+		f.vm.Error = errors.New("vm: internal: name not found")
 		return
 	}
 
@@ -128,13 +128,13 @@ func byteLoadField(f *Frame, i bytecode.Instruction) {
 
 			val = col.GetIndex(idx)
 		} else {
-			f.vm.Error = fmt.Errorf("evaluation: non-numeric type %s used to index a collection", field.Type())
+			f.vm.Error = fmt.Errorf("vm: non-numeric type %s used to index a collection", field.Type())
 			return
 		}
 	} else if cont, ok := obj.(object.Container); ok {
 		val = cont.Get(field)
 	} else {
-		f.vm.Error = fmt.Errorf("evaluation: cannot index type %s", obj.Type())
+		f.vm.Error = fmt.Errorf("vm: cannot index type %s", obj.Type())
 	}
 
 	f.stack.push(val)
@@ -149,13 +149,13 @@ func byteStoreField(f *Frame, i bytecode.Instruction) {
 
 			col.SetIndex(idx, val)
 		} else {
-			f.vm.Error = fmt.Errorf("evaluation: non-numeric type %s used to index a collection", field.Type())
+			f.vm.Error = fmt.Errorf("vm: non-numeric type %s used to index a collection", field.Type())
 			return
 		}
 	} else if cont, ok := obj.(object.Container); ok {
 		cont.Set(field, val)
 	} else {
-		f.vm.Error = fmt.Errorf("evaluation: cannot index type %s", obj.Type())
+		f.vm.Error = fmt.Errorf("vm: cannot index type %s", obj.Type())
 	}
 }
 
@@ -171,7 +171,7 @@ func bytePrefix(f *Frame, i bytecode.Instruction) {
 		val := n.Float64()
 		f.stack.push(numPrefix(i.Code, val))
 	} else {
-		f.vm.Error = errors.New("evaluation: prefix r-value of invalid type")
+		f.vm.Error = errors.New("vm: prefix r-value of invalid type")
 	}
 }
 
@@ -195,7 +195,7 @@ func byteInfix(f *Frame, i bytecode.Instruction) {
 		} else if m, ok := right.(object.Collection); ok {
 			f.stack.push(numColInfix(f, i.Code, n.Float64(), m))
 		} else {
-			f.vm.Error = errors.New("evaluation: infix r-value of invalid type when l-value is <number>")
+			f.vm.Error = errors.New("vm: infix r-value of invalid type when l-value is <number>")
 			return
 		}
 	} else if n, ok := left.(object.Collection); ok {
@@ -204,10 +204,10 @@ func byteInfix(f *Frame, i bytecode.Instruction) {
 		} else if m, ok := right.(object.Collection); ok {
 			f.stack.push(colInfix(f, i.Code, n, m))
 		} else {
-			f.vm.Error = errors.New("evaluation: infix r-value of invalid type when l-value is a collection")
+			f.vm.Error = errors.New("vm: infix r-value of invalid type when l-value is a collection")
 		}
 	} else {
-		f.vm.Error = errors.New("evaluation: infix l-value of invalid type")
+		f.vm.Error = errors.New("vm: infix l-value of invalid type")
 		return
 	}
 }
@@ -236,7 +236,7 @@ func numInfix(f *Frame, opcode byte, left, right float64) object.Object {
 		val = float64(int64(left) & int64(right))
 	default:
 		op := bytecode.Instructions[opcode].Name[7:]
-		f.vm.Error = fmt.Errorf("evaluation: operator %s not supported for two numbers", op)
+		f.vm.Error = fmt.Errorf("vm: operator %s not supported for two numbers", op)
 	}
 
 	return &object.Number{Value: val}
@@ -254,7 +254,7 @@ func numColInfix(f *Frame, opcode byte, left float64, right object.Collection) o
 		}
 	} else {
 		op := bytecode.Instructions[opcode].Name[7:]
-		f.vm.Error = fmt.Errorf("evaluation: operator %s not supported for a collection and a number", op)
+		f.vm.Error = fmt.Errorf("vm: operator %s not supported for a collection and a number", op)
 	}
 
 	col, _ := object.MakeCollection(right.Type(), result)
@@ -314,7 +314,7 @@ func colInfix(f *Frame, opcode byte, left, right object.Collection) object.Objec
 		}
 	default:
 		op := bytecode.Instructions[opcode].Name[7:]
-		f.vm.Error = fmt.Errorf("evaluation: operator %s not supported for two collections", op)
+		f.vm.Error = fmt.Errorf("vm: operator %s not supported for two collections", op)
 	}
 
 	col, _ := object.MakeCollection(left.Type(), elems)
@@ -328,13 +328,13 @@ func bincmp(f *Frame, i bytecode.Instruction) {
 
 	n, ok := a.(object.Numeric)
 	if !ok {
-		f.vm.Error = errors.New("evaluation: non-numeric value in numeric binary expression")
+		f.vm.Error = errors.New("vm: non-numeric value in numeric binary expression")
 		return
 	}
 
 	m, ok := b.(object.Numeric)
 	if !ok {
-		f.vm.Error = errors.New("evaluation: non-numeric value in numeric binary expression")
+		f.vm.Error = errors.New("vm: non-numeric value in numeric binary expression")
 		return
 	}
 
@@ -376,7 +376,7 @@ func byteCall(f *Frame, i bytecode.Instruction) {
 
 	fn := f.locals.FunctionStore.SearchString(pattern)
 	if fn == nil {
-		f.vm.Error = fmt.Errorf("evaluation: function '%s' not found in the current scope", pattern)
+		f.vm.Error = fmt.Errorf("vm: function '%s' not found in the current scope", pattern)
 		return
 	}
 
@@ -448,11 +448,21 @@ func byteJumpIfFalse(f *Frame, i bytecode.Instruction) {
 }
 
 func byteBreak(f *Frame, i bytecode.Instruction) {
+	if len(f.breaks) < 1 {
+		f.vm.Error = errors.New("vm: break statement found outside loop")
+		return
+	}
+
 	top := f.breaks[len(f.breaks)-1]
 	f.offset = top
 }
 
 func byteNext(f *Frame, i bytecode.Instruction) {
+	if len(f.nexts) < 1 {
+		f.vm.Error = errors.New("vm: next statement found outside loop")
+		return
+	}
+
 	top := f.nexts[len(f.nexts)-1]
 	f.offset = top
 }
@@ -507,7 +517,7 @@ func byteMakeMap(f *Frame, i bytecode.Instruction) {
 
 		hasher, ok := key.(object.Hasher)
 		if !ok {
-			f.vm.Error = fmt.Errorf("evaluation: non-hashable type as map key: %s", key.Type())
+			f.vm.Error = fmt.Errorf("vm: non-hashable type as map key: %s", key.Type())
 			return
 		}
 
