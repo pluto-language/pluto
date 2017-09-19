@@ -92,7 +92,7 @@ func byteLoadName(f *Frame, i bytecode.Instruction) {
 
 	val, ok := f.searchName(name)
 	if !ok {
-		f.vm.Error = Err("name %s not found in the current scope", ErrNotFound, name)
+		f.vm.Error = Errf("name %s not found in the current scope", ErrNotFound, name)
 		return
 	}
 
@@ -120,13 +120,13 @@ func byteLoadField(f *Frame, i bytecode.Instruction) {
 
 			val = col.GetIndex(idx)
 		} else {
-			f.vm.Error = Err("non-numeric type %s used to index a collection", ErrWrongType, field.Type())
+			f.vm.Error = Errf("non-numeric type %s used to index a collection", ErrWrongType, field.Type())
 			return
 		}
 	} else if cont, ok := obj.(object.Container); ok {
 		val = cont.Get(field)
 	} else {
-		f.vm.Error = Err("cannot index type %s", ErrNotFound, obj.Type())
+		f.vm.Error = Errf("cannot index type %s", ErrNotFound, obj.Type())
 	}
 
 	f.stack.push(val)
@@ -141,13 +141,13 @@ func byteStoreField(f *Frame, i bytecode.Instruction) {
 
 			col.SetIndex(idx, val)
 		} else {
-			f.vm.Error = Err("non-numeric type %s used to index a collection", ErrWrongType, field.Type())
+			f.vm.Error = Errf("non-numeric type %s used to index a collection", ErrWrongType, field.Type())
 			return
 		}
 	} else if cont, ok := obj.(object.Container); ok {
 		cont.Set(field, val)
 	} else {
-		f.vm.Error = Err("cannot index type %s", ErrWrongType, obj.Type())
+		f.vm.Error = Errf("cannot index type %s", ErrWrongType, obj.Type())
 	}
 }
 
@@ -228,7 +228,7 @@ func numInfix(f *Frame, opcode byte, left, right float64) object.Object {
 		val = float64(int64(left) & int64(right))
 	default:
 		op := bytecode.Instructions[opcode].Name[7:]
-		f.vm.Error = Err("operator %s not supported for two numbers", ErrNoOp, op)
+		f.vm.Error = Errf("operator %s not supported for two numbers", ErrNoOp, op)
 	}
 
 	return &object.Number{Value: val}
@@ -246,7 +246,7 @@ func numColInfix(f *Frame, opcode byte, left float64, right object.Collection) o
 		}
 	} else {
 		op := bytecode.Instructions[opcode].Name[7:]
-		f.vm.Error = Err("operator %s not supported for a collection and a number", ErrNoOp, op)
+		f.vm.Error = Errf("operator %s not supported for a collection and a number", ErrNoOp, op)
 	}
 
 	col, _ := object.MakeCollection(right.Type(), result)
@@ -306,7 +306,7 @@ func colInfix(f *Frame, opcode byte, left, right object.Collection) object.Objec
 		}
 	default:
 		op := bytecode.Instructions[opcode].Name[7:]
-		f.vm.Error = Err("operator %s not supported for two collections", ErrNoOp, op)
+		f.vm.Error = Errf("operator %s not supported for two collections", ErrNoOp, op)
 	}
 
 	col, _ := object.MakeCollection(left.Type(), elems)
@@ -368,7 +368,7 @@ func byteCall(f *Frame, i bytecode.Instruction) {
 
 	fn := f.locals.FunctionStore.SearchString(pattern)
 	if fn == nil {
-		f.vm.Error = Err("function '%s' not found in the current scope", ErrNotFound, pattern)
+		f.vm.Error = Errf("function '%s' not found in the current scope", ErrNotFound, pattern)
 		return
 	}
 
@@ -509,7 +509,7 @@ func byteMakeMap(f *Frame, i bytecode.Instruction) {
 
 		hasher, ok := key.(object.Hasher)
 		if !ok {
-			f.vm.Error = Err("non-hashable type as map key: %s", ErrWrongType, key.Type())
+			f.vm.Error = Errf("non-hashable type as map key: %s", ErrWrongType, key.Type())
 			return
 		}
 

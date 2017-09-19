@@ -42,7 +42,7 @@ func (f *Frame) execute() {
 func (f *Frame) doInstruction(i bytecode.Instruction) {
 	e, ok := effectors[i.Code]
 	if !ok {
-		f.vm.Error = Err("bytecode instruction %s not implemented", ErrNoInstruction, i.Name)
+		f.vm.Error = Errf("bytecode instruction %s not implemented", ErrNoInstruction, i.Name)
 		return
 	}
 

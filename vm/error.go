@@ -42,10 +42,18 @@ type Error struct {
 }
 
 // Err creates a new runtime error with the given message and type
-func Err(msg string, t ErrType, format ...interface{}) *Error {
+func Err(msg string, t ErrType) *Error {
 	return &Error{
 		Type:    t,
-		Message: fmt.Sprintf(msg, format),
+		Message: msg,
+	}
+}
+
+// Errf creates a new runtime error, formatting msg with format
+func Errf(msg string, t ErrType, format ...interface{}) *Error {
+	return &Error{
+		Type:    t,
+		Message: fmt.Sprintf(msg, format...),
 	}
 }
 
