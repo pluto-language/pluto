@@ -34,11 +34,15 @@ func (c *Compiler) addConst(val object.Object) (rune, error) {
 
 func (c *Compiler) loadConst(index rune) {
 	low, high := runeToBytes(index)
-	c.Bytes = append(c.Bytes, bytecode.LoadConst, high, low)
+	c.push(bytecode.LoadConst, high, low)
 }
 
 func (c *Compiler) loadName(index rune) {
 	low, high := runeToBytes(index)
 
-	c.Bytes = append(c.Bytes, bytecode.LoadName, high, low)
+	c.push(bytecode.LoadName, high, low)
+}
+
+func (c *Compiler) push(bytes ...byte) {
+	c.Bytes = append(c.Bytes, bytes...)
 }

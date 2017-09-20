@@ -175,7 +175,7 @@ func (c *Compiler) compileAssign(node *ast.AssignExpression) error {
 
 		low, high := runeToBytes(rune(index))
 
-		c.Bytes = append(c.Bytes, bytecode.StoreName, high, low)
+		c.push(bytecode.StoreName, high, low)
 	} else if indexpr, ok := node.Name.(*ast.IndexExpression); ok {
 		if err := c.CompileExpression(indexpr.Collection); err != nil {
 			return err
@@ -185,7 +185,7 @@ func (c *Compiler) compileAssign(node *ast.AssignExpression) error {
 			return err
 		}
 
-		c.Bytes = append(c.Bytes, bytecode.StoreField)
+		c.push(bytecode.StoreField)
 	} else if dotexpr, ok := node.Name.(*ast.DotExpression); ok {
 		if err := c.CompileExpression(dotexpr.Left); err != nil {
 			return err
@@ -203,12 +203,12 @@ func (c *Compiler) compileAssign(node *ast.AssignExpression) error {
 
 			low, high := runeToBytes(rune(index))
 
-			c.Bytes = append(c.Bytes, bytecode.LoadConst, high, low)
+			c.push(bytecode.LoadConst, high, low)
 		} else {
 			return errors.New("compiler: expected an identifier to the right of a dot")
 		}
 
-		c.Bytes = append(c.Bytes, bytecode.StoreField)
+		c.push(bytecode.StoreField)
 	} else {
 		return errors.New("compiler: can only assign to identfiers and field accessors")
 	}
@@ -251,7 +251,7 @@ func (c *Compiler) compileInfix(node *ast.InfixExpression) error {
 		return fmt.Errorf("compiler: operator %s not yet implemented", node.Operator)
 	}
 
-	c.Bytes = append(c.Bytes, op)
+	c.push(op)
 
 	return nil
 }
@@ -267,7 +267,7 @@ func (c *Compiler) compilePrefix(node *ast.PrefixExpression) error {
 		"!": bytecode.UnaryInvert,
 	}[node.Operator]
 
-	c.Bytes = append(c.Bytes, op)
+	c.push(op)
 
 	return nil
 }
@@ -278,7 +278,7 @@ func (c *Compiler) compileIf(node *ast.IfExpression) error {
 	}
 
 	// JumpIfFalse (82) with 2 empty argument bytes
-	c.Bytes = append(c.Bytes, bytecode.JumpIfFalse, 0, 0)
+	c.push(bytecode.JumpIfFalse, 0, 0)
 	condJump := len(c.Bytes) - 3
 
 	if err := c.CompileStatement(node.Consequence); err != nil {
@@ -289,7 +289,7 @@ func (c *Compiler) compileIf(node *ast.IfExpression) error {
 
 	if node.Alternative != nil {
 		// Jump past the alternative
-		c.Bytes = append(c.Bytes, bytecode.Jump, 0, 0)
+		c.push(bytecode.Jump, 0, 0)
 		skipJump = len(c.Bytes) - 3
 	}
 
@@ -323,7 +323,7 @@ func (c *Compiler) compileArray(node *ast.Array) error {
 
 	low, high := runeToBytes(rune(len(node.Elements)))
 
-	c.Bytes = append(c.Bytes, bytecode.MakeArray, high, low)
+	c.push(bytecode.MakeArray, high, low)
 
 	return nil
 }
@@ -337,7 +337,7 @@ func (c *Compiler) compileTuple(node *ast.Tuple) error {
 
 	low, high := runeToBytes(rune(len(node.Value)))
 
-	c.Bytes = append(c.Bytes, bytecode.MakeTuple, high, low)
+	c.push(bytecode.MakeTuple, high, low)
 
 	return nil
 }
@@ -355,7 +355,7 @@ func (c *Compiler) compileMap(node *ast.Map) error {
 
 	low, high := runeToBytes(rune(len(node.Pairs)))
 
-	c.Bytes = append(c.Bytes, bytecode.MakeMap, high, low)
+	c.push(bytecode.MakeMap, high, low)
 
 	return nil
 }
@@ -383,7 +383,7 @@ func (c *Compiler) compileFnCall(node *ast.FunctionCall) error {
 	}
 
 	low, high := runeToBytes(rune(len(c.Patterns) - 1))
-	c.Bytes = append(c.Bytes, bytecode.Call, high, low)
+	c.push(bytecode.Call, high, low)
 
 	return nil
 }
@@ -397,7 +397,7 @@ func (c *Compiler) compileIndex(node *ast.IndexExpression) error {
 		return err
 	}
 
-	c.Bytes = append(c.Bytes, bytecode.LoadField)
+	c.push(bytecode.LoadField)
 
 	return nil
 }
@@ -418,7 +418,7 @@ func (c *Compiler) compileDot(node *ast.DotExpression) error {
 		return errors.New("compiler: expected an identifier to the right of a dot")
 	}
 
-	c.Bytes = append(c.Bytes, bytecode.LoadField)
+	c.push(bytecode.LoadField)
 
 	return nil
 }
@@ -439,11 +439,11 @@ func (c *Compiler) compileEmission(node *ast.EmissionExpression) error {
 				}
 			}
 
-			c.Bytes = append(c.Bytes, ib)
+			c.push(ib)
 
 			if hasArg {
 				low, high := runeToBytes(item.Argument)
-				c.Bytes = append(c.Bytes, high, low)
+				c.push(high, low)
 			}
 		} else {
 			if err := c.CompileExpression(item.Exp); err != nil {

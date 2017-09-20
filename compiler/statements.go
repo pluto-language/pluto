@@ -77,13 +77,13 @@ func (c *Compiler) compileReturnStatement(node *ast.ReturnStatement) error {
 		}
 	}
 
-	c.Bytes = append(c.Bytes, bytecode.Return)
+	c.push(bytecode.Return)
 
 	return nil
 }
 
 func (c *Compiler) compileWhile(node *ast.WhileLoop) error {
-	c.Bytes = append(c.Bytes, bytecode.LoopStart)
+	c.push(bytecode.LoopStart)
 
 	// Jump here to go to the next iteration
 	start := len(c.Bytes) - 1
@@ -93,7 +93,7 @@ func (c *Compiler) compileWhile(node *ast.WhileLoop) error {
 	}
 
 	// An empty jump to the end of the loop
-	c.Bytes = append(c.Bytes, bytecode.JumpIfFalse, 0, 0)
+	c.push(bytecode.JumpIfFalse, 0, 0)
 	skipJump := len(c.Bytes) - 3
 
 	// Compile the loop's body
@@ -103,7 +103,7 @@ func (c *Compiler) compileWhile(node *ast.WhileLoop) error {
 
 	// After the body, jump back to the beginning of the loop
 	low, high := runeToBytes(rune(start))
-	c.Bytes = append(c.Bytes, bytecode.Jump, high, low)
+	c.push(bytecode.Jump, high, low)
 
 	// If the condition isn't met, jump to the end of the loop
 	skipIndex := rune(len(c.Bytes))
@@ -111,19 +111,19 @@ func (c *Compiler) compileWhile(node *ast.WhileLoop) error {
 	c.Bytes[skipJump+1] = high
 	c.Bytes[skipJump+2] = low
 
-	c.Bytes = append(c.Bytes, bytecode.LoopEnd)
+	c.push(bytecode.LoopEnd)
 
 	return nil
 }
 
 func (c *Compiler) compileNext(node *ast.NextStatement) error {
-	c.Bytes = append(c.Bytes, bytecode.Next)
+	c.push(bytecode.Next)
 
 	return nil
 }
 
 func (c *Compiler) compileBreak(node *ast.BreakStatement) error {
-	c.Bytes = append(c.Bytes, bytecode.Break)
+	c.push(bytecode.Break)
 
 	return nil
 }
@@ -146,7 +146,7 @@ func (c *Compiler) compileUse(node *ast.UseStatement) error {
 
 	low, high := runeToBytes(rune(index))
 
-	c.Bytes = append(c.Bytes, bytecode.Use, high, low)
+	c.push(bytecode.Use, high, low)
 
 	return nil
 }
