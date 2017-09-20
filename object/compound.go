@@ -32,8 +32,11 @@ type (
 
 	// Block is an anonymous function
 	Block struct {
-		Params []ast.Expression
-		Body   bytecode.Code
+		Params    []ast.Expression
+		Body      bytecode.Code
+		Constants []Object
+		Names     []string
+		Patterns  []string
 	}
 
 	// Class is a class, containing methods and a parent

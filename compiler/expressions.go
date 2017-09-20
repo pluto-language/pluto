@@ -52,6 +52,8 @@ func (c *Compiler) CompileExpression(n ast.Expression) error {
 		return c.compileDot(node)
 	case *ast.EmissionExpression:
 		return c.compileEmission(node)
+	case *ast.BlockLiteral:
+		return c.compileBlockLiteral(node)
 	default:
 		return fmt.Errorf("compiler: compilation not yet implemented for %s", reflect.TypeOf(n))
 	}
@@ -451,6 +453,37 @@ func (c *Compiler) compileEmission(node *ast.EmissionExpression) error {
 			}
 		}
 	}
+
+	return nil
+}
+
+func (c *Compiler) compileBlockLiteral(node *ast.BlockLiteral) error {
+	fcomp := New()
+
+	if err := fcomp.CompileStatement(node.Body); err != nil {
+		return err
+	}
+
+	instructions, err := bytecode.Read(fcomp.Bytes)
+	if err != nil {
+		return err
+	}
+
+	obj := &object.Block{
+		Params:    node.Params,
+		Body:      instructions,
+		Constants: fcomp.Constants,
+		Names:     fcomp.Names,
+		Patterns:  fcomp.Patterns,
+	}
+
+	index, err := c.addConst(obj)
+
+	if err != nil {
+		return err
+	}
+
+	c.loadConst(index)
 
 	return nil
 }
