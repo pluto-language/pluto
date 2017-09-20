@@ -204,7 +204,17 @@ func (m *Map) String() string {
 }
 
 func (b *Block) String() string {
-	return "<block>"
+	if len(b.Params) == 0 {
+		return "<block>"
+	}
+
+	var params []string
+
+	for _, param := range b.Params {
+		params = append(params, param.Token().Literal)
+	}
+
+	return fmt.Sprintf("<block: %s>", strings.Join(params, ", "))
 }
 
 func (c *Class) String() string {
