@@ -145,8 +145,8 @@ func (c *Compiler) compileParameter(node *ast.Parameter) error {
 func (c *Compiler) compileName(name string) error {
 	var index int
 
-	for i, name := range c.Names {
-		if name == name {
+	for i, n := range c.Names {
+		if name == n {
 			index = i
 			goto found
 		}
