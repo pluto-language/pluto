@@ -140,7 +140,7 @@ func (c *Compiler) compileUse(node *ast.UseStatement) error {
 	c.Constants = append(c.Constants, obj)
 	index := len(c.Constants) - 1
 
-	if index >= 1<<16 {
+	if index >= maxRune {
 		return fmt.Errorf("compiler: constant index %d greater than 0xFFFF (maximum uint16)", index)
 	}
 

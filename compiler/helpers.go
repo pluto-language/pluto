@@ -7,6 +7,8 @@ import (
 	"github.com/Zac-Garby/pluto/object"
 )
 
+const maxRune = 1 << 16
+
 func runeToBytes(x rune) (byte, byte) {
 	var (
 		low  = byte(x & 0xff)
@@ -25,7 +27,7 @@ func (c *Compiler) addConst(val object.Object) (rune, error) {
 	c.Constants = append(c.Constants, obj)
 	index := len(c.Constants) - 1
 
-	if index >= 1<<16 {
+	if index >= maxRune {
 		return 0, fmt.Errorf("compiler: constant index %d greater than 0xFFFF (maximum uint16)", index)
 	}
 
