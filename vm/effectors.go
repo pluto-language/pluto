@@ -49,8 +49,9 @@ func init() {
 		bytecode.BinaryLessEq:   bincmp,
 		bytecode.BinaryMoreEq:   bincmp,
 
-		bytecode.Call:   byteCall,
-		bytecode.Return: byteReturn,
+		bytecode.Call:    byteCall,
+		bytecode.Return:  byteReturn,
+		bytecode.DoBlock: byteDoBlock,
 
 		bytecode.Print:   bytePrint,
 		bytecode.Println: bytePrintln,
@@ -409,6 +410,45 @@ func byteCall(f *Frame, i bytecode.Instruction) {
 
 func byteReturn(f *Frame, i bytecode.Instruction) {
 	f.offset = len(f.code) - 1
+}
+
+func byteDoBlock(f *Frame, i bytecode.Instruction) {
+	top := f.stack.pop()
+
+	block, ok := top.(*object.Block)
+	if !ok {
+		f.vm.Error = Errf("cannot 'do' a non-block. got %s", ErrWrongType, top.Type())
+		return
+	}
+
+	locals := f.locals
+
+	locals.Names = block.Names
+	locals.Patterns = block.Patterns
+
+	for _, item := range block.Params {
+		name := item.Token().Literal
+
+		locals.Data[name] = f.stack.pop()
+	}
+
+	blockFrame := &Frame{
+		code:      block.Body,
+		constants: block.Constants,
+		locals:    locals,
+		offset:    0,
+		previous:  f,
+		stack:     newStack(),
+		vm:        f.vm,
+	}
+
+	f.vm.runFrame(blockFrame)
+
+	if len(blockFrame.stack.objects) > 0 {
+		ret := blockFrame.stack.pop()
+
+		f.stack.push(ret)
+	}
 }
 
 func bytePrint(f *Frame, i bytecode.Instruction) {

@@ -40,10 +40,11 @@ const (
 	BinaryMoreEq   byte = 41
 )
 
-// 50-59: using functions
+// 50-59: using functions/blocks
 const (
-	Call   byte = 50
-	Return byte = 51
+	Call    byte = 50
+	Return  byte = 51
+	DoBlock byte = 52
 )
 
 // 60-89: pseudo-syscalls (i.e. builtin functions?)
