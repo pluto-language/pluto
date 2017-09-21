@@ -26,8 +26,12 @@ func New() *VirtualMachine {
 }
 
 // Run executes the supplied bytecode
-func (vm *VirtualMachine) Run(code bytecode.Code, locals *Store, constants []object.Object) {
+func (vm *VirtualMachine) Run(code bytecode.Code, locals *Store, constants []object.Object, usePrelude bool) {
 	frame := vm.makeFrame(code, NewStore(), locals, constants)
+
+	if usePrelude {
+		frame.Use("std/prelude")
+	}
 
 	vm.pushFrame(frame)
 	vm.runFrame(frame)
@@ -36,7 +40,7 @@ func (vm *VirtualMachine) Run(code bytecode.Code, locals *Store, constants []obj
 // RunDefault executes the bytecode with
 // empty globals and locals
 func (vm *VirtualMachine) RunDefault(code bytecode.Code, constants []object.Object) {
-	vm.Run(code, NewStore(), constants)
+	vm.Run(code, NewStore(), constants, false)
 }
 
 func (vm *VirtualMachine) makeFrame(code bytecode.Code, args, locals *Store, constants []object.Object) *Frame {

@@ -59,7 +59,7 @@ func execute(text, file string, store *vm.Store) (object.Object, error) {
 	store.Patterns = cmp.Patterns
 
 	machine := vm.New()
-	machine.Run(code, store, cmp.Constants)
+	machine.Run(code, store, cmp.Constants, true)
 
 	if machine.Error != nil {
 		return nil, machine.Error
