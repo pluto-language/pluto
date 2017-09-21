@@ -55,3 +55,57 @@ outer:
 
 	return nil
 }
+
+// def defines fn in the function store. If it's
+// already defined (i.e. a function with the same pattern
+// already exists) the old function is overwritten.
+func (f *FunctionStore) def(newf object.Function) {
+outer:
+	for i, fn := range f.Functions {
+		var (
+			fnpat = fn.Pattern
+			nfpat = newf.Pattern
+		)
+
+		if len(fnpat) != len(nfpat) {
+			// Doesn't match
+			continue outer
+		}
+
+		for i, item := range nfpat {
+			fItem := fnpat[i]
+
+			_, isArg := item.(*ast.Argument)
+
+			if isArg {
+				if _, ok := fItem.(*ast.Parameter); !ok {
+					// Doesn't match
+					continue outer
+				}
+			} else {
+				if id, ok := fItem.(*ast.Identifier); !ok {
+					// Doesn't match
+					continue outer
+				} else if id.Value != item.Token().Literal {
+					// Doesn't match
+					continue outer
+				}
+			}
+		}
+
+		f.Functions[i] = newf
+
+		return
+	}
+
+	f.Functions = append(f.Functions, newf)
+}
+
+// Define defines all functions in fs in the store. If
+// any are already defined, the new one will overwrite
+// the old one.
+func (f *FunctionStore) Define(fs ...object.Function) {
+	for _, fn := range fs {
+		f.def(fn)
+	}
+}
