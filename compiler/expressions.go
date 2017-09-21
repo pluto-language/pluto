@@ -142,21 +142,25 @@ func (c *Compiler) compileParameter(node *ast.Parameter) error {
 	return c.compileName(node.Name)
 }
 
-func (c *Compiler) compileName(name string) error {
-	var index int
-
+func (c *Compiler) addName(name string) (rune, error) {
 	for i, n := range c.Names {
 		if name == n {
-			index = i
-			goto found
+			return rune(i), nil
 		}
 	}
 
-	// These two lines are executed if the name isn't found
 	c.Names = append(c.Names, name)
-	index = len(c.Names) - 1
+	index := len(c.Names) - 1
 
-found:
+	return rune(index), nil
+}
+
+func (c *Compiler) compileName(name string) error {
+	index, err := c.addName(name)
+	if err != nil {
+		return err
+	}
+
 	c.loadName(rune(index))
 
 	return nil
@@ -168,15 +172,16 @@ func (c *Compiler) compileAssign(node *ast.AssignExpression) error {
 	}
 
 	if id, ok := node.Name.(*ast.Identifier); ok {
-		c.Names = append(c.Names, id.Value)
-		index := len(c.Names) - 1
+		index, err := c.addName(id.Value)
+		if err != nil {
+			return err
+		}
 
 		if index >= maxRune {
 			return fmt.Errorf("compiler: name index %d greater than 0xFFFF (maximum uint16)", index)
 		}
 
 		low, high := runeToBytes(rune(index))
-
 		c.push(bytecode.StoreName, high, low)
 	} else if indexpr, ok := node.Name.(*ast.IndexExpression); ok {
 		if err := c.CompileExpression(indexpr.Collection); err != nil {

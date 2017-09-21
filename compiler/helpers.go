@@ -23,8 +23,13 @@ func bytesToRune(low, high byte) rune {
 }
 
 func (c *Compiler) addConst(val object.Object) (rune, error) {
-	obj := val
-	c.Constants = append(c.Constants, obj)
+	for i, cst := range c.Constants {
+		if val.Equals(cst) {
+			return rune(i), nil
+		}
+	}
+
+	c.Constants = append(c.Constants, val)
 	index := len(c.Constants) - 1
 
 	if index >= maxRune {
