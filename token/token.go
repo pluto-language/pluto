@@ -38,7 +38,6 @@ var Keywords = map[string]Type{
 	"break":  Break,
 	"import": Import,
 	"use":    Use,
-	"in":     In,
 }
 
 // IsKeyword checks if a token of type t is a

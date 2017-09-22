@@ -24,6 +24,8 @@ func (c *Compiler) CompileStatement(n ast.Statement) error {
 		return c.compileReturnStatement(node)
 	case *ast.WhileLoop:
 		return c.compileWhile(node)
+	case *ast.ForLoop:
+		return c.compileFor(node)
 	case *ast.NextStatement:
 		return c.compileNext(node)
 	case *ast.BreakStatement:
@@ -112,6 +114,28 @@ func (c *Compiler) compileWhile(node *ast.WhileLoop) error {
 	c.Bytes[skipJump+2] = low
 
 	c.push(bytecode.LoopEnd)
+
+	return nil
+}
+
+func (c *Compiler) compileFor(node *ast.ForLoop) error {
+	if err := c.CompileExpression(node.Init); err != nil {
+		return err
+	}
+
+	body := node.Body.(*ast.BlockStatement)
+	body.Statements = append(body.Statements, &ast.ExpressionStatement{
+		Expr: node.Increment,
+	})
+
+	while := &ast.WhileLoop{
+		Condition: node.Condition,
+		Body:      body,
+	}
+
+	if err := c.CompileStatement(while); err != nil {
+		return err
+	}
 
 	return nil
 }

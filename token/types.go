@@ -207,7 +207,4 @@ const (
 
 	// Use is the 'use' keyword, which does an unqualified source include
 	Use = "use"
-
-	// In is the 'in' keyword, which separates sections in a for loop
-	In = "in"
 )

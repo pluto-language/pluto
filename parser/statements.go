@@ -181,14 +181,21 @@ func (p *Parser) parseForLoop() ast.Statement {
 	}
 
 	p.next()
-	stmt.Var = p.parseID()
+	stmt.Init = p.parseExpression(lowest)
 
-	if !p.expect(token.In) {
+	if !p.expect(token.Semi) {
 		return nil
 	}
 
 	p.next()
-	stmt.Collection = p.parseExpression(lowest)
+	stmt.Condition = p.parseExpression(lowest)
+
+	if !p.expect(token.Semi) {
+		return nil
+	}
+
+	p.next()
+	stmt.Increment = p.parseExpression(lowest)
 
 	if !p.expect(token.RightParen) {
 		return nil

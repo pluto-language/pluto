@@ -59,9 +59,13 @@ type (
 
 	// ForLoop executes Body for each element in a collection
 	ForLoop struct {
-		Tok             token.Token
-		Var, Collection Expression
-		Body            Statement
+		Tok token.Token
+
+		// for (Init; Condition; Increment) { Body }
+		Init      Expression
+		Condition Expression
+		Increment Expression
+		Body      Statement
 	}
 )
 
