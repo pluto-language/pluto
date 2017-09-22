@@ -142,6 +142,10 @@ func (a *Array) String() string {
 }
 
 func (m *Map) String() string {
+	if len(m.Keys) == 0 {
+		return "[:]"
+	}
+
 	stringArr := make([]string, len(m.Values))
 	i := 0
 
