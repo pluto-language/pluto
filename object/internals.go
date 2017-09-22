@@ -16,28 +16,12 @@ type (
 		Patterns  []string
 		OnCall    func(self *Function) Object
 	}
-
-	// InitMethod is an initializer method on a class
-	InitMethod struct {
-		Fn Function
-	}
-
-	// Method is a regular method on a class
-	Method struct {
-		Fn Function
-	}
 )
 
 /* Type() methods */
 
 // Type returns the type of the object
 func (f *Function) Type() Type { return FunctionType }
-
-// Type returns the type of the object
-func (i *InitMethod) Type() Type { return InitType }
-
-// Type returns the type of the object
-func (m *Method) Type() Type { return MethodType }
 
 /* Equals() methods */
 
@@ -47,27 +31,7 @@ func (f *Function) Equals(o Object) bool {
 	return ok
 }
 
-// Equals checks if two objects are equal to each other
-func (i *InitMethod) Equals(o Object) bool {
-	_, ok := o.(*Function)
-	return ok
-}
-
-// Equals checks if two objects are equal to each other
-func (m *Method) Equals(o Object) bool {
-	_, ok := o.(*Method)
-	return ok
-}
-
 /* Stringer implementations */
 func (f *Function) String() string {
 	return "<function>"
-}
-
-func (i *InitMethod) String() string {
-	return "<init method>"
-}
-
-func (m *Method) String() string {
-	return "<method>"
 }

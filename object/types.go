@@ -4,19 +4,8 @@ package object
 type Type string
 
 const (
-	/* Internal Types */
-
-	// ReturnValueType is the type of a return value
-	ReturnValueType = "<return value>"
-
 	// FunctionType is the type of a function
 	FunctionType = "<function>"
-
-	// NextType is the type of the 'next' value
-	NextType = "<next>"
-
-	// BreakType is the type of the 'break' value
-	BreakType = "<break>"
 
 	/* Special Types */
 
@@ -60,18 +49,6 @@ const (
 
 	// MapType is the type of map objects
 	MapType = "<map>"
-
-	// ClassType is the type of class objects
-	ClassType = "<class>"
-
-	// InitType is the type of init methods
-	InitType = "<init method>"
-
-	// MethodType is the type of regular methods
-	MethodType = "<method>"
-
-	// InstanceType is the type of class instances
-	InstanceType = "<instance>"
 )
 
 func is(obj Object, t Type) bool {
