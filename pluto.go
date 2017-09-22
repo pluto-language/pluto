@@ -58,8 +58,6 @@ func execute(text, file string, store *vm.Store) (object.Object, error) {
 	store.FunctionStore.Define(cmp.Functions...)
 	store.Patterns = cmp.Patterns
 
-	fmt.Println(store.Names, cmp.Constants)
-
 	machine := vm.New()
 	machine.Run(code, store, cmp.Constants, true)
 
