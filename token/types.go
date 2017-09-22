@@ -127,9 +127,6 @@ const (
 	// Bang is an exclaimation mark (!)
 	Bang = "bang"
 
-	// DoubleColon is two colons (::)
-	DoubleColon = "double-colon"
-
 	// PlusEquals is the addition-assignment operator (+=)
 	PlusEquals = "assign-plus"
 
