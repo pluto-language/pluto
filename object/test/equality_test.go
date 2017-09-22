@@ -1,6 +1,10 @@
 package object
 
-import "testing"
+import (
+	"testing"
+
+	. "github.com/Zac-Garby/pluto/object"
+)
 
 func TestEquality(t *testing.T) {
 	var (
