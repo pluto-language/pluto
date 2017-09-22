@@ -89,7 +89,7 @@ func New(text, file string) *Parser {
 		token.Assign:             p.parseAssignExpression,
 		token.Declare:            p.parseDeclareExpression,
 		token.Dot:                p.parseDotExpression,
-		token.Colon:              p.parseQualifiedFunctionCall,
+		token.DoubleColon:        p.parseQualifiedFunctionCall,
 		token.LeftSquare:         p.parseIndexExpression,
 	}
 

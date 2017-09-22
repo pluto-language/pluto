@@ -394,7 +394,7 @@ func (p *Parser) parseIndexExpression(left ast.Expression) ast.Expression {
 func (p *Parser) parseQualifiedFunctionCall(left ast.Expression) ast.Expression {
 	return &ast.QualifiedFunctionCall{
 		Tok:     p.cur,
-		Base:    left,
+		Package: left,
 		Pattern: p.parsePattern(),
 	}
 }

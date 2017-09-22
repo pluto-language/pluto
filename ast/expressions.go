@@ -122,7 +122,7 @@ type (
 	// QualifiedFunctionCall calls a function from a package
 	QualifiedFunctionCall struct {
 		Tok     token.Token
-		Base    Expression
+		Package Expression
 		Pattern []Expression
 	}
 

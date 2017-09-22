@@ -56,6 +56,7 @@ var precedences = map[token.Type]int{
 	token.FloorDiv:           exp,
 	token.Bang:               prefix,
 	token.Colon:              methodCall,
+	token.DoubleColon:        methodCall,
 	token.Dot:                index,
 	token.LeftSquare:         index,
 }
