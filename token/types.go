@@ -103,9 +103,6 @@ const (
 	// Assign is the assign operator (=)
 	Assign = "assign"
 
-	// Declare is the declare operator (:=)
-	Declare = "declare"
-
 	// Comma is a comma (,)
 	Comma = "comma"
 
@@ -120,9 +117,6 @@ const (
 
 	// Dot is the dot-access operator (.)
 	Dot = "dot"
-
-	// FatArrow is the fat arrow (=>)
-	FatArrow = "fat-arrow"
 
 	// Bang is an exclaimation mark (!)
 	Bang = "bang"

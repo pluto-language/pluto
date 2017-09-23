@@ -20,6 +20,7 @@ func TestLexer(t *testing.T) {
 		`\ ( ) { } [ ]`:                     {token.BackSlash, token.LeftParen, token.RightParen, token.LeftBrace, token.RightBrace, token.LeftSquare, token.RightSquare},
 		`< > <= >= == !=`:                   {token.LessThan, token.GreaterThan, token.LessThanEq, token.GreaterThanEq, token.Equal, token.NotEqual},
 		`|| && | &`:                         {token.Or, token.And, token.BitOr, token.BitAnd},
+		`, -> : ? . !`:                      {token.Comma, token.Arrow, token.Colon, token.QuestionMark, token.Dot, token.Bang},
 		`= += -= *= **= /= //= %=`:          {token.Assign, token.PlusEquals, token.MinusEquals, token.StarEquals, token.ExpEquals, token.SlashEquals, token.FloorDivEquals, token.ModEquals},
 		`||= &&= |= &= ?=`:                  {token.OrEquals, token.AndEquals, token.BitOrEquals, token.BitAndEquals, token.QuestionMarkEquals},
 		`true false null`:                   {token.True, token.False, token.Null},
