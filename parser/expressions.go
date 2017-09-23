@@ -351,18 +351,6 @@ func (p *Parser) parseShorthandAssignment(left ast.Expression) ast.Expression {
 	return expr
 }
 
-func (p *Parser) parseDeclareExpression(left ast.Expression) ast.Expression {
-	expr := &ast.DeclareExpression{
-		Tok:  p.cur,
-		Name: left,
-	}
-
-	p.next()
-	expr.Value = p.parseExpression(lowest)
-
-	return expr
-}
-
 func (p *Parser) parseDotExpression(left ast.Expression) ast.Expression {
 	expr := &ast.DotExpression{
 		Tok:  p.cur,

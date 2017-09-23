@@ -87,7 +87,6 @@ func New(text, file string) *Parser {
 		token.SlashEquals:        p.parseShorthandAssignment,
 		token.StarEquals:         p.parseShorthandAssignment,
 		token.Assign:             p.parseAssignExpression,
-		token.Declare:            p.parseDeclareExpression,
 		token.Dot:                p.parseDotExpression,
 		token.Colon:              p.parseQualifiedFunctionCall,
 		token.LeftSquare:         p.parseIndexExpression,

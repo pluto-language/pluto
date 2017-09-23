@@ -23,7 +23,6 @@ const (
 
 var precedences = map[token.Type]int{
 	token.Assign:             assign,
-	token.Declare:            assign,
 	token.AndEquals:          assign,
 	token.BitAndEquals:       assign,
 	token.BitOrEquals:        assign,
