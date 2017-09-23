@@ -39,7 +39,7 @@ func (f *Function) String() string {
 	var pstring []string
 
 	for _, item := range f.Pattern {
-		if _, ok := item.(*ast.Argument); ok {
+		if _, ok := item.(*ast.Parameter); ok {
 			pstring = append(pstring, "$")
 		} else {
 			pstring = append(pstring, item.Token().Literal)
