@@ -49,9 +49,11 @@ func (s *Store) Extend(other *Store) {
 	for k, v := range other.Data {
 		if k == "_module" {
 			var (
-				m      *object.Map
-				title  object.Object
-				newVar string
+				m                *object.Map
+				title            object.Object
+				newVar           string
+				fnArr            object.Object
+				generalFunctions []object.Object
 			)
 
 			m, ok := v.(*object.Map)
@@ -64,8 +66,20 @@ func (s *Store) Extend(other *Store) {
 				goto invalid
 			}
 
+			generalFunctions = make([]object.Object, len(other.Functions))
+
+			for i, fn := range other.Functions {
+				generalFunctions[i] = &fn
+			}
+
+			fnArr = &object.Array{
+				Value: generalFunctions,
+			}
+
+			m.Set(&object.String{Value: "_methods"}, fnArr)
+
 			newVar = title.String()
-			s.Data[newVar] = v
+			s.Data[newVar] = m
 
 		invalid:
 		}
