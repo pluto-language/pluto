@@ -3,126 +3,130 @@ package bytecode
 // 0-9: stack operations
 const (
 	// Pop pops the stack
-	Pop byte = 0
+	Pop byte = iota
 
 	// Dup duplicates the top item, so [x, y, z] -> [x, y, z, z]
-	Dup byte = 1
+	Dup
 
 	// Rot rotates the top two items, so [x, y, z] -> [x, z, y]
-	Rot byte = 2
+	Rot
 )
 
 // 10-19: load/store
 const (
 	// LoadConst loads a constant by index
-	LoadConst byte = 10
+	LoadConst byte = iota + 10
 
 	// LoadName loads a name by name index
-	LoadName byte = 11
+	LoadName
 
 	// StoreName stores the top item
-	StoreName byte = 12
+	StoreName
 
 	// LoadField pops two items, essentially does second[top]
-	LoadField byte = 13
+	LoadField
 
 	// StoreField pops three items, essentially does second[top] = third
-	StoreField byte = 14
+	StoreField
 )
 
 // 20-39: operators
 const (
 	// Unary operators pop one item and do something with it
-	UnaryInvert byte = 20
-	UnaryNegate byte = 21
-	UnaryNoOp   byte = 22
+	UnaryInvert byte = iota + 20
+	UnaryNegate
+	UnaryNoOp
 
 	// Binary operators pop two items and do something with them
-	BinaryAdd      byte = 25
-	BinarySubtract byte = 26
-	BinaryMultiply byte = 27
-	BinaryDivide   byte = 28
-	BinaryExponent byte = 29
-	BinaryFloorDiv byte = 30
-	BinaryMod      byte = 31
-	BinaryOr       byte = 32
-	BinaryAnd      byte = 33
-	BinaryBitOr    byte = 34
-	BinaryBitAnd   byte = 35
-	BinaryEquals   byte = 36
-	BinaryNotEqual byte = 37
-	BinaryLessThan byte = 38
-	BinaryMoreThan byte = 39
-	BinaryLessEq   byte = 40
-	BinaryMoreEq   byte = 41
+	BinaryAdd byte = iota + 25
+	BinarySubtract
+	BinaryMultiply
+	BinaryDivide
+	BinaryExponent
+	BinaryFloorDiv
+	BinaryMod
+	BinaryOr
+	BinaryAnd
+	BinaryBitOr
+	BinaryBitAnd
+	BinaryEquals
+	BinaryNotEqual
+	BinaryLessThan
+	BinaryMoreThan
+	BinaryLessEq
+	BinaryMoreEq
 )
 
 // 50-59: using functions/blocks
 const (
 	// PushFn pushes the function at pattern index n
-	PushFn byte = 50
+	PushFn byte = iota + 50
+
+	// PushQualFn pushes the fn at pattern index n in
+	// the map at the top of the stack
+	PushQualFn
 
 	// CallFn calls the function at the top of the stack,
 	// popping arguments as necessary
-	CallFn byte = 51
+	CallFn
 
 	// Return skips to the end of the context
-	Return byte = 52
+	Return
 
 	// DoBlock executes the block at the top of the stack,
 	// popping arguments off as necessary
-	DoBlock byte = 53
+	DoBlock
 )
 
 // 60-89: pseudo-syscalls (i.e. builtin functions?)
 const (
 	// Print prints the item at the top of the stack
-	Print byte = 60
+	Print byte = iota + 60
 
 	// Println prints the item at the top of the stack,
 	// with a trailing new line
-	Println byte = 61
+	Println
 )
 
 // 90-99: control flow
 const (
 	// Jump unconditionally jumps to the given offset
-	Jump byte = 90
+	Jump byte = iota + 90
 
 	// JumpIfTrue jumps to the given offset if the top item is truthy
-	JumpIfTrue byte = 91
+	JumpIfTrue
 
 	// JumpIfFalse jumps to the given offset if the top item is falsey
-	JumpIfFalse byte = 92
+	JumpIfFalse
 
 	// Break jumps to the LoopEnd instruction of the innermost loop
-	Break byte = 93
+	Break
 
 	// Next jumps to the LoopStart instruction of the innermost loop
-	Next byte = 94
+	Next
 
 	// LoopStart pushes the start and end positions for the loop
-	LoopStart byte = 95
+	LoopStart
 
 	// LoopEnd pops the start and end positions
-	LoopEnd byte = 96
+	LoopEnd
 )
 
 // 100-109: data constructors
 const (
 	// MakeArray makes an array object from the top n items
-	MakeArray byte = 100
+	MakeArray byte = iota + 100
 
 	// MakeTuple makes a tuple from the top n items
-	MakeTuple byte = 101
+	MakeTuple
 
 	// MakeMap makes a map from the top n * 2 items.
 	// The top n*2 items should be in key, val, ..., key, val order
-	MakeMap byte = 102
+	MakeMap
 )
 
 // 110-119: packages
 const (
 	// Use directly imports the specified sources
-	Use byte = 110
+	Use byte = iota + 110
 )

@@ -1,6 +1,9 @@
 package object
 
 import (
+	"fmt"
+	"strings"
+
 	"github.com/Zac-Garby/pluto/ast"
 	"github.com/Zac-Garby/pluto/bytecode"
 )
@@ -33,5 +36,15 @@ func (f *Function) Equals(o Object) bool {
 
 /* Stringer implementations */
 func (f *Function) String() string {
-	return "<function>"
+	var pstring []string
+
+	for _, item := range f.Pattern {
+		if _, ok := item.(*ast.Argument); ok {
+			pstring = append(pstring, "$")
+		} else {
+			pstring = append(pstring, item.Token().Literal)
+		}
+	}
+
+	return fmt.Sprintf("<function: %s>", strings.Join(pstring, " "))
 }

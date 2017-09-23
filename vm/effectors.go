@@ -3,6 +3,7 @@ package vm
 import (
 	"fmt"
 	"math"
+	"strings"
 
 	"github.com/Zac-Garby/pluto/ast"
 	"github.com/Zac-Garby/pluto/bytecode"
@@ -45,10 +46,11 @@ func init() {
 		bytecode.BinaryLessEq:   bincmp,
 		bytecode.BinaryMoreEq:   bincmp,
 
-		bytecode.PushFn:  bytePushFn,
-		bytecode.CallFn:  byteCall,
-		bytecode.Return:  byteReturn,
-		bytecode.DoBlock: byteDoBlock,
+		bytecode.PushFn:     bytePushFn,
+		bytecode.PushQualFn: bytePushQualFn,
+		bytecode.CallFn:     byteCall,
+		bytecode.Return:     byteReturn,
+		bytecode.DoBlock:    byteDoBlock,
 
 		bytecode.Print:   bytePrint,
 		bytecode.Println: bytePrintln,
@@ -371,6 +373,76 @@ func bytePushFn(f *Frame, i bytecode.Instruction) {
 	}
 
 	f.stack.push(fn)
+}
+
+func bytePushQualFn(f *Frame, i bytecode.Instruction) {
+	pattern := strings.Split(f.locals.Patterns[i.Arg], " ")
+
+	baseObj := f.stack.pop()
+
+	if baseObj.Type() != object.MapType {
+		f.vm.Error = Errf("cannot call a method of non-map type %s", ErrWrongType, baseObj.Type())
+		return
+	}
+
+	var (
+		base    = baseObj.(*object.Map)
+		methods = base.Get(&object.String{Value: "_methods"})
+	)
+
+	if methods == nil {
+		f.vm.Error = Err("_methods key not found", ErrWrongType)
+		return
+	}
+
+	if methods.Type() != object.ArrayType {
+		f.vm.Error = Err("_methods is not an array", ErrWrongType)
+		return
+	}
+
+	methArr := methods.(*object.Array)
+
+outer:
+	for _, obj := range methArr.Elements() {
+		fn, ok := obj.(*object.Function)
+		if !ok {
+			continue
+		}
+
+		fnpat := fn.Pattern
+
+		if len(fnpat) != len(pattern) {
+			// Doesn't match
+			continue outer
+		}
+
+		for i, item := range pattern {
+			var (
+				fItem = fnpat[i]
+				isArg = item[0] == '$'
+			)
+
+			if isArg {
+				if _, ok := fItem.(*ast.Parameter); !ok {
+					// Doesn't match
+					continue outer
+				}
+			} else {
+				if id, ok := fItem.(*ast.Identifier); !ok {
+					// Doesn't match
+					continue outer
+				} else if id.Value != item {
+					// Doesn't match
+					continue outer
+				}
+			}
+		}
+
+		f.stack.push(fn)
+		return
+	}
+
+	f.vm.Error = Errf("no method was found matching the pattern: '%s'", ErrNotFound, strings.Join(pattern, " "))
 }
 
 func byteCall(f *Frame, i bytecode.Instruction) {

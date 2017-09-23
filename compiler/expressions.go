@@ -44,6 +44,8 @@ func (c *Compiler) CompileExpression(n ast.Expression) error {
 		return c.compileIf(node)
 	case *ast.FunctionCall:
 		return c.compileFnCall(node)
+	case *ast.QualifiedFunctionCall:
+		return c.compileQualifiedFnCall(node)
 	case *ast.Argument:
 		return c.CompileExpression(node.Value)
 	case *ast.IndexExpression:
@@ -391,6 +393,38 @@ func (c *Compiler) compileFnCall(node *ast.FunctionCall) error {
 
 	low, high := runeToBytes(rune(len(c.Patterns) - 1))
 	c.push(bytecode.PushFn, high, low, bytecode.CallFn)
+
+	return nil
+}
+
+func (c *Compiler) compileQualifiedFnCall(node *ast.QualifiedFunctionCall) error {
+	var ptn []string
+
+	for _, item := range node.Pattern {
+		if id, ok := item.(*ast.Identifier); ok {
+			ptn = append(ptn, id.Value)
+		} else {
+			ptn = append(ptn, "$")
+		}
+	}
+
+	str := strings.Join(ptn, " ")
+	c.Patterns = append(c.Patterns, str)
+
+	for _, item := range node.Pattern {
+		if arg, ok := item.(*ast.Argument); ok {
+			if err := c.CompileExpression(arg); err != nil {
+				return err
+			}
+		}
+	}
+
+	if err := c.CompileExpression(node.Base); err != nil {
+		return err
+	}
+
+	low, high := runeToBytes(rune(len(c.Patterns) - 1))
+	c.push(bytecode.PushQualFn, high, low, bytecode.CallFn)
 
 	return nil
 }
