@@ -59,16 +59,19 @@ const (
 
 // 50-59: using functions/blocks
 const (
-	// Call calls a function by index,
+	// PushFn pushes the function at pattern index n
+	PushFn byte = 50
+
+	// CallFn calls the function at the top of the stack,
 	// popping arguments as necessary
-	Call byte = 50
+	CallFn byte = 51
 
 	// Return skips to the end of the context
-	Return byte = 51
+	Return byte = 52
 
 	// DoBlock executes the block at the top of the stack,
 	// popping arguments off as necessary
-	DoBlock byte = 52
+	DoBlock byte = 53
 )
 
 // 60-89: pseudo-syscalls (i.e. builtin functions?)

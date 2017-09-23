@@ -390,7 +390,7 @@ func (c *Compiler) compileFnCall(node *ast.FunctionCall) error {
 	}
 
 	low, high := runeToBytes(rune(len(c.Patterns) - 1))
-	c.push(bytecode.Call, high, low)
+	c.push(bytecode.PushFn, high, low, bytecode.CallFn)
 
 	return nil
 }

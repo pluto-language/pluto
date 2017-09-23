@@ -45,7 +45,8 @@ func init() {
 		bytecode.BinaryLessEq:   bincmp,
 		bytecode.BinaryMoreEq:   bincmp,
 
-		bytecode.Call:    byteCall,
+		bytecode.PushFn:  bytePushFn,
+		bytecode.CallFn:  byteCall,
 		bytecode.Return:  byteReturn,
 		bytecode.DoBlock: byteDoBlock,
 
@@ -360,12 +361,22 @@ func byteNotEqual(f *Frame, i bytecode.Instruction) {
 	f.stack.push(object.BoolObj(!eq))
 }
 
-func byteCall(f *Frame, i bytecode.Instruction) {
+func bytePushFn(f *Frame, i bytecode.Instruction) {
 	pattern := f.locals.Patterns[i.Arg]
 
 	fn := f.locals.FunctionStore.SearchString(pattern)
 	if fn == nil {
 		f.vm.Error = Errf("function '%s' not found in the current scope", ErrNotFound, pattern)
+		return
+	}
+
+	f.stack.push(fn)
+}
+
+func byteCall(f *Frame, i bytecode.Instruction) {
+	fn, ok := f.stack.pop().(*object.Function)
+	if !ok {
+		f.vm.Error = Errf("cannot call non-function type: %s", ErrWrongType, fn.Type())
 		return
 	}
 
