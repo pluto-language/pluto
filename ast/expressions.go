@@ -69,12 +69,6 @@ type (
 		Name, Value Expression
 	}
 
-	// DeclareExpression declares a name as an expression
-	DeclareExpression struct {
-		Tok         token.Token
-		Name, Value Expression
-	}
-
 	// PrefixExpression is a prefix operator expression
 	PrefixExpression struct {
 		Tok      token.Token
@@ -217,12 +211,6 @@ func (n AssignExpression) Expr() {}
 
 // Token returns the node's token
 func (n AssignExpression) Token() token.Token { return n.Tok }
-
-// Expr tells the compiler this node is an expression
-func (n DeclareExpression) Expr() {}
-
-// Token returns the node's token
-func (n DeclareExpression) Token() token.Token { return n.Tok }
 
 // Expr tells the compiler this node is an expression
 func (n PrefixExpression) Expr() {}

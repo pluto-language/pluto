@@ -38,12 +38,6 @@ type (
 		Tok token.Token
 	}
 
-	// ImportStatement imports a package
-	ImportStatement struct {
-		Tok     token.Token
-		Package string
-	}
-
 	// UseStatement imports a package into the current scope
 	UseStatement struct {
 		Tok     token.Token
@@ -104,12 +98,6 @@ func (n BreakStatement) Stmt() {}
 
 //Token returns this node's token
 func (n BreakStatement) Token() token.Token { return n.Tok }
-
-// Stmt tells the compiler this node is a statement
-func (n ImportStatement) Stmt() {}
-
-//Token returns this node's token
-func (n ImportStatement) Token() token.Token { return n.Tok }
 
 // Stmt tells the compiler this node is a statement
 func (n UseStatement) Stmt() {}

@@ -18,8 +18,6 @@ func (p *Parser) parseStatement() ast.Statement {
 		stmt = p.parseNextStatement()
 	} else if p.curIs(token.Break) {
 		stmt = p.parseBreakStatement()
-	} else if p.curIs(token.Import) {
-		stmt = p.parseImportStatement()
 	} else if p.curIs(token.Use) {
 		stmt = p.parseUseStatement()
 	} else if p.curIs(token.While) {
@@ -114,20 +112,6 @@ func (p *Parser) parseDefStatement() ast.Statement {
 	}
 
 	stmt.Body = p.parseBlockStatement()
-
-	return stmt
-}
-
-func (p *Parser) parseImportStatement() ast.Statement {
-	stmt := &ast.ImportStatement{
-		Tok: p.cur,
-	}
-
-	if !p.expect(token.String) {
-		return nil
-	}
-
-	stmt.Package = p.cur.Literal
 
 	return stmt
 }

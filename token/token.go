@@ -36,7 +36,6 @@ var Keywords = map[string]Type{
 	"for":    For,
 	"next":   Next,
 	"break":  Break,
-	"import": Import,
 	"use":    Use,
 }
 

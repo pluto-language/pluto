@@ -193,9 +193,6 @@ const (
 	// Break is the 'break' keyword, which breaks out of a loop
 	Break = "break"
 
-	// Import is the 'import' keyword, which does a qualified source include
-	Import = "import"
-
 	// Use is the 'use' keyword, which does an unqualified source include
 	Use = "use"
 )
