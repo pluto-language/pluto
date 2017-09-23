@@ -2,6 +2,8 @@ package vm
 
 import (
 	"io/ioutil"
+	"path/filepath"
+	"strings"
 
 	"github.com/Zac-Garby/pluto/bytecode"
 	"github.com/Zac-Garby/pluto/compiler"
@@ -57,6 +59,8 @@ func (f *Frame) Use(src string) {
 		machine := New()
 		machine.Run(code, &store, cmp.Constants, false)
 
-		f.locals.Extend(&store)
+		sourceName := strings.Split(filepath.Base(source), ".")[0]
+
+		f.locals.ImportModule(&store, sourceName)
 	}
 }

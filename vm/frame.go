@@ -84,12 +84,10 @@ func (f *Frame) getName(arg rune) (string, bool) {
 }
 
 func (f *Frame) searchName(name string) (object.Object, bool) {
-	if val, ok := f.locals.Data[name]; ok {
+	if val := f.locals.GetName(name); val != nil {
 		return val, true
 	} else if f.previous != nil {
-		if val, ok := f.previous.locals.Data[name]; ok {
-			return val, true
-		}
+		return f.previous.searchName(name)
 	}
 
 	return nil, false

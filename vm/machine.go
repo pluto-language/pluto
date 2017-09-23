@@ -55,7 +55,7 @@ func (vm *VirtualMachine) makeFrame(code bytecode.Code, args, locals *Store, con
 
 	for k, v := range args.Names {
 		locals.Names[k] = v
-		locals.Data[v] = args.Data[v]
+		locals.Define(v, args.GetName(v), true)
 	}
 
 	return frame

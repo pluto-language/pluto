@@ -103,7 +103,7 @@ func byteStoreName(f *Frame, i bytecode.Instruction) {
 		return
 	}
 
-	f.locals.Define(name, f.stack.top())
+	f.locals.Define(name, f.stack.top(), true)
 }
 
 func byteLoadField(f *Frame, i bytecode.Instruction) {
@@ -378,7 +378,7 @@ func byteCall(f *Frame, i bytecode.Instruction) {
 		if param, ok := item.(*ast.Parameter); ok {
 			// Found a parameter
 
-			locals.Data[param.Name] = f.stack.pop()
+			locals.Define(param.Name, f.stack.pop(), true)
 		}
 	}
 
@@ -425,7 +425,7 @@ func byteDoBlock(f *Frame, i bytecode.Instruction) {
 	for _, item := range block.Params {
 		name := item.Token().Literal
 
-		locals.Data[name] = f.stack.pop()
+		locals.Define(name, f.stack.pop(), true)
 	}
 
 	blockFrame := &Frame{
