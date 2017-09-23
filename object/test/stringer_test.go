@@ -27,13 +27,9 @@ func TestStringer(t *testing.T) {
 
 		m0 = &Map{Keys: make(map[string]Object), Values: make(map[string]Object)}
 		m1 = &Map{Keys: make(map[string]Object), Values: make(map[string]Object)}
-		m2 = &Map{Keys: make(map[string]Object), Values: make(map[string]Object)}
 	)
 
 	m1.Set(s1, n1)
-
-	m2.Set(s1, n1)
-	m2.Set(s2, n2)
 
 	cases := []struct {
 		obj Object
@@ -53,7 +49,6 @@ func TestStringer(t *testing.T) {
 		{t2, "(0, 1)"},
 		{m0, "[:]"},
 		{m1, "[foo: 0]"},
-		{m2, "[foo: 0, bar: 1]"},
 	}
 
 	for _, pair := range cases {
