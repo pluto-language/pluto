@@ -1,6 +1,8 @@
 package vm
 
-import "github.com/Zac-Garby/pluto/object"
+import (
+	"github.com/Zac-Garby/pluto/object"
+)
 
 type item struct {
 	name  string
@@ -74,88 +76,67 @@ func (s *Store) GetID(id rune) (string, object.Object) {
 // copied into a new map inside this store, assigned
 // to other["title"].
 func (s *Store) ImportModule(other *Store, name string) {
+	var (
+		module     *object.Map
+		moduleName string
+	)
+
 	if mod := other.GetName("_module"); mod != nil {
 		// _module exists in the imported package
 
 		var (
-			m                *object.Map
-			title            object.Object
-			tString          string
-			fnArr            object.Object
-			generalFunctions []object.Object
+			title object.Object
+			ok    bool
 		)
 
-		m, ok := mod.(*object.Map)
+		module, ok = mod.(*object.Map)
 		if !ok {
 			goto invalid
 		}
 
-		title = m.Get(&object.String{Value: "title"})
+		title = module.Get(&object.String{Value: "title"})
 		if title == nil {
 			goto invalid
 		}
 
-		tString = title.String()
-
-		generalFunctions = make([]object.Object, len(other.Functions))
-
-		for i, fn := range other.Functions {
-			generalFunctions[i] = &fn
-		}
-
-		fnArr = &object.Array{
-			Value: generalFunctions,
-		}
-
-		m.Set(&object.String{Value: "_methods"}, fnArr)
-
-		for _, item := range other.Data {
-			if item.name == "_module" || !item.local {
-				continue
-			}
-
-			m.Set(&object.String{Value: item.name}, item.value)
-		}
-
-		s.Define(tString, m, false)
-
-		return
-	invalid:
-	} else {
-		// _module doesn't exist
-		// importing from file name
-
-		var (
-			m                *object.Map
-			fnArr            object.Object
-			generalFunctions []object.Object
-		)
-
-		m = &object.Map{
-			Keys:   make(map[string]object.Object),
-			Values: make(map[string]object.Object),
-		}
-
-		generalFunctions = make([]object.Object, len(other.Functions))
-
-		for i, fn := range other.Functions {
-			generalFunctions[i] = &fn
-		}
-
-		fnArr = &object.Array{
-			Value: generalFunctions,
-		}
-
-		m.Set(&object.String{Value: "_methods"}, fnArr)
-
-		for _, item := range other.Data {
-			if !item.local {
-				continue
-			}
-
-			m.Set(&object.String{Value: item.name}, item.value)
-		}
-
-		s.Define(name, m, false)
+		moduleName = title.String()
 	}
+
+	goto after_fallback
+invalid:
+	// _module doesn't exist
+	// importing from file name
+
+	module = &object.Map{
+		Keys:   make(map[string]object.Object),
+		Values: make(map[string]object.Object),
+	}
+
+after_fallback:
+
+	functions := &object.Array{
+		Value: make([]object.Object, len(other.Functions)),
+	}
+
+	for i, fn := range other.Functions {
+		functions.Value[i] = &object.Function{
+			Body:      fn.Body,
+			Constants: fn.Constants,
+			Names:     fn.Names,
+			Pattern:   fn.Pattern,
+			Patterns:  fn.Patterns,
+		}
+	}
+
+	module.Set(&object.String{Value: "_methods"}, functions)
+
+	for _, item := range other.Data {
+		if item.name == "_module" || !item.local {
+			continue
+		}
+
+		module.Set(&object.String{Value: item.name}, item.value)
+	}
+
+	s.Define(moduleName, module, false)
 }
