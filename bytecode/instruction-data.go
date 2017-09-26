@@ -47,6 +47,7 @@ var Instructions = map[byte]data{
 
 	Print:   {Name: "PRINT"},
 	Println: {Name: "PRINT_LINE"},
+	Length:  {Name: "LENGTH"},
 
 	Jump:        {Name: "JUMP", HasArg: true},
 	JumpIfTrue:  {Name: "JUMP_IF_TRUE", HasArg: true},

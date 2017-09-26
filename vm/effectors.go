@@ -1,7 +1,6 @@
 package vm
 
 import (
-	"fmt"
 	"math"
 	"strings"
 
@@ -54,6 +53,7 @@ func init() {
 
 		bytecode.Print:   bytePrint,
 		bytecode.Println: bytePrintln,
+		bytecode.Length:  byteLength,
 
 		bytecode.Jump:        byteJump,
 		bytecode.JumpIfTrue:  byteJumpIfTrue,
@@ -528,14 +528,6 @@ func byteDoBlock(f *Frame, i bytecode.Instruction) {
 
 		f.stack.push(ret)
 	}
-}
-
-func bytePrint(f *Frame, i bytecode.Instruction) {
-	fmt.Print(f.stack.pop())
-}
-
-func bytePrintln(f *Frame, i bytecode.Instruction) {
-	fmt.Println(f.stack.pop())
 }
 
 func byteJump(f *Frame, i bytecode.Instruction) {

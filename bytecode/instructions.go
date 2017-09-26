@@ -86,6 +86,10 @@ const (
 	// Println prints the item at the top of the stack,
 	// with a trailing new line
 	Println
+
+	// Length pushes the length of the collection at
+	// the top of the stack
+	Length
 )
 
 // 90-99: control flow
