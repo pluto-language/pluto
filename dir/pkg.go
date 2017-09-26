@@ -75,14 +75,17 @@ func LocateRootSources(pkg string) ([]string, error) {
 // For example, pkg=std/io will find the standard IO package,
 // and /Users/.../packages/io/src/* will find the source files of it.
 func LocateAnySources(pkg string) ([]string, error) {
-	root, err := LocateSources("/", pkg)
+	sources, err := LocateSources("/", pkg)
 	if err != nil && err != errNoSources {
 		return nil, err
 	}
 
-	if len(root) > 0 {
-		return root, nil
+	if len(sources) == 0 {
+		sources, err = LocateRootSources(pkg)
+		if err != nil && err != errNoSources {
+			return nil, err
+		}
 	}
 
-	return LocateRootSources(pkg)
+	return sources, nil
 }
