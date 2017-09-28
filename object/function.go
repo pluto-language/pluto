@@ -30,8 +30,34 @@ func (f *Function) Type() Type { return FunctionType }
 
 // Equals checks if two objects are equal to each other
 func (f *Function) Equals(o Object) bool {
-	_, ok := o.(*Function)
-	return ok
+	if of, ok := o.(*Function); ok {
+		if len(f.Pattern) != len(of.Pattern) {
+			return false
+		}
+
+		for i, item := range f.Pattern {
+			oitem := of.Pattern[i]
+
+			if _, ok := item.(*ast.Parameter); ok {
+				_, ok := oitem.(*ast.Parameter)
+				if !ok {
+					return false
+				}
+			}
+
+			if id1, ok := item.(*ast.Identifier); ok {
+				if id2, ok := oitem.(*ast.Identifier); ok {
+					if id1.Value != id2.Value {
+						return false
+					}
+				}
+			}
+		}
+
+		return true
+	}
+
+	return false
 }
 
 /* Stringer implementations */

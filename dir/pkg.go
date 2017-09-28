@@ -82,10 +82,7 @@ func LocateAnySources(pkg string) ([]string, error) {
 
 	if len(sources) == 0 {
 		sources, err = LocateRootSources(pkg)
-		if err != nil && err != errNoSources {
-			return nil, err
-		}
 	}
 
-	return sources, nil
+	return sources, err
 }
