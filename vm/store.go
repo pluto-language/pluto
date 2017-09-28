@@ -128,7 +128,13 @@ after_fallback:
 		}
 	}
 
-	module.Set(&object.String{Value: "_methods"}, functions)
+	var (
+		mkey       = &object.String{Value: "_methods"}
+		oldMethods = module.Get(mkey)
+		appended   = addMethods(oldMethods, functions.Elements())
+	)
+
+	module.Set(mkey, &object.Array{Value: appended})
 
 	for _, item := range other.Data {
 		if item.name == "_module" || !item.local {
@@ -139,4 +145,17 @@ after_fallback:
 	}
 
 	s.Define(moduleName, module, false)
+}
+
+func addMethods(old object.Object, methods []object.Object) []object.Object {
+	if old == nil || old.Equals(object.NullObj) {
+		return methods
+	}
+
+	oldArr, ok := old.(*object.Array)
+	if !ok {
+		return methods
+	}
+
+	return append(methods, oldArr.Elements()...)
 }
