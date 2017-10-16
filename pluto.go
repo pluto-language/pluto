@@ -17,6 +17,7 @@ import (
 
 func main() {
 	store := vm.NewStore()
+	usePrelude := true
 
 	for {
 		reader := bufio.NewReader(os.Stdin)
@@ -24,15 +25,17 @@ func main() {
 		text, _ := reader.ReadString('\n')
 		text = strings.TrimRight(text, "\n")
 
-		if obj, err := execute(text, "<repl>", store); err != nil {
+		if obj, err := execute(text, "<repl>", store, usePrelude); err != nil {
 			color.Red("  %s", err)
 		} else if obj != nil {
 			color.Cyan("  %s", obj)
 		}
+
+		usePrelude = false
 	}
 }
 
-func execute(text, file string, store *vm.Store) (object.Object, error) {
+func execute(text, file string, store *vm.Store, prelude bool) (object.Object, error) {
 	var (
 		cmp   = compiler.New()
 		parse = parser.New(text, file)
@@ -56,10 +59,11 @@ func execute(text, file string, store *vm.Store) (object.Object, error) {
 
 	store.Names = cmp.Names
 	store.FunctionStore.Define(cmp.Functions...)
+
 	store.Patterns = cmp.Patterns
 
 	machine := vm.New()
-	machine.Run(code, store, cmp.Constants, true)
+	machine.Run(code, store, cmp.Constants, prelude)
 
 	if machine.Error != nil {
 		return nil, machine.Error

@@ -30,7 +30,7 @@ func (vm *VirtualMachine) Run(code bytecode.Code, locals *Store, constants []obj
 	frame := vm.makeFrame(code, NewStore(), locals, constants)
 
 	if usePrelude {
-		frame.Use("std/prelude")
+		frame.Use("std/prelude/*.pluto")
 	}
 
 	vm.pushFrame(frame)

@@ -109,3 +109,14 @@ func (f *FunctionStore) Define(fs ...object.Function) {
 		f.def(fn)
 	}
 }
+
+// Clone duplicates a function store
+func (f *FunctionStore) Clone() *FunctionStore {
+	nfs := &FunctionStore{}
+
+	for _, fn := range f.Functions {
+		nfs.Functions = append(nfs.Functions, fn)
+	}
+
+	return nfs
+}

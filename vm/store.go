@@ -74,7 +74,8 @@ func (s *Store) GetID(id rune) (string, object.Object) {
 // ImportModule imports a module: If _module is
 // defined in the module store, its contents are
 // copied into a new map inside this store, assigned
-// to other["title"].
+// to other["title"]. If _module isn't defined,
+// copy all files from other to this store
 func (s *Store) ImportModule(other *Store, name string) {
 	var (
 		module     *object.Map
@@ -100,17 +101,18 @@ func (s *Store) ImportModule(other *Store, name string) {
 		}
 
 		moduleName = title.String()
+	} else {
+		goto invalid
 	}
 
 	goto after_fallback
 invalid:
-	// _module doesn't exist
-	// importing from file name
+	// _module doesn't exist, so just
+	// importing functions directly into
+	// this store
 
-	module = &object.Map{
-		Keys:   make(map[string]object.Object),
-		Values: make(map[string]object.Object),
-	}
+	s.FunctionStore.Define(other.Functions...)
+	return
 
 after_fallback:
 
@@ -158,4 +160,14 @@ func addMethods(old object.Object, methods []object.Object) []object.Object {
 	}
 
 	return append(methods, oldArr.Elements()...)
+}
+
+// Clone duplicates a store
+func (s *Store) Clone() *Store {
+	return &Store{
+		Names:         s.Names,
+		Patterns:      s.Patterns,
+		Data:          s.Data,
+		FunctionStore: s.FunctionStore.Clone(),
+	}
 }

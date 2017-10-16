@@ -51,16 +51,20 @@ func (f *Frame) Use(src string) {
 			return
 		}
 
-		store := *f.locals
-		store.Names = cmp.Names
-		store.Functions = cmp.Functions
-		store.Patterns = cmp.Patterns
+		store := &Store{
+			Names:    cmp.Names,
+			Patterns: cmp.Patterns,
+			Data:     []*item{},
+			FunctionStore: &FunctionStore{
+				Functions: cmp.Functions,
+			},
+		}
 
 		machine := New()
-		machine.Run(code, &store, cmp.Constants, false)
+		machine.Run(code, store, cmp.Constants, false)
 
 		sourceName := strings.Split(filepath.Base(source), ".")[0]
 
-		f.locals.ImportModule(&store, sourceName)
+		f.locals.ImportModule(store, sourceName)
 	}
 }
