@@ -111,6 +111,12 @@ invalid:
 	// importing functions directly into
 	// this store
 
+	// TODO:
+	// All that needs to be done now is allowing files
+	// which make up a module to interact with each other.
+	// This could be done quite simply by merging their ASTs
+	// together before compilation.
+
 	s.FunctionStore.Define(other.Functions...)
 	return
 
