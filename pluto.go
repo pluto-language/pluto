@@ -10,13 +10,14 @@ import (
 	"github.com/Zac-Garby/pluto/compiler"
 	"github.com/Zac-Garby/pluto/object"
 	"github.com/Zac-Garby/pluto/parser"
+	"github.com/Zac-Garby/pluto/store"
 	"github.com/Zac-Garby/pluto/vm"
 
 	"github.com/fatih/color"
 )
 
 func main() {
-	store := vm.NewStore()
+	store := store.New()
 	usePrelude := true
 
 	for {
@@ -35,7 +36,7 @@ func main() {
 	}
 }
 
-func execute(text, file string, store *vm.Store, prelude bool) (object.Object, error) {
+func execute(text, file string, store *store.Store, prelude bool) (object.Object, error) {
 	var (
 		cmp   = compiler.New()
 		parse = parser.New(text, file)

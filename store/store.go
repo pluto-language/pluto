@@ -1,4 +1,4 @@
-package vm
+package store
 
 import (
 	"github.com/Zac-Garby/pluto/object"
@@ -23,7 +23,7 @@ type Store struct {
 }
 
 // NewStore creates an empty store
-func NewStore() *Store {
+func New() *Store {
 	return &Store{
 		Names:         make([]string, 0),
 		Patterns:      make([]string, 0),
@@ -110,12 +110,6 @@ invalid:
 	// _module doesn't exist, so just
 	// importing functions directly into
 	// this store
-
-	// TODO:
-	// All that needs to be done now is allowing files
-	// which make up a module to interact with each other.
-	// This could be done quite simply by merging their ASTs
-	// together before compilation.
 
 	s.FunctionStore.Define(other.Functions...)
 	return

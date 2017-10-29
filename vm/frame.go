@@ -3,6 +3,7 @@ package vm
 import (
 	"github.com/Zac-Garby/pluto/bytecode"
 	"github.com/Zac-Garby/pluto/object"
+	"github.com/Zac-Garby/pluto/store"
 )
 
 // Frame is a virtual machine frame. A frame is
@@ -15,7 +16,7 @@ type Frame struct {
 	offset   int             // the current instruction index
 	vm       *VirtualMachine // the frame's virtual machine
 
-	locals        *Store          // the local namespace
+	locals        *store.Store    // the local namespace
 	stack         stack           // the object stack
 	breaks, nexts []int           // the loop stack
 	constants     []object.Object // the pre-initialised constants
@@ -75,8 +76,9 @@ func (f *Frame) getName(arg rune) (string, bool) {
 	if index < len(f.locals.Names) {
 		name := f.locals.Names[index]
 		return name, true
-	} else if f.previous != nil {
-		return f.previous.getName(arg)
+	} else if f.previous != nil && index < len(f.previous.locals.Names) {
+		name := f.previous.locals.Names[index]
+		return name, true
 	}
 
 	return "", false

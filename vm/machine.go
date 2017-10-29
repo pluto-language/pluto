@@ -3,6 +3,7 @@ package vm
 import (
 	"github.com/Zac-Garby/pluto/bytecode"
 	"github.com/Zac-Garby/pluto/object"
+	"github.com/Zac-Garby/pluto/store"
 )
 
 // VirtualMachine is the base struct
@@ -26,8 +27,8 @@ func New() *VirtualMachine {
 }
 
 // Run executes the supplied bytecode
-func (vm *VirtualMachine) Run(code bytecode.Code, locals *Store, constants []object.Object, usePrelude bool) {
-	frame := vm.makeFrame(code, NewStore(), locals, constants)
+func (vm *VirtualMachine) Run(code bytecode.Code, locals *store.Store, constants []object.Object, usePrelude bool) {
+	frame := vm.makeFrame(code, store.New(), locals, constants)
 
 	if usePrelude {
 		frame.Use("std/prelude/*.pluto")
@@ -40,10 +41,10 @@ func (vm *VirtualMachine) Run(code bytecode.Code, locals *Store, constants []obj
 // RunDefault executes the bytecode with
 // empty globals and locals
 func (vm *VirtualMachine) RunDefault(code bytecode.Code, constants []object.Object) {
-	vm.Run(code, NewStore(), constants, false)
+	vm.Run(code, store.New(), constants, false)
 }
 
-func (vm *VirtualMachine) makeFrame(code bytecode.Code, args, locals *Store, constants []object.Object) *Frame {
+func (vm *VirtualMachine) makeFrame(code bytecode.Code, args, locals *store.Store, constants []object.Object) *Frame {
 	frame := &Frame{
 		code:      code,
 		locals:    locals,
