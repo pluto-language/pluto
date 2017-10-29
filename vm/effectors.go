@@ -86,7 +86,7 @@ func byteLoadConst(f *Frame, i bytecode.Instruction) {
 func byteLoadName(f *Frame, i bytecode.Instruction) {
 	name, ok := f.getName(i.Arg)
 	if !ok {
-		f.vm.Error = Err("name not defined", ErrInternal)
+		f.vm.Error = Err("name not defined when loading a name", ErrInternal)
 		return
 	}
 
@@ -102,7 +102,7 @@ func byteLoadName(f *Frame, i bytecode.Instruction) {
 func byteStoreName(f *Frame, i bytecode.Instruction) {
 	name, ok := f.getName(i.Arg)
 	if !ok {
-		f.vm.Error = Err("name not defined", ErrInternal)
+		f.vm.Error = Err("name not defined when storing a name", ErrInternal)
 		return
 	}
 
