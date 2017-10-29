@@ -75,9 +75,8 @@ func (f *Frame) getName(arg rune) (string, bool) {
 	if index < len(f.locals.Names) {
 		name := f.locals.Names[index]
 		return name, true
-	} else if f.previous != nil && index < len(f.previous.locals.Names) {
-		name := f.previous.locals.Names[index]
-		return name, true
+	} else if f.previous != nil {
+		return f.previous.getName(arg)
 	}
 
 	return "", false
