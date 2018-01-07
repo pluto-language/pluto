@@ -26,9 +26,9 @@ type Parser struct {
 
 // New returns a new parser for the
 // given string
-func New(text string) *Parser {
+func New(text, file string) *Parser {
 	p := &Parser{
-		lex:    lexer.Lexer(text),
+		lex:    lexer.Lexer(text, file),
 		text:   text,
 		Errors: []Error{},
 	}
@@ -42,6 +42,8 @@ func New(text string) *Parser {
 		token.LeftSquare: p.parseArrayOrMap,
 		token.String:     p.parseString,
 		token.Char:       p.parseChar,
+		token.LessThan:   p.parseEmission,
+		token.Param:      p.parseParam,
 
 		token.Minus: p.parsePrefix,
 		token.Plus:  p.parsePrefix,
@@ -51,10 +53,6 @@ func New(text string) *Parser {
 		token.If:        p.parseIfExpression,
 		token.BackSlash: p.parseFunctionCall,
 		token.LeftBrace: p.parseBlockLiteral,
-		token.While:     p.parseWhileLoop,
-		token.For:       p.parseForLoop,
-		token.Match:     p.parseMatchExpression,
-		token.Try:       p.parseTryExpression,
 	}
 
 	p.infixes = map[token.Type]infixParser{
@@ -89,16 +87,12 @@ func New(text string) *Parser {
 		token.SlashEquals:        p.parseShorthandAssignment,
 		token.StarEquals:         p.parseShorthandAssignment,
 		token.Assign:             p.parseAssignExpression,
-		token.Declare:            p.parseDeclareExpression,
 		token.Dot:                p.parseDotExpression,
-		token.Colon:              p.parseMethodCall,
-		token.DoubleColon:        p.parseQualifiedFunctionCall,
+		token.Colon:              p.parseQualifiedFunctionCall,
 		token.LeftSquare:         p.parseIndexExpression,
 	}
 
-	p.argTokens = []token.Type{
-		token.Param,
-	}
+	p.argTokens = []token.Type{}
 
 	for k := range p.prefixes {
 		if !isBlacklisted(k) {

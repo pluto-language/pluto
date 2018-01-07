@@ -22,13 +22,6 @@ type (
 		Body    Statement
 	}
 
-	// InitDefinition defines an initialisation method
-	InitDefinition struct {
-		Tok     token.Token
-		Pattern []Expression
-		Body    Statement
-	}
-
 	// ReturnStatement returns an expression from a BlockStatement
 	ReturnStatement struct {
 		Tok   token.Token
@@ -45,23 +38,28 @@ type (
 		Tok token.Token
 	}
 
-	// ClassStatement defines a class
-	ClassStatement struct {
-		Tok          token.Token
-		Name, Parent Expression
-		Methods      []Statement
-	}
-
-	// ImportStatement imports a package
-	ImportStatement struct {
-		Tok     token.Token
-		Package string
-	}
-
 	// UseStatement imports a package into the current scope
 	UseStatement struct {
 		Tok     token.Token
 		Package string
+	}
+
+	// WhileLoop executes Body while Condition holds true
+	WhileLoop struct {
+		Tok       token.Token
+		Condition Expression
+		Body      Statement
+	}
+
+	// ForLoop executes Body for each element in a collection
+	ForLoop struct {
+		Tok token.Token
+
+		// for (Init; Condition; Increment) { Body }
+		Init      Expression
+		Condition Expression
+		Increment Expression
+		Body      Statement
 	}
 )
 
@@ -84,12 +82,6 @@ func (n FunctionDefinition) Stmt() {}
 func (n FunctionDefinition) Token() token.Token { return n.Tok }
 
 // Stmt tells the compiler this node is a statement
-func (n InitDefinition) Stmt() {}
-
-//Token returns this node's token
-func (n InitDefinition) Token() token.Token { return n.Tok }
-
-// Stmt tells the compiler this node is a statement
 func (n ReturnStatement) Stmt() {}
 
 //Token returns this node's token
@@ -108,19 +100,19 @@ func (n BreakStatement) Stmt() {}
 func (n BreakStatement) Token() token.Token { return n.Tok }
 
 // Stmt tells the compiler this node is a statement
-func (n ClassStatement) Stmt() {}
-
-//Token returns this node's token
-func (n ClassStatement) Token() token.Token { return n.Tok }
-
-// Stmt tells the compiler this node is a statement
-func (n ImportStatement) Stmt() {}
-
-//Token returns this node's token
-func (n ImportStatement) Token() token.Token { return n.Tok }
-
-// Stmt tells the compiler this node is a statement
 func (n UseStatement) Stmt() {}
 
 //Token returns this node's token
 func (n UseStatement) Token() token.Token { return n.Tok }
+
+// Stmt tells the compiler this node is a statement
+func (n WhileLoop) Stmt() {}
+
+//Token returns this node's token
+func (n WhileLoop) Token() token.Token { return n.Tok }
+
+// Stmt tells the compiler this node is a statement
+func (n ForLoop) Stmt() {}
+
+//Token returns this node's token
+func (n ForLoop) Token() token.Token { return n.Tok }

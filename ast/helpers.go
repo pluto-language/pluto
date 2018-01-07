@@ -91,28 +91,31 @@ func Tree(node Node, indent int, name string) string {
 			}
 
 			str += "\n" + makeListTree(indent+1, nodes, label)
-		case []Arm:
-			str += "\n" + prefix(indent+1, label) + "arms ["
+		case []EmittedItem:
+			str += "\n" + prefix(indent+1, label) + "items ["
 
 			if len(n) == 0 {
 				str += "]"
 				break
 			}
 
-			for _, arm := range n {
-				var nodes []Node
-
-				for _, item := range arm.Exprs {
-					nodes = append(nodes, item.(Node))
+			for _, item := range n {
+				if item.IsInstruction {
+					str += fmt.Sprintf(
+						"\n%sinstruction (\n%s%s\n%s%d\n%s)",
+						in(indent+2),
+						prefix(indent+3, "instruction"),
+						item.Instruction,
+						prefix(indent+3, "argument"),
+						item.Argument,
+						in(indent+2),
+					)
+				} else {
+					str += fmt.Sprintf(
+						"\n%s",
+						Tree(item.Exp, indent+2, "expression"),
+					)
 				}
-
-				str += fmt.Sprintf(
-					"\n%sarm (\n%s\n%s\n%s)",
-					in(indent+2),
-					makeListTree(indent+3, nodes, "expressions"),
-					Tree(arm.Body, indent+3, "body"),
-					in(indent+2),
-				)
 			}
 
 			str += "\n" + in(indent+1) + "]"

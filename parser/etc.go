@@ -23,7 +23,6 @@ const (
 
 var precedences = map[token.Type]int{
 	token.Assign:             assign,
-	token.Declare:            assign,
 	token.AndEquals:          assign,
 	token.BitAndEquals:       assign,
 	token.BitOrEquals:        assign,
@@ -56,7 +55,6 @@ var precedences = map[token.Type]int{
 	token.FloorDiv:           exp,
 	token.Bang:               prefix,
 	token.Colon:              methodCall,
-	token.DoubleColon:        methodCall,
 	token.Dot:                index,
 	token.LeftSquare:         index,
 }
@@ -66,12 +64,11 @@ var argBlacklist = []token.Type{
 	token.BackSlash,
 	token.While,
 	token.For,
-	token.Match,
 	token.Minus,
 	token.Plus,
 	token.LeftSquare,
-	token.Try,
 	token.Bang,
+	token.LessThan,
 }
 
 func isBlacklisted(t token.Type) bool {

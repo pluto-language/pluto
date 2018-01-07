@@ -28,3 +28,6 @@ LANGUAGE
   + 'import "..." as "..."' statements
   + 'import "fn $ pattern", ... from "..."' statements
   + c-like for loops
+
+BYTECODE
+  implement all language features

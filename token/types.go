@@ -103,9 +103,6 @@ const (
 	// Assign is the assign operator (=)
 	Assign = "assign"
 
-	// Declare is the declare operator (:=)
-	Declare = "declare"
-
 	// Comma is a comma (,)
 	Comma = "comma"
 
@@ -121,14 +118,8 @@ const (
 	// Dot is the dot-access operator (.)
 	Dot = "dot"
 
-	// FatArrow is the fat arrow (=>)
-	FatArrow = "fat-arrow"
-
 	// Bang is an exclaimation mark (!)
 	Bang = "bang"
-
-	// DoubleColon is two colons (::)
-	DoubleColon = "double-colon"
 
 	// PlusEquals is the addition-assignment operator (+=)
 	PlusEquals = "assign-plus"
@@ -196,33 +187,12 @@ const (
 	// For is the 'for' keyword
 	For = "for"
 
-	// Next is the 'next' keyword
+	// Next is the 'next' keyword, which skips to the next iteration in a loop
 	Next = "next"
 
-	// Break is the 'break' keyword
+	// Break is the 'break' keyword, which breaks out of a loop
 	Break = "break"
 
-	// Class is the 'class' keyword
-	Class = "class"
-
-	// Extends is the 'extends' keyword
-	Extends = "extends"
-
-	// Init is the 'init' keyword
-	Init = "init"
-
-	// Match is the 'match' keyword
-	Match = "match"
-
-	// Try is the 'try' keyword
-	Try = "try"
-
-	// Catch is the 'catch' keyword
-	Catch = "catch"
-
-	// Import is the 'import' keyword
-	Import = "import"
-
-	// Use is the 'use' keyword
+	// Use is the 'use' keyword, which does an unqualified source include
 	Use = "use"
 )

@@ -69,12 +69,6 @@ type (
 		Name, Value Expression
 	}
 
-	// DeclareExpression declares a name as an expression
-	DeclareExpression struct {
-		Tok         token.Token
-		Name, Value Expression
-	}
-
 	// PrefixExpression is a prefix operator expression
 	PrefixExpression struct {
 		Tok      token.Token
@@ -122,7 +116,7 @@ type (
 	// QualifiedFunctionCall calls a function from a package
 	QualifiedFunctionCall struct {
 		Tok     token.Token
-		Package Expression
+		Base    Expression
 		Pattern []Expression
 	}
 
@@ -133,46 +127,22 @@ type (
 		Consequence, Alternative Statement
 	}
 
-	// Arm is a match-arm
-	Arm struct {
-		Exprs []Expression
-		Body  Statement
+	// EmittedItem is an item inside an emission expression
+	EmittedItem struct {
+		IsInstruction bool
+
+		// This will be defined if !IsInstruction
+		Exp Expression
+
+		// These things will be defined if IsInstruction
+		Instruction string
+		Argument    rune
 	}
 
-	// MatchExpression matches an expression against a list of arms
-	MatchExpression struct {
-		Tok  token.Token
-		Exp  Expression
-		Arms []Arm
-	}
-
-	// WhileLoop executes Body while Condition holds true
-	WhileLoop struct {
-		Tok       token.Token
-		Condition Expression
-		Body      Statement
-	}
-
-	// ForLoop executes Body for each element in a collection
-	ForLoop struct {
-		Tok             token.Token
-		Var, Collection Expression
-		Body            Statement
-	}
-
-	// TryExpression trys to execute Body, and matches Arms if it throws an error
-	TryExpression struct {
-		Tok     token.Token
-		Body    Statement
-		ErrName Expression
-		Arms    []Arm
-	}
-
-	// MethodCall calls a method on an instance
-	MethodCall struct {
-		Tok      token.Token
-		Instance Expression
-		Pattern  []Expression
+	// EmissionExpression emits some raw bytecode
+	EmissionExpression struct {
+		Tok   token.Token
+		Items []EmittedItem
 	}
 )
 
@@ -243,12 +213,6 @@ func (n AssignExpression) Expr() {}
 func (n AssignExpression) Token() token.Token { return n.Tok }
 
 // Expr tells the compiler this node is an expression
-func (n DeclareExpression) Expr() {}
-
-// Token returns the node's token
-func (n DeclareExpression) Token() token.Token { return n.Tok }
-
-// Expr tells the compiler this node is an expression
 func (n PrefixExpression) Expr() {}
 
 // Token returns the node's token
@@ -303,31 +267,7 @@ func (n IfExpression) Expr() {}
 func (n IfExpression) Token() token.Token { return n.Tok }
 
 // Expr tells the compiler this node is an expression
-func (n MatchExpression) Expr() {}
+func (n EmissionExpression) Expr() {}
 
 // Token returns the node's token
-func (n MatchExpression) Token() token.Token { return n.Tok }
-
-// Expr tells the compiler this node is an expression
-func (n WhileLoop) Expr() {}
-
-// Token returns the node's token
-func (n WhileLoop) Token() token.Token { return n.Tok }
-
-// Expr tells the compiler this node is an expression
-func (n ForLoop) Expr() {}
-
-// Token returns the node's token
-func (n ForLoop) Token() token.Token { return n.Tok }
-
-// Expr tells the compiler this node is an expression
-func (n TryExpression) Expr() {}
-
-// Token returns the node's token
-func (n TryExpression) Token() token.Token { return n.Tok }
-
-// Expr tells the compiler this node is an expression
-func (n MethodCall) Expr() {}
-
-// Token returns the node's token
-func (n MethodCall) Token() token.Token { return n.Tok }
+func (n EmissionExpression) Token() token.Token { return n.Tok }

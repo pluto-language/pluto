@@ -22,12 +22,13 @@ var lineEndings = []token.Type{
 	token.RightParen,
 	token.RightSquare,
 	token.RightBrace,
+	token.GreaterThan,
 }
 
 // Lexer takes a string and returns a stream of tokens
 // The stream of tokens is in the form of a function
 // which returns the next token.
-func Lexer(str string) func() token.Token {
+func Lexer(str, file string) func() token.Token {
 	var (
 		index = 0
 		col   = 1
@@ -84,8 +85,8 @@ func Lexer(str string) func() token.Token {
 						ch <- token.Token{
 							Type:    t,
 							Literal: literal,
-							Start:   token.Position{Line: line, Column: col},
-							End:     token.Position{Line: line, Column: col + l - 1},
+							Start:   token.Position{Line: line, Column: col, File: file},
+							End:     token.Position{Line: line, Column: col + l - 1, File: file},
 						}
 
 						index += l
@@ -114,8 +115,8 @@ func Lexer(str string) func() token.Token {
 							ch <- token.Token{
 								Type:    token.Semi,
 								Literal: ";",
-								Start:   token.Position{Line: line, Column: col},
-								End:     token.Position{Line: line, Column: col},
+								Start:   token.Position{Line: line, Column: col, File: file},
+								End:     token.Position{Line: line, Column: col, File: file},
 							}
 						}
 
@@ -127,8 +128,8 @@ func Lexer(str string) func() token.Token {
 					ch <- token.Token{
 						Type:    token.Illegal,
 						Literal: string(str[index]),
-						Start:   token.Position{Line: line, Column: col},
-						End:     token.Position{Line: line, Column: col},
+						Start:   token.Position{Line: line, Column: col, File: file},
+						End:     token.Position{Line: line, Column: col, File: file},
 					}
 
 					index++
@@ -141,8 +142,8 @@ func Lexer(str string) func() token.Token {
 				ch <- token.Token{
 					Type:    token.EOF,
 					Literal: "",
-					Start:   token.Position{Line: line, Column: col},
-					End:     token.Position{Line: line, Column: col},
+					Start:   token.Position{Line: line, Column: col, File: file},
+					End:     token.Position{Line: line, Column: col, File: file},
 				}
 			}
 		}
